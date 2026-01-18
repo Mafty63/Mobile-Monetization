@@ -1,0 +1,111 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
+  m_Name: AdsSettings
+  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.Advertisements.AdsSettings
+  bannerType: 1
+  interstitialType: 1
+  rewardedVideoType: 1
+  adMobContainer:
+    androidAppID: ca-app-pub-3940256099942544~3347511713
+    iOSAppID: ca-app-pub-3940256099942544~1458002511
+    androidBannerID: ca-app-pub-3940256099942544/6300978111
+    iOSBannerID: ca-app-pub-3940256099942544/2934735716
+    androidInterstitialID: ca-app-pub-3940256099942544/1033173712
+    iOSInterstitialID: ca-app-pub-3940256099942544/4411468910
+    androidRewardedVideoID: ca-app-pub-3940256099942544/5224354917
+    iOSRewardedVideoID: ca-app-pub-3940256099942544/1712485313
+    bannerPosition: 0
+    bannerType: 0
+    testDevicesIDs: []
+  unityAdsContainer:
+    androidAppID: 1234567
+    iOSAppID: 1234567
+    androidBannerID: banner
+    iOSBannerID: banner
+    androidInterstitialID: video
+    iOSInterstitialID: video
+    androidRewardedVideoID: rewardedVideo
+    iOSRewardedVideoID: rewardedVideo
+    bannerPosition: 4
+  levelPlayContainer:
+    androidAppKey: 85460dcd
+    iOSAppKey: 8545d445
+    androidBannerID: thnfvcsog13bhn08
+    iOSBannerID: iep3rxsyp9na3rw8
+    androidInterstitialID: aeyqi3vqlv6o8sh9
+    iOSInterstitialID: wmgt0712uuux8ju4
+    bannerPosition: 0
+    bannerType: 0
+  appLovinContainer:
+    androidSdkKey: YOUR_ANDROID_SDK_KEY
+    iosSdkKey: YOUR_IOS_SDK_KEY
+    androidBannerID: c192d3f0d6c8bf71
+    iOSBannerID: c192d3f0d6c8bf71
+    androidInterstitialID: 4b6b2fef8bd6a3cd
+    iOSInterstitialID: 4b6b2fef8bd6a3cd
+    androidRewardedVideoID: d64b5b9c5a1a7e36
+    iOSRewardedVideoID: d64b5b9c5a1a7e36
+    bannerPosition: 0
+    bannerSize: 0
+    enableVerboseLogging: 0
+  vungleContainer:
+    androidAppId: 5c6b1d416b3b280019a2c0a3
+    iosAppId: 5c6b1d416b3b280019a2c0a3
+    androidBannerID: BANNER-1468791
+    iOSBannerID: BANNER-1468791
+    androidInterstitialID: DEFAULT-1468791
+    iOSInterstitialID: DEFAULT-1468791
+    androidRewardedVideoID: REWARDED-1468791
+    iOSRewardedVideoID: REWARDED-1468791
+    bannerPosition: 0
+    bannerSize: 0
+  mintegralContainer:
+    androidAppId: 118690
+    iosAppId: 118692
+    androidAppKey: 7c22942a749fe6a6e361c675ddc4e5a9
+    iosAppKey: 854d0a8c6b34f5ae84905b87a4b6c5b7
+    androidBannerID: 176869
+    iOSBannerID: 176870
+    androidInterstitialID: 176873
+    iOSInterstitialID: 176874
+    androidRewardedVideoID: 176875
+    iOSRewardedVideoID: 176876
+    bannerPosition: 0
+  chartboostContainer:
+    androidAppID: test_android_app_id
+    iOSAppID: test_ios_app_id
+    androidAppSignature: test_android_app_signature
+    iOSAppSignature: test_ios_app_signature
+    androidBannerID: default_banner
+    iOSBannerID: default_banner
+    androidInterstitialID: default_interstitial
+    iOSInterstitialID: default_interstitial
+    androidRewardedVideoID: default_rewarded
+    iOSRewardedVideoID: default_rewarded
+    bannerPosition: 0
+    bannerType: 0
+  dummyContainer:
+    bannerPosition: 0
+    dontAutoInitialize: 0
+  testMode: 0
+  systemLogs: 0
+  interstitialFirstStartDelay: 40
+  interstitialStartDelay: 40
+  interstitialShowingDelay: 30
+  adOnStart: 1
+  autoShowInterstitial: 0
+  isGDPREnabled: 0
+  isIDFAEnabled: 0
+  trackingDescription: Your data will be used to deliver personalized ads to you.
+  privacyLink: https://mywebsite.com/privacy
+  termsOfUseLink: https://mywebsite.com/terms

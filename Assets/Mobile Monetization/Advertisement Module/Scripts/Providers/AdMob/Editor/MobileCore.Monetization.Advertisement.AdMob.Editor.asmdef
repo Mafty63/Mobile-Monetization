@@ -1,0 +1,10 @@
+{
+    "name": "MobileCore.Monetization.Advertisement.AdMob.Editor",
+    "references": [
+        "MobileCore.Monetization"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

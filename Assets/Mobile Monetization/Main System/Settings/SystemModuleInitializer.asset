@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34f27d59b0f7fd64bbdece140f4e0eae, type: 3}
+  m_Name: SystemModuleInitializer
+  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.SystemModule.SystemModuleInitializer
+  ModuleName: System Module
+  ModuleDescription: 
+  isEnabled: 1
+  SystemCanvas: {fileID: 0}
+  ScreenSettings:
+    setFrameRateAutomatically: 0
+    defaultFrameRate: 60
+    batterySaveFrameRate: 30
+    sleepTimeout: -1
+    customSleepTimeout: 300

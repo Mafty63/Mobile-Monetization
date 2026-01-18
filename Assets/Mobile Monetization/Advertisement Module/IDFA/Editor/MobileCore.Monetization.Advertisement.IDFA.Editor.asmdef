@@ -1,0 +1,10 @@
+{
+    "name": "MobileCore.Monetization.Advertisement.IDFA.Editor",
+    "references": [
+        "MobileCore.Monetization"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

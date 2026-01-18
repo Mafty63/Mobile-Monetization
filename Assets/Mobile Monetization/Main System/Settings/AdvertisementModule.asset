@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92fc42d5fd1f8b545b7bd8a121a23de1, type: 3}
+  m_Name: AdvertisementModule
+  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.Advertisements.AdsManagerInitializer
+  ModuleName: Ads Module
+  ModuleDescription: Module to show Ads
+  isEnabled: 1
+  Settings: {fileID: 11400000, guid: 2ad6139efd0a7a14ba45765e8da2ab3f, type: 2}
+  DummyCanvasPrefab: {fileID: 985655532585203946, guid: a7af08efc5cd16c4db955b7f65f00dfc, type: 3}
+  GDPRPrefab: {fileID: 2665059414450368139, guid: 25b05165b3e164d41a5e0f7d29a77b0a, type: 3}

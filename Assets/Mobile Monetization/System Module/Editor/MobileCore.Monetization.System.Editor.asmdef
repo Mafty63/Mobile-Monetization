@@ -1,0 +1,11 @@
+{
+    "name": "MobileCore.Monetization.System.Editor",
+    "references": [
+        "MobileCore.Monetization",
+        "MobileCore.Monetization.MainSystem.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

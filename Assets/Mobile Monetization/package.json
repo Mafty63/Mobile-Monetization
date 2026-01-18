@@ -1,0 +1,22 @@
+{
+    "name": "com.mobilecore.monetization",
+    "version": "1.0.0",
+    "displayName": "Mobile Monetization",
+    "description": "A modular system for Mobile Monetization including Ads and IAP.",
+    "unity": "2021.3",
+    "documentationUrl": "",
+    "changelogUrl": "",
+    "licensesUrl": "",
+    "dependencies": {},
+    "keywords": [
+        "monetization",
+        "ads",
+        "iap",
+        "mobile"
+    ],
+    "author": {
+        "name": "MobileCore",
+        "email": "",
+        "url": ""
+    }
+}

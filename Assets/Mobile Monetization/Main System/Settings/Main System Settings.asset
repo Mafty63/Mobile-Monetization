@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a0258cb7d17964493174ceaf8d2867, type: 3}
+  m_Name: Main System Settings
+  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.MainModule.MainSystemSettings
+  coreModule: {fileID: 11400000, guid: 81138fdcef32d81468efcaee4e3e5a5e, type: 2}
+  modules:
+  - {fileID: 11400000, guid: 568dff29ceb9aef48a3d97f9ec2f7f62, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: ef2b111e2624c184984e7be4461bd0d6, type: 2}
