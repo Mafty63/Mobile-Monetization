@@ -30,7 +30,7 @@ namespace MobileCore.MainModule
 
                 gameObject.AddComponent<MonoBehaviourExecution>();
 
-#if MODULE_INPUT_SYSTEM
+#if ENABLE_INPUT_SYSTEM
                 eventSystem.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 #else
                 eventSystem.gameObject.AddComponent<StandaloneInputModule>();

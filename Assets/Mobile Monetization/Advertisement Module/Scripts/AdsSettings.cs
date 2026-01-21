@@ -44,7 +44,7 @@ namespace MobileCore.Advertisements
         [SerializeField] private ChartboostContainer chartboostContainer;
         public ChartboostContainer ChartboostContainer => chartboostContainer;
 
-        [AdsProviderContainer("Meta Audience Network", 8, "https://developers.facebook.com/docs/audience-network/setting-up/unity-sdk")]
+        [AdsProviderContainer("Meta Audience Network", 8, "https://developers.facebook.com/docs/audience-network/setting-up/platform-steup/unity/add-sdk")]
         [SerializeField] private MetaAudienceNetworkContainer metaAudienceNetworkContainer;
         public MetaAudienceNetworkContainer MetaAudienceNetworkContainer => metaAudienceNetworkContainer;
 

@@ -97,3 +97,11 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# External SDKs (installed via package manager or manually)
+/[Aa]ssets/ExternalDependencyManager/
+/[Aa]ssets/ExternalDependencyManager.meta
+/[Aa]ssets/AudienceNetwork/
+/[Aa]ssets/AudienceNetwork.meta
+/[Aa]ssets/TapjoySDK/
+/[Aa]ssets/TapjoySDK.meta

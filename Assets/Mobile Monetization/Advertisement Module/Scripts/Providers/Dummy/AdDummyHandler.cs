@@ -8,7 +8,7 @@ namespace MobileCore.Advertisements.Providers
 
         private bool isInterstitialLoaded = false;
         private bool isRewardVideoLoaded = false;
-        private bool _isInitializationDelayed = false;
+
 
         // Fixed values untuk simulasi - tidak perlu configurable
         private const float INTERSTITIAL_CLOSE_DELAY = 2f;
@@ -28,16 +28,7 @@ namespace MobileCore.Advertisements.Providers
 
             DebugLog($"[AdsManager]: {providerType} is trying to initialize!");
 
-            // Check DontAutoInitialize setting
-            if (!adsSettings.DummyContainer.DontAutoInitialize)
-            {
-                InitializeDummy();
-            }
-            else
-            {
-                _isInitializationDelayed = true;
-                DebugLog($"[AdsManager]: {providerType} auto-initialization disabled. Call ManualInitialize() to initialize.");
-            }
+            InitializeDummy();
         }
 
         /// <summary>
@@ -45,19 +36,14 @@ namespace MobileCore.Advertisements.Providers
         /// </summary>
         public void ManualInitialize()
         {
-            if (!isInitialized && _isInitializationDelayed)
+            if (!isInitialized)
             {
                 DebugLog($"[AdsManager]: Manually initializing {providerType}...");
-
                 InitializeDummy();
-            }
-            else if (isInitialized)
-            {
-                DebugLog($"[AdsManager]: {providerType} already initialized.");
             }
             else
             {
-                DebugLogWarning($"[AdsManager]: {providerType} not configured for manual initialization.");
+                DebugLog($"[AdsManager]: {providerType} already initialized.");
             }
         }
 
@@ -104,11 +90,8 @@ namespace MobileCore.Advertisements.Providers
             OnProviderInitialized();
 
             // Auto-request ads setelah inisialisasi berhasil
-            if (!adsSettings.DummyContainer.DontAutoInitialize)
-            {
-                RequestInterstitial();
-                RequestRewardedVideo();
-            }
+            RequestInterstitial();
+            RequestRewardedVideo();
         }
 
         /// <summary>

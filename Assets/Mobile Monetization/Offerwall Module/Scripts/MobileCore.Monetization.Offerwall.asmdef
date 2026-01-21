@@ -1,0 +1,17 @@
+{
+    "name": "MobileCore.Monetization.Offerwall",
+    "rootNamespace": "MobileCore.Offerwall",
+    "references": [
+        "MobileCore.Monetization",
+        "Tapjoy.Plugin.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

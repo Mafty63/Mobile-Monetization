@@ -21,8 +21,14 @@ namespace MobileCore.Advertisements.Providers
         private InterstitialCallback currentInterstitialCallback;
         private RewardedVideoCallback currentRewardedCallback;
 
-        // Flags
+        // Flags (following Meta examples)
         private bool isBannerLoadedAndReady = false;
+        private bool isInterstitialLoaded = false;
+        private bool isRewardedVideoLoaded = false;
+#pragma warning disable 0414
+        private bool didCloseInterstitial = false;
+        private bool didCloseRewardedVideo = false;
+#pragma warning restore 0414
 
         public MetaAudienceNetworkHandler(AdProvider providerType) : base(providerType) { }
 
@@ -36,13 +42,17 @@ namespace MobileCore.Advertisements.Providers
 
             try
             {
+                // Meta SDK auto-initializes when creating ad objects
+                // No explicit Initialize() call needed (AudienceNetworkAds.Initialize is internal)
+                
                 // Set AdSettings for testing if needed
                 if (adsSettings.MetaAudienceNetworkContainer.TestDevicesIDs.Count > 0)
                 {
-                    AudienceNetwork.AdSettings.AddTestDevices(adsSettings.MetaAudienceNetworkContainer.TestDevicesIDs);
+                    foreach (var deviceId in adsSettings.MetaAudienceNetworkContainer.TestDevicesIDs)
+                    {
+                        AudienceNetwork.AdSettings.AddTestDevice(deviceId);
+                    }
                 }
-
-                AudienceNetworkAds.Initialize();
                 
                 isInitialized = true;
                 OnProviderInitialized();
@@ -111,13 +121,14 @@ namespace MobileCore.Advertisements.Providers
             bannerAd = new AdView(placementId, adSize);
             bannerAd.Register(MonoBehaviourExecution.Instance.gameObject);
 
-            // Set delegates
+            // Set delegates (following Meta examples)
             bannerAd.AdViewDidLoad = () =>
             {
                 isBannerLoadedAndReady = true;
                 UpdateBannerState(isBannerShowing, true);
                 OnAdLoaded(AdType.Banner);
-                DebugLog("[MetaAN]: Banner loaded");
+                string isAdValid = bannerAd.IsValid() ? "valid" : "invalid";
+                DebugLog($"[MetaAN]: Banner loaded and is {isAdValid}");
                 
                 // If we shouldn't be showing, hide it (dispose it because Meta doesn't have Hide())
                 if (!isBannerShowing)
@@ -126,7 +137,8 @@ namespace MobileCore.Advertisements.Providers
                 }
                 else
                 {
-                    bannerAd.Show(); // Explicit show if needed by specific SDK version
+                    // Show banner at bottom position
+                    bannerAd.Show(AdPosition.BOTTOM);
                     OnAdDisplayed(AdType.Banner);
                 }
             };
@@ -136,6 +148,16 @@ namespace MobileCore.Advertisements.Providers
                 isBannerLoadedAndReady = false;
                 UpdateBannerState(false, false);
                 DebugLogError($"[MetaAN]: Banner failed to load: {error}");
+            };
+
+            bannerAd.AdViewWillLogImpression = () =>
+            {
+                DebugLog("[MetaAN]: Banner logged impression");
+            };
+
+            bannerAd.AdViewDidClick = () =>
+            {
+                DebugLog("[MetaAN]: Banner clicked");
             };
 
             bannerAd.LoadAd();
@@ -160,28 +182,68 @@ namespace MobileCore.Advertisements.Providers
             interstitialAd = new InterstitialAd(placementId);
             interstitialAd.Register(MonoBehaviourExecution.Instance.gameObject);
 
+            // Set delegates (following Meta examples)
             interstitialAd.InterstitialAdDidLoad = () =>
             {
+                isInterstitialLoaded = true;
+                didCloseInterstitial = false;
+                string isAdValid = interstitialAd.IsValid() ? "valid" : "invalid";
                 OnAdLoaded(AdType.Interstitial);
-                DebugLog("[MetaAN]: Interstitial loaded");
+                DebugLog($"[MetaAN]: Interstitial loaded and is {isAdValid}");
             };
 
             interstitialAd.InterstitialAdDidFailWithError = (error) =>
             {
-                DebugLogError($"[MetaAN]: Interstitial failed: {error}");
-                // Retry logic could go here
+                isInterstitialLoaded = false;
+                DebugLogError($"[MetaAN]: Interstitial failed to load: {error}");
+            };
+
+            interstitialAd.InterstitialAdWillLogImpression = () =>
+            {
+                DebugLog("[MetaAN]: Interstitial logged impression");
+            };
+
+            interstitialAd.InterstitialAdDidClick = () =>
+            {
+                DebugLog("[MetaAN]: Interstitial clicked");
             };
 
             interstitialAd.InterstitialAdDidClose = () =>
             {
+                DebugLog("[MetaAN]: Interstitial did close");
+                didCloseInterstitial = true;
+                isInterstitialLoaded = false;
+                
                 OnAdClosed(AdType.Interstitial);
                 currentInterstitialCallback?.Invoke(true);
                 currentInterstitialCallback = null;
-                DebugLog("[MetaAN]: Interstitial closed");
+                
+                // Cleanup
+                if (interstitialAd != null)
+                {
+                    interstitialAd.Dispose();
+                }
                 
                 // Auto reload
                 RequestInterstitial();
             };
+
+#if UNITY_ANDROID
+            // Android-specific: Handle activity destroyed without proper close
+            // (following Meta example for apps with launchMode:singleTask)
+            interstitialAd.interstitialAdActivityDestroyed = () =>
+            {
+                if (!didCloseInterstitial)
+                {
+                    DebugLogWarning("[MetaAN]: Interstitial activity destroyed without being closed first");
+                    DebugLog("[MetaAN]: Game should resume");
+                    
+                    isInterstitialLoaded = false;
+                    currentInterstitialCallback?.Invoke(false);
+                    currentInterstitialCallback = null;
+                }
+            };
+#endif
 
             interstitialAd.LoadAd();
         }
@@ -203,7 +265,7 @@ namespace MobileCore.Advertisements.Providers
 
         public override bool IsInterstitialLoaded()
         {
-            return interstitialAd != null && interstitialAd.IsValid();
+            return isInterstitialLoaded && interstitialAd != null && interstitialAd.IsValid();
         }
         #endregion
 
@@ -225,42 +287,104 @@ namespace MobileCore.Advertisements.Providers
             rewardedVideoAd = new RewardedVideoAd(placementId);
             rewardedVideoAd.Register(MonoBehaviourExecution.Instance.gameObject);
 
+            // Set delegates (following Meta examples)
             rewardedVideoAd.RewardedVideoAdDidLoad = () =>
             {
+                isRewardedVideoLoaded = true;
+                didCloseRewardedVideo = false;
+                string isAdValid = rewardedVideoAd.IsValid() ? "valid" : "invalid";
                 OnAdLoaded(AdType.RewardedVideo);
-                DebugLog("[MetaAN]: Rewarded video loaded");
+                DebugLog($"[MetaAN]: Rewarded video loaded and is {isAdValid}");
             };
 
             rewardedVideoAd.RewardedVideoAdDidFailWithError = (error) =>
             {
-                DebugLogError($"[MetaAN]: Rewarded video failed: {error}");
+                isRewardedVideoLoaded = false;
+                DebugLogError($"[MetaAN]: Rewarded video failed to load: {error}");
             };
 
-            rewardedVideoAd.RewardedVideoAdDidClose = () =>
+            rewardedVideoAd.RewardedVideoAdWillLogImpression = () =>
             {
-                OnAdClosed(AdType.RewardedVideo);
-                // DidSucceed is separate, so we handle callback logic carefully
-                // If DidSucceed wasn't called, we might invoke with false here if not already invoked?
-                // Meta usually calls DidSucceed then DidClose.
-                if (currentRewardedCallback != null)
-                {
-                    currentRewardedCallback.Invoke(false); // Closed without reward if callback still exists
-                    currentRewardedCallback = null;
-                }
-                
-                DebugLog("[MetaAN]: Rewarded video closed");
-                RequestRewardedVideo();
+                DebugLog("[MetaAN]: Rewarded video logged impression");
             };
 
+            rewardedVideoAd.RewardedVideoAdDidClick = () =>
+            {
+                DebugLog("[MetaAN]: Rewarded video clicked");
+            };
+
+            // Server-to-Server (S2S) validation callbacks
+            // These are called when using RewardData for server-side validation
+            rewardedVideoAd.RewardedVideoAdDidSucceed = () =>
+            {
+                DebugLog("[MetaAN]: Rewarded video validated by server");
+            };
+
+            rewardedVideoAd.RewardedVideoAdDidFail = () =>
+            {
+                DebugLogWarning("[MetaAN]: Rewarded video not validated, or no response from server");
+            };
+
+            // RewardedVideoAdComplete is called when user completes the video
+            // This is called BEFORE DidClose
             rewardedVideoAd.RewardedVideoAdComplete = () =>
             {
+                DebugLog("[MetaAN]: Rewarded video completed - User earned reward");
+                
+                // Invoke callback with reward = true
                 if (currentRewardedCallback != null)
                 {
                     currentRewardedCallback.Invoke(true);
                     currentRewardedCallback = null;
                 }
-                DebugLog("[MetaAN]: Rewarded video completed");
             };
+
+            rewardedVideoAd.RewardedVideoAdDidClose = () =>
+            {
+                DebugLog("[MetaAN]: Rewarded video did close");
+                didCloseRewardedVideo = true;
+                isRewardedVideoLoaded = false;
+                
+                OnAdClosed(AdType.RewardedVideo);
+                
+                // If callback still exists here, user closed without completing
+                if (currentRewardedCallback != null)
+                {
+                    currentRewardedCallback.Invoke(false);
+                    currentRewardedCallback = null;
+                }
+                
+                // Cleanup
+                if (rewardedVideoAd != null)
+                {
+                    rewardedVideoAd.Dispose();
+                }
+                
+                // Auto reload
+                RequestRewardedVideo();
+            };
+
+#if UNITY_ANDROID
+            // Android-specific: Handle activity destroyed without proper close
+            // (following Meta example for apps with launchMode:singleTask)
+            rewardedVideoAd.RewardedVideoAdActivityDestroyed = () =>
+            {
+                if (!didCloseRewardedVideo)
+                {
+                    DebugLogWarning("[MetaAN]: Rewarded video activity destroyed without being closed first");
+                    DebugLog("[MetaAN]: Game should resume. User should NOT get a reward");
+                    
+                    isRewardedVideoLoaded = false;
+                    
+                    // User should NOT get reward in this case
+                    if (currentRewardedCallback != null)
+                    {
+                        currentRewardedCallback.Invoke(false);
+                        currentRewardedCallback = null;
+                    }
+                }
+            };
+#endif
 
             rewardedVideoAd.LoadAd();
         }
@@ -282,7 +406,7 @@ namespace MobileCore.Advertisements.Providers
 
         public override bool IsRewardedVideoLoaded()
         {
-            return rewardedVideoAd != null && rewardedVideoAd.IsValid();
+            return isRewardedVideoLoaded && rewardedVideoAd != null && rewardedVideoAd.IsValid();
         }
         #endregion
 

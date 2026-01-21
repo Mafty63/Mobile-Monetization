@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da15839aa65947a4e934f279395da541, type: 3}
+  m_Name: OfferwallSettings
+  m_EditorClassIdentifier: MobileCore.Monetization.Offerwall::MobileCore.Offerwall.OfferwallSettings
+  testMode: 0
+  showLogs: 1
+  tapjoyContainer:
+    androidSdkKey: YOUR_ANDROID_SDK_KEY
+    iosSdkKey: YOUR_IOS_SDK_KEY
+    gcmSenderId: YOUR_GCM_SENDER_ID
+    offerwallPlacementName: Offerwall
+    enableDebug: 0

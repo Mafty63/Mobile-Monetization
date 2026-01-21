@@ -15,7 +15,7 @@ MonoBehaviour:
   ModuleName: System Module
   ModuleDescription: 
   isEnabled: 1
-  SystemCanvas: {fileID: 0}
+  SystemCanvas: {fileID: 6951761026347705287, guid: 15892f63869a33e41aa27c6098e3caf3, type: 3}
   ScreenSettings:
     setFrameRateAutomatically: 0
     defaultFrameRate: 60

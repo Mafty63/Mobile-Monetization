@@ -1,0 +1,19 @@
+{
+    "name": "MobileCore.Monetization.Offerwall.Editor",
+    "rootNamespace": "MobileCore.Offerwall.Editor",
+    "references": [
+        "MobileCore.Monetization.Offerwall",
+        "MobileCore.Monetization.MainSystem.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

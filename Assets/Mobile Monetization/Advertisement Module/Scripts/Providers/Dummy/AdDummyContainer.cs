@@ -9,9 +9,6 @@ namespace MobileCore.Advertisements.Providers
     {
         public BannerPosition bannerPosition = BannerPosition.Bottom;
 
-        [Header("Advanced Settings")]
-        [Tooltip("If true, Handler will not auto-initialize on Start(). You must call Initialize() manually")]
-        [SerializeField] bool dontAutoInitialize = false;
-        public bool DontAutoInitialize => dontAutoInitialize;
+
     }
 }
