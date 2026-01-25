@@ -2,11 +2,10 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-// We assume Tapjoy plugin resides in global namespace or TapjoyUnity namespace
-// Since we don't have the SDK yet, we wrap usage in #if
-
 #if TAPJOY_OFFERWALL
-// using TapjoyUnity; // Avoiding using directive to prevent collision
+#if UNITY_IOS
+using Unity.Advertisement.IosSupport;
+#endif
 #endif
 
 namespace MobileCore.Offerwall.Providers.Tapjoy
@@ -17,6 +16,10 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
         private TapjoyContainer tapjoySettings;
         private TapjoyUnity.TJPlacement offerwallPlacement;
         private bool isConnecting = false;
+        
+        private Action<int> pendingBalanceCallback;
+        private Action<bool> pendingSpendCallback;
+        private Action<bool> pendingAwardCallback;
 #endif
 
         public override void Initialize(OfferwallSettings settings)
@@ -25,6 +28,9 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
             
 #if TAPJOY_OFFERWALL
             tapjoySettings = settings.TapjoyContainer;
+
+            // Handle iOS App Tracking Transparency (ATT) before connecting
+            RequestATTPermission();
 
             if (tapjoySettings.EnableDebug)
             {
@@ -56,17 +62,15 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
                 // Currency delegates
                 TapjoyUnity.Tapjoy.OnGetCurrencyBalanceResponse += HandleGetCurrencyBalanceResponse;
                 TapjoyUnity.Tapjoy.OnGetCurrencyBalanceResponseFailure += HandleGetCurrencyBalanceResponseFailure;
+                TapjoyUnity.Tapjoy.OnSpendCurrencyResponse += HandleSpendCurrencyResponse;
+                TapjoyUnity.Tapjoy.OnSpendCurrencyResponseFailure += HandleSpendCurrencyResponseFailure;
+                TapjoyUnity.Tapjoy.OnAwardCurrencyResponse += HandleAwardCurrencyResponse;
+                TapjoyUnity.Tapjoy.OnAwardCurrencyResponseFailure += HandleAwardCurrencyResponseFailure;
                 TapjoyUnity.Tapjoy.OnEarnedCurrency += HandleEarnedCurrency;
                 
                 Dictionary<string, object> connectFlags = new Dictionary<string, object>();
                 connectFlags.Add("TJC_OPTION_LOGGING_LEVEL", tapjoySettings.EnableDebug ? TapjoyUnity.LoggingLevel.Debug : TapjoyUnity.LoggingLevel.Info);
                 
-                // Gcm sender id if needed
-                if (!string.IsNullOrEmpty(tapjoySettings.GcmSenderId))
-                {
-                    // connectFlags.Add("TJC_OPTION_GCM_SENDER_ID", tapjoySettings.GcmSenderId);
-                }
-
                 TapjoyUnity.Tapjoy.Connect(sdkKey, connectFlags);
                 Debug.Log("[TapjoyProvider] Connecting...");
             }
@@ -78,13 +82,29 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
         }
 
 #if TAPJOY_OFFERWALL
+        private void RequestATTPermission()
+        {
+#if UNITY_IOS
+            // Check if we need to request ATT permission (iOS 14+)
+            if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() == 
+                ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED)
+            {
+                Debug.Log("[TapjoyProvider] Requesting ATT permission...");
+                ATTrackingStatusBinding.RequestAuthorizationTracking();
+            }
+            else
+            {
+                Debug.Log($"[TapjoyProvider] ATT status: {ATTrackingStatusBinding.GetAuthorizationTrackingStatus()}");
+            }
+#endif
+        }
+
         private void HandleConnectSuccess()
         {
             isConnecting = false;
             isInitialized = true;
             Debug.Log("[TapjoyProvider] Connected successfully!");
 
-            // Pre-load Offerwall placement when connected
             ConnectPlacement();
         }
 
@@ -101,30 +121,25 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
             isConnecting = false;
             isInitialized = true;
             Debug.LogWarning($"[TapjoyProvider] Connect Warning: {message} ({code})");
-            // Treat warning as success for functionality usually
             ConnectPlacement();
         }
 
         private void ConnectPlacement()
         {
-            // Just create the placement, content request happens when showing or explicitly requested
             string placementName = tapjoySettings.OfferwallPlacementName;
             
-            // Unsubscribe static events to prevent duplicates if re-connecting
             TapjoyUnity.TJPlacement.OnRequestSuccess -= OnPlacementRequestSuccess;
             TapjoyUnity.TJPlacement.OnRequestFailure -= OnPlacementRequestFailure;
             TapjoyUnity.TJPlacement.OnContentReady -= OnPlacementContentReady;
             TapjoyUnity.TJPlacement.OnContentShow -= OnPlacementContentShow;
             TapjoyUnity.TJPlacement.OnContentDismiss -= OnPlacementContentDismiss;
 
-            // Subscribe to static events
             TapjoyUnity.TJPlacement.OnRequestSuccess += OnPlacementRequestSuccess;
             TapjoyUnity.TJPlacement.OnRequestFailure += OnPlacementRequestFailure;
             TapjoyUnity.TJPlacement.OnContentReady += OnPlacementContentReady;
             TapjoyUnity.TJPlacement.OnContentShow += OnPlacementContentShow;
             TapjoyUnity.TJPlacement.OnContentDismiss += OnPlacementContentDismiss;
 
-            // Only create if null to avoid duplicates (though sample cleans up ref)
             if (offerwallPlacement == null)
             {
                  offerwallPlacement = TapjoyUnity.TJPlacement.CreatePlacement(placementName);
@@ -146,7 +161,6 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
                 return;
             }
 
-            // If placement is null, try to recreate
             if (offerwallPlacement == null)
             {
                  ConnectPlacement();
@@ -154,7 +168,6 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
 
             if (offerwallPlacement != null)
             {
-                // We define a local handler for when content is ready, IF we are requesting now
                 if (offerwallPlacement.IsContentAvailable())
                 {
                     offerwallPlacement.ShowContent();
@@ -164,7 +177,6 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
                 {
                     Debug.Log("[TapjoyProvider] Content not available, requesting...");
                     
-                    // Temporary handler just for this show request
                     TapjoyUnity.TJPlacement.OnContentReadyHandler readyHandler = null;
                     readyHandler = (TapjoyUnity.TJPlacement p) =>
                     {
@@ -173,7 +185,7 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
                             Debug.Log("[TapjoyProvider] Content Ready (Late), Showing...");
                             p.ShowContent();
                             NotifyOfferwallOpened();
-                            TapjoyUnity.TJPlacement.OnContentReady -= readyHandler; // Unsubscribe self
+                            TapjoyUnity.TJPlacement.OnContentReady -= readyHandler;
                         }
                     };
                     
@@ -189,75 +201,175 @@ namespace MobileCore.Offerwall.Providers.Tapjoy
         public override void GetCurrencyBalance(Action<int> onBalanceReceived)
         {
 #if TAPJOY_OFFERWALL
-            if (!isInitialized) return;
+            if (!isInitialized) 
+            {
+                onBalanceReceived?.Invoke(0);
+                return;
+            }
+            
+            pendingBalanceCallback = onBalanceReceived;
             TapjoyUnity.Tapjoy.GetCurrencyBalance();
-            // Note: Listener HandleGetCurrencyBalanceResponse handles the callback globally
+#else
+            onBalanceReceived?.Invoke(0);
+#endif
+        }
+
+        public override void SpendCurrency(int amount, Action<bool> onSpent)
+        {
+#if TAPJOY_OFFERWALL
+            if (!isInitialized)
+            {
+                Debug.LogWarning("[TapjoyProvider] Not initialized, cannot spend currency.");
+                onSpent?.Invoke(false);
+                return;
+            }
+            
+            if (amount <= 0)
+            {
+                Debug.LogWarning("[TapjoyProvider] Invalid amount to spend.");
+                onSpent?.Invoke(false);
+                return;
+            }
+            
+            pendingSpendCallback = onSpent;
+            TapjoyUnity.Tapjoy.SpendCurrency(amount);
+            Debug.Log($"[TapjoyProvider] Spending {amount} currency...");
+#else
+            onSpent?.Invoke(false);
+#endif
+        }
+
+        public void AwardCurrency(int amount, Action<bool> onAwarded = null)
+        {
+#if TAPJOY_OFFERWALL
+            if (!isInitialized)
+            {
+                Debug.LogWarning("[TapjoyProvider] Not initialized, cannot award currency.");
+                onAwarded?.Invoke(false);
+                return;
+            }
+            
+            if (amount <= 0)
+            {
+                Debug.LogWarning("[TapjoyProvider] Invalid amount to award.");
+                onAwarded?.Invoke(false);
+                return;
+            }
+            
+            pendingAwardCallback = onAwarded;
+            TapjoyUnity.Tapjoy.AwardCurrency(amount);
+            Debug.Log($"[TapjoyProvider] Awarding {amount} currency...");
+#else
+            onAwarded?.Invoke(false);
 #endif
         }
 
 #if TAPJOY_OFFERWALL
+        #region Currency Response Handlers
+        
         private void HandleGetCurrencyBalanceResponse(string currencyName, int balance)
         {
-            Debug.Log($"[TapjoyProvider] Balance: {currencyName} {balance}");
-            // Since BaseOfferwallProvider doesn't have a direct callback field for this async request outside of event,
-            // we might want to trigger a generic event or just log index.
-            // If you need direct callback support, we'd need to store the 'onBalanceReceived' action in a list/queue.
+            Debug.Log($"[TapjoyProvider] Balance: {currencyName} = {balance}");
+            pendingBalanceCallback?.Invoke(balance);
+            pendingBalanceCallback = null;
         }
 
         private void HandleGetCurrencyBalanceResponseFailure(string error)
         {
-             Debug.LogError($"[TapjoyProvider] GetCurrencyBalance failed: {error}");
+            Debug.LogError($"[TapjoyProvider] GetCurrencyBalance failed: {error}");
+            pendingBalanceCallback?.Invoke(0);
+            pendingBalanceCallback = null;
+        }
+
+        private void HandleSpendCurrencyResponse(string currencyName, int balance)
+        {
+            Debug.Log($"[TapjoyProvider] SpendCurrency success. {currencyName} balance: {balance}");
+            pendingSpendCallback?.Invoke(true);
+            pendingSpendCallback = null;
+        }
+
+        private void HandleSpendCurrencyResponseFailure(string error)
+        {
+            Debug.LogError($"[TapjoyProvider] SpendCurrency failed: {error}");
+            pendingSpendCallback?.Invoke(false);
+            pendingSpendCallback = null;
+        }
+
+        private void HandleAwardCurrencyResponse(string currencyName, int balance)
+        {
+            Debug.Log($"[TapjoyProvider] AwardCurrency success. {currencyName} balance: {balance}");
+            pendingAwardCallback?.Invoke(true);
+            pendingAwardCallback = null;
+        }
+
+        private void HandleAwardCurrencyResponseFailure(string error)
+        {
+            Debug.LogError($"[TapjoyProvider] AwardCurrency failed: {error}");
+            pendingAwardCallback?.Invoke(false);
+            pendingAwardCallback = null;
         }
 
         private void HandleEarnedCurrency(string currencyName, int amount)
         {
-             Debug.Log($"[TapjoyProvider] Earned: {amount} {currencyName}");
-             TapjoyUnity.Tapjoy.ShowDefaultEarnedCurrencyAlert(); // Optional: Show built-in alert
-             NotifyCurrencyEarned(amount);
+            Debug.Log($"[TapjoyProvider] Earned: {amount} {currencyName}");
+            TapjoyUnity.Tapjoy.ShowDefaultEarnedCurrencyAlert();
+            NotifyCurrencyEarned(amount);
         }
 
-        // Static Event Handlers
+        #endregion
+
+        #region Placement Event Handlers
+
         private void OnPlacementRequestSuccess(TapjoyUnity.TJPlacement placement)
         {
             if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
             {
-                Debug.Log($"[Tapjoy] Request success: {placement.GetName()}"); 
+                if (placement.IsContentAvailable())
+                {
+                    Debug.Log($"[TapjoyProvider] Content available for: {placement.GetName()}");
+                }
+                else
+                {
+                    Debug.Log($"[TapjoyProvider] No content available for: {placement.GetName()}");
+                }
             }
         }
 
         private void OnPlacementRequestFailure(TapjoyUnity.TJPlacement placement, string error)
         {
-             if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
+            if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
             {
-                Debug.LogWarning($"[Tapjoy] Request failure: {placement.GetName()} - {error}");
+                Debug.LogWarning($"[TapjoyProvider] Request failure: {placement.GetName()} - {error}");
+                NotifyOfferwallError(error);
             }
         }
 
         private void OnPlacementContentReady(TapjoyUnity.TJPlacement placement)
         {
-             if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
+            if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
             {
-                Debug.Log($"[Tapjoy] Content ready: {placement.GetName()}"); 
+                Debug.Log($"[TapjoyProvider] Content ready: {placement.GetName()}"); 
             }
         }
 
         private void OnPlacementContentShow(TapjoyUnity.TJPlacement placement)
         {
-             if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
+            if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
             {
-                 // NotifyOfferwallOpened(); 
+                Debug.Log($"[TapjoyProvider] Content showing: {placement.GetName()}");
             }
         }
 
         private void OnPlacementContentDismiss(TapjoyUnity.TJPlacement placement)
         {
-             if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
+            if (placement.GetName() == tapjoySettings.OfferwallPlacementName)
             {
-                 NotifyOfferwallClosed();
-                 // Request next content for future
-                 placement.RequestContent();
+                NotifyOfferwallClosed();
+                placement.RequestContent();
             }
         }
+
+        #endregion
 #endif
     }
 }

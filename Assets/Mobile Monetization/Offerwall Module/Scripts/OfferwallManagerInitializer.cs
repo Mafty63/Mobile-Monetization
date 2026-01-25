@@ -22,12 +22,8 @@ namespace MobileCore.Offerwall
                 return;
             }
 
-            if (OfferwallManager.Instance == null)
-            {
-                GameObject managerGO = new GameObject("OfferwallManager");
-                OfferwallManager manager = managerGO.AddComponent<OfferwallManager>();
-                manager.transform.SetParent(mainSystemManager.transform);
-            }
+            // OfferwallManager is now a static class, so we just initialize it directly.
+            // No need to create a GameObject or assign parent.
 
             OfferwallManager.Initialize(this);
         }

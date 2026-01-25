@@ -31,13 +31,13 @@ namespace MobileCore.Advertisements
             AdsManager.Initialize(this);
 
 #if UNITY_IOS
-            // if (Settings.IsIDFAEnabled && !AdsManager.IsIDFADetermined())
-            // {
-            //     if (Settings.SystemLogs)
-            //         Debug.Log("[Ads Manager]: Requesting IDFA..");
+            if (Settings.IsIDFAEnabled && !AdsManager.IsIDFADetermined())
+            {
+                if (Settings.SystemLogs)
+                    Debug.Log("[Ads Manager]: Requesting IDFA..");
 
-            //     ATTrackingStatusBinding.RequestAuthorizationTracking();
-            // }
+                ATTrackingStatusBinding.RequestAuthorizationTracking();
+            }
 #endif
         }
 

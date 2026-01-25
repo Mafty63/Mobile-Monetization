@@ -113,7 +113,7 @@ MonoBehaviour:
   interstitialStartDelay: 40
   interstitialShowingDelay: 30
   adOnStart: 1
-  autoShowInterstitial: 0
+  autoShowInterstitial: 1
   isGDPREnabled: 0
   isIDFAEnabled: 0
   trackingDescription: Your data will be used to deliver personalized ads to you.

@@ -6,43 +6,21 @@ using System.Collections.Generic;
 namespace MobileCore.Offerwall
 {
     [MobileCore.DefineSystem.Define("TAPJOY_OFFERWALL", "TapjoyUnity.Tapjoy", "Tapjoy Offerwall SDK")]
-    public class OfferwallManager : MonoBehaviour
+    public static class OfferwallManager
     {
-        public static OfferwallManager Instance { get; private set; }
+        private static OfferwallSettings settings;
+        private static BaseOfferwallProvider activeProvider;
 
-        private OfferwallSettings settings;
-        private BaseOfferwallProvider activeProvider;
-
-        public event Action<int> OnCurrencyEarned;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
-        }
+        public static event Action<int> OnCurrencyEarned;
 
         public static void Initialize(OfferwallManagerInitializer initializer)
         {
-            if (Instance == null)
-            {
-                GameObject go = new GameObject("OfferwallManager");
-                go.AddComponent<OfferwallManager>();
-                DontDestroyOnLoad(go);
-            }
-
-            Instance.InitInternal(initializer.Settings);
+            InitInternal(initializer.Settings);
         }
 
-        private void InitInternal(OfferwallSettings settings)
+        private static void InitInternal(OfferwallSettings settings)
         {
-            this.settings = settings;
+            OfferwallManager.settings = settings;
 
 #if TAPJOY_OFFERWALL
             var provider = new Providers.Tapjoy.TapjoyProvider();
@@ -57,13 +35,13 @@ namespace MobileCore.Offerwall
 #endif
         }
 
-        private void HandleCurrencyEarned(int amount)
+        private static void HandleCurrencyEarned(int amount)
         {
-            if (settings.ShowLogs) Debug.Log($"[Offerwall] Currency Earned: {amount}");
+            if (settings != null && settings.ShowLogs) Debug.Log($"[Offerwall] Currency Earned: {amount}");
             OnCurrencyEarned?.Invoke(amount);
         }
 
-        public void ShowOfferwall()
+        public static void ShowOfferwall()
         {
             if (activeProvider != null && activeProvider.IsInitialized)
             {
@@ -72,6 +50,50 @@ namespace MobileCore.Offerwall
             else
             {
                 Debug.LogWarning("[Offerwall] Provider not initialized or unavailable");
+            }
+        }
+
+        public static void GetCurrencyBalance(Action<int> onBalanceReceived)
+        {
+            if (activeProvider != null && activeProvider.IsInitialized)
+            {
+                activeProvider.GetCurrencyBalance(onBalanceReceived);
+            }
+            else
+            {
+                onBalanceReceived?.Invoke(0);
+            }
+        }
+
+        public static void SpendCurrency(int amount, Action<bool> onSpent = null)
+        {
+            if (activeProvider != null && activeProvider.IsInitialized)
+            {
+                activeProvider.SpendCurrency(amount, onSpent);
+            }
+            else
+            {
+                onSpent?.Invoke(false);
+            }
+        }
+        
+        public static void AwardCurrency(int amount, Action<bool> onAwarded = null)
+        {
+            if (activeProvider != null && activeProvider.IsInitialized)
+            {
+                if (activeProvider is Providers.Tapjoy.TapjoyProvider tapjoyProvider)
+                {
+                    tapjoyProvider.AwardCurrency(amount, onAwarded);
+                }
+                else
+                {
+                    Debug.LogWarning("[OfferwallManager] Active provider does not support AwardCurrency");
+                    onAwarded?.Invoke(false);
+                }
+            }
+            else
+            {
+                onAwarded?.Invoke(false);
             }
         }
     }

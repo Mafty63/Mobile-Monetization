@@ -2,6 +2,7 @@
     "name": "MobileCore.Monetization.Examples",
     "references": [
         "MobileCore.Monetization",
+        "MobileCore.Monetization.Offerwall",
         "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
