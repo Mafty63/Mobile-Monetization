@@ -21,19 +21,9 @@
     },
     "samples": [
         {
-            "displayName": "Plugin Resources",
-            "description": "Essential prefabs, UI canvases, and runtime resources for Mobile Monetization setup",
-            "path": "Samples~/Plugin Resources"
-        },
-        {
-            "displayName": "Plugin Settings",
-            "description": "Pre-configured ScriptableObject settings for Ads, IAP, and System modules",
-            "path": "Samples~/Plugin Settings"
-        },
-        {
-            "displayName": "Example Scenes",
-            "description": "Example scenes demonstrating Ads, IAP, and Offerwall implementation",
-            "path": "Samples~/Example"
+            "displayName": "Examples and Resources",
+            "description": "Complete package including prefabs, settings, example scenes, and all essential resources for Mobile Monetization",
+            "path": "Samples~/Examples and Resources"
         }
     ]
 }

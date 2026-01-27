@@ -86,54 +86,40 @@ This package is hosted inside a full Unity project repository. To install it pro
 
 ## Quick Start
 
-### Step 1: Import Samples (Essential)
-After installing the package, you need to import the required samples to get started:
+### Step 1: Import Sample Package (Essential)
+After installing the package, you need to import the sample to get all essential resources:
 
 1. Open **Window > Package Manager**.
 2. Find **Mobile Monetization** in the package list.
 3. In the right panel, click on the **Samples** tab.
-4. Import the samples you need:
+4. Click **Import** on **"Examples and Resources"**.
 
-   **Plugin Resources** (Required)
-   - Contains essential prefabs (Initializer, System Canvas, GDPR Panel)
-   - UI components and runtime resources
-   - Click **Import** to add to your project
-   
-   **Plugin Settings** (Recommended)
-   - Pre-configured ScriptableObject settings for Ads, IAP, and System modules
-   - Saves time by providing ready-to-use templates
-   - Click **Import** and customize for your needs
-   
-   **Example Scenes** (Optional)
-   - Demo scenes showing how to implement Ads, IAP, and Offerwall
-   - Useful for learning the API
-   - Click **Import** to explore
+This will copy everything you need to `Assets/Samples/Mobile Monetization/[version]/Examples and Resources/`:
+- ✅ **Prefabs** - Initializer, System Canvas, GDPR Panel, UI components
+- ✅ **Settings** - Pre-configured AdsSettings, IAPSettings, MainSystemSettings
+- ✅ **Example Scenes** - Demo implementation of Ads, IAP, and Offerwall
+- ✅ **Plugin Resources** - All necessary runtime assets
 
-> 💡 **Note:** Samples are copied to `Assets/Samples/Mobile Monetization/[version]/` and are fully editable.
+> 💡 **Note:** All imported files are fully editable. You can delete example scenes after learning the API to reduce build size.
 
 ### Step 2: Configure Settings
 
-**If you imported Plugin Settings sample:**
-1. Navigate to `Assets/Samples/Mobile Monetization/[version]/Plugin Settings/`.
-2. Customize `AdsSettings`, `IAPSettings`, and `MainSystemSettings` for your needs.
-3. Configure your Ad Provider IDs, IAP Product IDs, etc.
-
-**If creating from scratch:**
-1. Right-click in Project window: **Create > Mobile Core > Ads Settings**.
-2. Right-click in Project window: **Create > Mobile Core > IAP Settings**.
-3. Right-click in Project window: **Create > Mobile Core > Main System Settings**.
+1. Navigate to `Assets/Samples/Mobile Monetization/[version]/Examples and Resources/Settings/`.
+2. Customize the settings for your project:
+   - **AdsSettings**: Configure Ad Provider IDs (AdMob, Unity Ads, etc.)
+   - **IAPSettings**: Add your IAP Product IDs
+   - **MainSystemSettings**: Link the module initializers
 
 ### Step 3: Setup Main System Manager
 
-1. Drag the **Initializer** prefab from `Assets/Samples/.../Plugin Resources/Prefabs/` into your first scene.
-2. Or, create a new GameObject and add the `MainSystemManager` component.
-3. Assign your `MainSystemSettings` to the Initializer.
-4. In `MainSystemSettings`:
-   - Set **Core Module** to `SystemModuleInitializer`
-   - Add **Modules**: `AdsManagerInitializer`, `IAPManagerInitializer` (as needed)
+1. Drag the **Initializer** prefab from `.../Prefabs/` into your first scene.
+2. Verify the Initializer has `MainSystemSettings` assigned.
+3. In `MainSystemSettings`, ensure:
+   - **Core Module** → `SystemModuleInitializer`
+   - **Modules** → Add `AdsManagerInitializer`, `IAPManagerInitializer` as needed
 
 ### Step 4: Test
-Press Play! The system will initialize automatically. Check Console for logs if `System Logs` is enabled in settings.
+Press Play! The system will initialize automatically. Check Console for initialization logs if `System Logs` is enabled.
 
 ## Directory Structure
 
