@@ -68,25 +68,72 @@ Automated management of Scripting Define Symbols based on SDK existence.
 
 ## Installation
 
-This package is designed to be installed as a local or git package.
+This package is hosted inside a full Unity project repository. To install it properly via Package Manager, you **must** specify the subfolder path.
 
-- **Option A (Git)**: In Package Manager, add package from git URL:
-  `https://your-repo-url.git?path=/Assets/Mobile Monetization`
-- **Option B (Local)**: Drop the `Mobile Monetization` folder into your `Packages` (or `Assets`) directory.
+### Option 1: Install via Git URL (Recommended)
+1. Open Unity Package Manager (**Window > Package Manager**).
+2. Click the **+** button and select **Add package from git URL...**.
+3. Enter the following URL **exactly**:
+   ```
+   https://github.com/Mafty63/Mobile-Monetization.git?path=/Assets/Mobile Monetization
+   ```
+   > ⚠️ **Important:** You must include the `?path=/Assets/Mobile Monetization` suffix. If you omit this, Unity will fail to find the `package.json` and give an error.
 
-**Note**: The `package.json` file must remain at the root of the `Mobile Monetization` folder for Unity to recognize it as a package.
+### Option 2: Local Installation
+1. Download or Clone this repository.
+2. Copy the entire `Assets/Mobile Monetization` folder.
+3. Paste it into your project's `Packages` folder (recommended) or `Assets` folder.
 
-## Setup Guide
+## Quick Start
 
-1. **Create Settings**:
-   - Create `AdsSettings`, `IAPSettings`, and `MainSystemSettings` in your Resources or Settings folder.
-   - Link `AdsSettings` and `IAPSettings` into their respective Initializers.
-2. **Main Manager**:
-   - Create a GameObject (e.g., `MainSystem`).
-   - Add `MainSystemManager` component.
-   - Assign `MainSystemSettings`. Only `SystemModuleInitializer` is required as Core; add others (Ads, IAP) to the "Modules" list.
-3. **Run**:
-   - The system marks itself `DontDestroyOnLoad` and persists throughout the game.
+### Step 1: Import Samples (Essential)
+After installing the package, you need to import the required samples to get started:
+
+1. Open **Window > Package Manager**.
+2. Find **Mobile Monetization** in the package list.
+3. In the right panel, click on the **Samples** tab.
+4. Import the samples you need:
+
+   **Plugin Resources** (Required)
+   - Contains essential prefabs (Initializer, System Canvas, GDPR Panel)
+   - UI components and runtime resources
+   - Click **Import** to add to your project
+   
+   **Plugin Settings** (Recommended)
+   - Pre-configured ScriptableObject settings for Ads, IAP, and System modules
+   - Saves time by providing ready-to-use templates
+   - Click **Import** and customize for your needs
+   
+   **Example Scenes** (Optional)
+   - Demo scenes showing how to implement Ads, IAP, and Offerwall
+   - Useful for learning the API
+   - Click **Import** to explore
+
+> 💡 **Note:** Samples are copied to `Assets/Samples/Mobile Monetization/[version]/` and are fully editable.
+
+### Step 2: Configure Settings
+
+**If you imported Plugin Settings sample:**
+1. Navigate to `Assets/Samples/Mobile Monetization/[version]/Plugin Settings/`.
+2. Customize `AdsSettings`, `IAPSettings`, and `MainSystemSettings` for your needs.
+3. Configure your Ad Provider IDs, IAP Product IDs, etc.
+
+**If creating from scratch:**
+1. Right-click in Project window: **Create > Mobile Core > Ads Settings**.
+2. Right-click in Project window: **Create > Mobile Core > IAP Settings**.
+3. Right-click in Project window: **Create > Mobile Core > Main System Settings**.
+
+### Step 3: Setup Main System Manager
+
+1. Drag the **Initializer** prefab from `Assets/Samples/.../Plugin Resources/Prefabs/` into your first scene.
+2. Or, create a new GameObject and add the `MainSystemManager` component.
+3. Assign your `MainSystemSettings` to the Initializer.
+4. In `MainSystemSettings`:
+   - Set **Core Module** to `SystemModuleInitializer`
+   - Add **Modules**: `AdsManagerInitializer`, `IAPManagerInitializer` (as needed)
+
+### Step 4: Test
+Press Play! The system will initialize automatically. Check Console for logs if `System Logs` is enabled in settings.
 
 ## Directory Structure
 
