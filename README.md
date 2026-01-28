@@ -121,6 +121,11 @@ This will copy everything you need to `Assets/Samples/Mobile Monetization/[versi
 ### Step 4: Test
 Press Play! The system will initialize automatically. Check Console for initialization logs if `System Logs` is enabled.
 
+## Documentation
+
+For more complete and detailed documentation, please visit:
+**[Mobile Monetization - Getting Started Guide](https://quick-setup-website.pages.dev/documentation/mobile-monetization/getting-started/)**
+
 ## Directory Structure
 
 - `Advertisement Module/`: Scripts, IDFA, Providers.

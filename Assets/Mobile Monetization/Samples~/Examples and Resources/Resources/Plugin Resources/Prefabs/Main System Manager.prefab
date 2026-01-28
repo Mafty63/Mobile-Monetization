@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 7791319070626528955}
   - component: {fileID: 7960496749308229392}
   m_Layer: 0
-  m_Name: Initializer
+  m_Name: Main System Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

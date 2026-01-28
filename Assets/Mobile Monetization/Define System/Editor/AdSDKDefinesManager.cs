@@ -7,22 +7,18 @@ using System;
 using System.Reflection;
 
 /// <summary>
-/// Manager untuk mengelola define symbols berdasarkan DefineAttribute yang dideklarasikan di class Manager.
-/// Sistem ini menggunakan attribute-based approach dimana setiap Manager class mendeklarasikan define symbol yang dibutuhkan.
+/// Manager for handling define symbols based on DefineAttribute declared in Manager classes.
 /// </summary>
 public static class SDKDefinesManager
 {
-
-
     static SDKDefinesManager()
     {
-        // Tidak ada auto initialization, hanya manual melalui menu
     }
 
     /// <summary>
-    /// Scan semua class dengan DefineAttribute dan update define symbols berdasarkan ketersediaan type
+    /// Scans all classes with DefineAttribute and updates define symbols based on type availability.
     /// </summary>
-    [MenuItem("MobileCore/Refresh All Define Symbols")]
+    [MenuItem("Tools/MobileCore/Refresh All Define Symbols")]
     public static void RefreshAllDefines()
     {
         Debug.Log("=== Scanning Define Attributes ===");
@@ -48,9 +44,6 @@ public static class SDKDefinesManager
             "OK");
     }
 
-    /// <summary>
-    /// Scan semua assembly untuk class dengan DefineAttribute
-    /// </summary>
     private static List<DefineConfig> ScanDefineAttributes()
     {
         var configs = new List<DefineConfig>();
@@ -72,7 +65,6 @@ public static class SDKDefinesManager
                     var attributes = type.GetCustomAttributes(defineAttributeType, false);
                     foreach (var attr in attributes)
                     {
-                        // Use reflection to get properties
                         var defineSymbolProp = defineAttributeType.GetProperty("DefineSymbol");
                         var typeCheckProp = defineAttributeType.GetProperty("TypeCheck");
                         var descriptionProp = defineAttributeType.GetProperty("Description");
@@ -92,7 +84,6 @@ public static class SDKDefinesManager
             }
             catch (ReflectionTypeLoadException)
             {
-                // Skip assemblies yang tidak bisa di-load
                 continue;
             }
             catch (Exception ex)
@@ -104,9 +95,6 @@ public static class SDKDefinesManager
         return configs;
     }
 
-    /// <summary>
-    /// Cek ketersediaan type dan update define symbol
-    /// </summary>
     private static void CheckAndUpdateDefine(DefineConfig config)
     {
         bool typeExists = TypeExistsInAssemblies(config.TypeCheck);
@@ -135,21 +123,16 @@ public static class SDKDefinesManager
         }
     }
 
-    /// <summary>
-    /// Cek apakah type exists di semua assemblies
-    /// </summary>
     public static bool TypeExistsInAssemblies(string typeName)
     {
         try
         {
-            // Coba langsung dengan Type.GetType
             var type = Type.GetType(typeName);
             if (type != null)
             {
                 return true;
             }
 
-            // Scan semua assemblies
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try
@@ -181,10 +164,7 @@ public static class SDKDefinesManager
         return false;
     }
 
-    /// <summary>
-    /// Tambahkan define symbol ke semua build target groups
-    /// </summary>
-#pragma warning disable 0618 // PlayerSettings API obsolete warning
+#pragma warning disable 0618
     public static bool AddDefineSymbol(string defineSymbol)
     {
         bool changed = false;
@@ -205,9 +185,6 @@ public static class SDKDefinesManager
         return changed;
     }
 
-    /// <summary>
-    /// Hapus define symbol dari semua build target groups
-    /// </summary>
     public static bool RemoveDefineSymbol(string defineSymbol)
     {
         bool changed = false;
@@ -229,9 +206,6 @@ public static class SDKDefinesManager
     }
 #pragma warning restore 0618
 
-    /// <summary>
-    /// Get semua valid build target groups
-    /// </summary>
     public static List<BuildTargetGroup> GetValidBuildTargetGroups()
     {
         List<BuildTargetGroup> validGroups = new List<BuildTargetGroup>();
@@ -250,7 +224,7 @@ public static class SDKDefinesManager
                 if (obsoletes.Length > 0)
                     continue;
 
-#pragma warning disable 0618 // PlayerSettings API obsolete warning
+#pragma warning disable 0618
                 PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
 #pragma warning restore 0618
                 validGroups.Add(targetGroup);
@@ -262,10 +236,7 @@ public static class SDKDefinesManager
         return validGroups;
     }
 
-    /// <summary>
-    /// Reset semua define symbols yang terdeteksi dari attributes
-    /// </summary>
-    [MenuItem("MobileCore/Reset All Define Symbols")]
+    [MenuItem("Tools/MobileCore/Reset All Define Symbols")]
     public static void ResetAllDefines()
     {
         if (EditorUtility.DisplayDialog("Reset All Define Symbols",
@@ -281,9 +252,6 @@ public static class SDKDefinesManager
         }
     }
 
-    /// <summary>
-    /// Internal class untuk menyimpan config dari DefineAttribute
-    /// </summary>
     private class DefineConfig
     {
         public string DefineSymbol;
@@ -294,14 +262,14 @@ public static class SDKDefinesManager
 }
 
 /// <summary>
-/// Editor window untuk mengelola define symbols secara manual
+/// Editor window to manually manage define symbols.
 /// </summary>
 public class SDKDefinesEditorWindow : EditorWindow
 {
     private Vector2 scrollPosition;
     private List<DefineInfo> defineInfos = new List<DefineInfo>();
 
-    [MenuItem("MobileCore/Define Symbols Manager")]
+    [MenuItem("Tools/MobileCore/Define Symbols Manager")]
     public static void ShowWindow()
     {
         GetWindow<SDKDefinesEditorWindow>("Define Symbols Manager");
@@ -333,7 +301,6 @@ public class SDKDefinesEditorWindow : EditorWindow
                     var attributes = type.GetCustomAttributes(defineAttributeType, false);
                     foreach (var attr in attributes)
                     {
-                        // Use reflection to get properties
                         var defineSymbolProp = defineAttributeType.GetProperty("DefineSymbol");
                         var typeCheckProp = defineAttributeType.GetProperty("TypeCheck");
                         var descriptionProp = defineAttributeType.GetProperty("Description");
@@ -371,7 +338,7 @@ public class SDKDefinesEditorWindow : EditorWindow
         }
     }
 
-#pragma warning disable 0618 // PlayerSettings API obsolete warning
+#pragma warning disable 0618
     private bool IsDefineSymbolSet(string defineSymbol)
     {
         foreach (var targetGroup in SDKDefinesManager.GetValidBuildTargetGroups())
@@ -452,7 +419,7 @@ public class SDKDefinesEditorWindow : EditorWindow
         EditorGUILayout.LabelField("Current Define Symbols", EditorStyles.boldLabel);
         GUILayout.Space(5);
 
-#pragma warning disable 0618 // PlayerSettings API obsolete warning
+#pragma warning disable 0618
         foreach (var targetGroup in SDKDefinesManager.GetValidBuildTargetGroups())
         {
             string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
