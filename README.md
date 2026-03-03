@@ -68,43 +68,33 @@ Automated management of Scripting Define Symbols based on SDK existence.
 
 ## Installation
 
-This package is hosted inside a full Unity project repository. To install it properly via Package Manager, you **must** specify the subfolder path.
+### Option 1: Install via Unity Package (Recommended)
+1. Go to the [**Releases**](https://github.com/Mafty63/Mobile-Monetization/releases) page.
+2. Download the latest `MobileMonetization-vX.X.X.unitypackage` file.
+3. In your Unity project, go to **Assets > Import Package > Custom Package...**.
+4. Select the downloaded `.unitypackage` file and click **Import**.
 
-### Option 1: Install via Git URL (Recommended)
-1. Open Unity Package Manager (**Window > Package Manager**).
-2. Click the **+** button and select **Add package from git URL...**.
-3. Enter the following URL **exactly**:
-   ```
-   https://github.com/Mafty63/Mobile-Monetization.git?path=/Assets/Mobile Monetization
-   ```
-   > ⚠️ **Important:** You must include the `?path=/Assets/Mobile Monetization` suffix. If you omit this, Unity will fail to find the `package.json` and give an error.
+> 💡 **Note:** Files will be imported directly into your `Assets/` folder, so you can freely edit them to fit your project.
 
-### Option 2: Local Installation
+### Option 2: Manual Installation (via Clone)
 1. Download or Clone this repository.
 2. Copy the entire `Assets/Mobile Monetization` folder.
-3. Paste it into your project's `Packages` folder (recommended) or `Assets` folder.
+3. Paste it into your project's `Assets` folder.
 
 ## Quick Start
 
-### Step 1: Import Sample Package (Essential)
-After installing the package, you need to import the sample to get all essential resources:
-
-1. Open **Window > Package Manager**.
-2. Find **Mobile Monetization** in the package list.
-3. In the right panel, click on the **Samples** tab.
-4. Click **Import** on **"Examples and Resources"**.
-
-This will copy everything you need to `Assets/Samples/Mobile Monetization/[version]/Examples and Resources/`:
+### Step 1: Import the Package
+After downloading and importing the `.unitypackage`, you will find everything you need under `Assets/Mobile Monetization/`:
 - ✅ **Prefabs** - Initializer, System Canvas, GDPR Panel, UI components
 - ✅ **Settings** - Pre-configured AdsSettings, IAPSettings, MainSystemSettings
 - ✅ **Example Scenes** - Demo implementation of Ads, IAP, and Offerwall
 - ✅ **Plugin Resources** - All necessary runtime assets
 
-> 💡 **Note:** All imported files are fully editable. You can delete example scenes after learning the API to reduce build size.
+> 💡 **Note:** All imported files are fully editable. Feel free to delete example scenes after learning the API to reduce build size.
 
 ### Step 2: Configure Settings
 
-1. Navigate to `Assets/Samples/Mobile Monetization/[version]/Examples and Resources/Settings/`.
+1. Navigate to `Assets/Mobile Monetization/Samples/Examples and Resources/Settings/`.
 2. Customize the settings for your project:
    - **AdsSettings**: Configure Ad Provider IDs (AdMob, Unity Ads, etc.)
    - **IAPSettings**: Add your IAP Product IDs
