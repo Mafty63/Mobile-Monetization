@@ -18,7 +18,6 @@ namespace MobileCore.Advertisements
     [Define("LEVELPLAY_PROVIDER", "IronSource", "IronSource LevelPlay SDK")]
     [Define("UNITYADS_PROVIDER", "UnityEngine.Advertisements.Advertisement", "Unity Ads SDK")]
     [Define("APPLOVIN_PROVIDER", "MaxSdk", "AppLovin MAX SDK")]
-    [Define("VUNGLE_PROVIDER", "Vungle.VungleAd", "Vungle SDK")]
     [Define("MINTEGRAL_PROVIDER", "Mintegral", "Mintegral SDK")]
     [Define("CHARTBOOST_PROVIDER", "Chartboost.Mediation.ChartboostMediation", "Chartboost SDK")]
     [Define("META_AUDIENCE_NETWORK_PROVIDER", "AudienceNetwork.AudienceNetworkAds", "Meta Audience Network SDK")]
@@ -53,9 +52,6 @@ namespace MobileCore.Advertisements
         #endif
         #if CHARTBOOST_PROVIDER
             new ChartboostHandler(AdProvider.Chartboost),
-        #endif
-        #if VUNGLE_PROVIDER
-            new VungleHandler(AdProvider.Vungle),
         #endif
         #if META_AUDIENCE_NETWORK_PROVIDER
             new MetaAudienceNetworkHandler(AdProvider.MetaAudienceNetwork),

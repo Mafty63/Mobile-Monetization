@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
   m_Name: AdsSettings
   m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.Advertisements.AdsSettings
-  bannerType: 9
-  interstitialType: 9
-  rewardedVideoType: 9
+  bannerType: 1
+  interstitialType: 0
+  rewardedVideoType: 1
   adMobContainer:
     androidAppID: ca-app-pub-3940256099942544~3347511713
     iOSAppID: ca-app-pub-3940256099942544~1458002511
@@ -58,17 +58,6 @@ MonoBehaviour:
     bannerPosition: 0
     bannerSize: 0
     enableVerboseLogging: 0
-  vungleContainer:
-    androidAppId: 5c6b1d416b3b280019a2c0a3
-    iosAppId: 5c6b1d416b3b280019a2c0a3
-    androidBannerID: BANNER-1468791
-    iOSBannerID: BANNER-1468791
-    androidInterstitialID: DEFAULT-1468791
-    iOSInterstitialID: DEFAULT-1468791
-    androidRewardedVideoID: REWARDED-1468791
-    iOSRewardedVideoID: REWARDED-1468791
-    bannerPosition: 0
-    bannerSize: 0
   mintegralContainer:
     androidAppId: 118690
     iosAppId: 118692

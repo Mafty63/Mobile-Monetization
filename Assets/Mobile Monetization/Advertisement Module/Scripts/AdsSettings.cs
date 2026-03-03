@@ -32,9 +32,6 @@ namespace MobileCore.Advertisements
         [SerializeField] private AppLovinContainer appLovinContainer;
         public AppLovinContainer AppLovinContainer => appLovinContainer;
 
-        [AdsProviderContainer("Vungle", 5, "https://support.vungle.com/hc/en-us/articles/360003455452-Integrate-Vungle-SDK-for-Unity")]
-        [SerializeField] private VungleContainer vungleContainer;
-        public VungleContainer VungleContainer => vungleContainer;
 
         [AdsProviderContainer("Mintegral", 6, "https://developer.mintegral.com/doc.html?channel=unity&id=1")]
         [SerializeField] private MintegralContainer mintegralContainer;
@@ -126,9 +123,6 @@ namespace MobileCore.Advertisements
 #endif
 #if APPLOVIN_PROVIDER
         AppLovin = 5,
-#endif
-#if VUNGLE_PROVIDER
-        Vungle = 6,
 #endif
 #if MINTEGRAL_PROVIDER
         Mintegral = 7,

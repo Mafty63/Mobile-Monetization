@@ -268,6 +268,14 @@ public class SDKDefinesEditorWindow : EditorWindow
 {
     private Vector2 scrollPosition;
     private List<DefineInfo> defineInfos = new List<DefineInfo>();
+    private bool showAllPlatforms = false;
+
+    // Platform yang relevan untuk Mobile Monetization
+    private static readonly BuildTargetGroup[] releventPlatforms = new[]
+    {
+        BuildTargetGroup.Android,
+        BuildTargetGroup.iOS,
+    };
 
     [MenuItem("Tools/MobileCore/Define Symbols Manager")]
     public static void ShowWindow()
@@ -357,15 +365,10 @@ public class SDKDefinesEditorWindow : EditorWindow
     {
         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
-        GUILayout.Space(10);
+        GUILayout.Space(6);
         EditorGUILayout.LabelField("Define Symbols Manager", EditorStyles.boldLabel);
-        GUILayout.Space(5);
-
-        EditorGUILayout.HelpBox(
-            "This system uses [Define] attributes on Manager classes to automatically manage define symbols.\n" +
-            "Add [Define(\"SYMBOL\", \"TypeName\")] attributes to your Manager classes to declare required defines.",
-            MessageType.Info);
-        GUILayout.Space(10);
+        EditorGUILayout.HelpBox("Uses [Define(\"SYMBOL\", \"TypeName\")] attributes on Manager classes to auto-manage define symbols.", MessageType.Info);
+        GUILayout.Space(6);
 
         if (GUILayout.Button("Refresh All Define Symbols", GUILayout.Height(30)))
         {
@@ -390,44 +393,103 @@ public class SDKDefinesEditorWindow : EditorWindow
         }
         else
         {
+            // Header row
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            EditorGUILayout.LabelField("", GUILayout.Width(20));
+            EditorGUILayout.LabelField("Define Symbol", EditorStyles.toolbarButton, GUILayout.MinWidth(160));
+            EditorGUILayout.LabelField("Description", EditorStyles.toolbarButton, GUILayout.MinWidth(120));
+            EditorGUILayout.LabelField("SDK Found", EditorStyles.toolbarButton, GUILayout.Width(72));
+            EditorGUILayout.LabelField("Define Set", EditorStyles.toolbarButton, GUILayout.Width(72));
+            EditorGUILayout.EndHorizontal();
+
             foreach (var info in defineInfos)
             {
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-                EditorGUILayout.BeginHorizontal();
                 string status = info.TypeExists ? (info.DefineExists ? "✅" : "⚠️") : "❌";
-                EditorGUILayout.LabelField($"{status} {info.DefineSymbol}", EditorStyles.boldLabel);
+                string tooltip = $"Type: {info.TypeCheck}\nSource: {info.SourceClass}";
+
+                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+
+                // Status icon
+                EditorGUILayout.LabelField(new GUIContent(status, tooltip), GUILayout.Width(20));
+
+                // Define Symbol name
+                EditorGUILayout.LabelField(new GUIContent(info.DefineSymbol, tooltip), EditorStyles.boldLabel, GUILayout.MinWidth(160));
+
+                // Description
+                string desc = string.IsNullOrEmpty(info.Description) ? "-" : info.Description;
+                EditorGUILayout.LabelField(new GUIContent(desc, tooltip), EditorStyles.miniLabel, GUILayout.MinWidth(120));
+
+                // SDK Found badge
+                Color prevColor = GUI.color;
+                GUI.color = info.TypeExists ? new Color(0.4f, 1f, 0.4f) : new Color(1f, 0.4f, 0.4f);
+                EditorGUILayout.LabelField(info.TypeExists ? "✔ Found" : "✘ Missing",
+                    EditorStyles.miniLabel, GUILayout.Width(72));
+
+                // Define Set badge
+                GUI.color = info.DefineExists ? new Color(0.4f, 1f, 0.4f) : new Color(1f, 0.7f, 0.3f);
+                EditorGUILayout.LabelField(info.DefineExists ? "✔ Set" : "✘ Not Set",
+                    EditorStyles.miniLabel, GUILayout.Width(72));
+
+                GUI.color = prevColor;
+
                 EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.LabelField($"Type Check: {info.TypeCheck}", EditorStyles.miniLabel);
-                EditorGUILayout.LabelField($"Source: {info.SourceClass}", EditorStyles.miniLabel);
-
-                if (!string.IsNullOrEmpty(info.Description))
-                {
-                    EditorGUILayout.LabelField($"Description: {info.Description}", EditorStyles.miniLabel);
-                }
-
-                EditorGUILayout.LabelField($"Type Exists: {info.TypeExists} | Define Set: {info.DefineExists}", EditorStyles.miniLabel);
-
-                EditorGUILayout.EndVertical();
-                GUILayout.Space(5);
             }
         }
 
-        GUILayout.Space(15);
+        GUILayout.Space(10);
 
         EditorGUILayout.LabelField("Current Define Symbols", EditorStyles.boldLabel);
-        GUILayout.Space(5);
+        GUILayout.Space(3);
 
 #pragma warning disable 0618
-        foreach (var targetGroup in SDKDefinesManager.GetValidBuildTargetGroups())
+        // Header row
+        EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+        EditorGUILayout.LabelField("Platform", EditorStyles.toolbarButton, GUILayout.Width(90));
+        EditorGUILayout.LabelField("Active Defines", EditorStyles.toolbarButton);
+        EditorGUILayout.EndHorizontal();
+
+        // Tampilkan hanya platform mobile yang relevan
+        foreach (var targetGroup in releventPlatforms)
         {
             string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
-            EditorGUILayout.LabelField(targetGroup.ToString(), EditorStyles.boldLabel);
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.TextArea(defines, GUILayout.Height(50));
-            EditorGUI.EndDisabledGroup();
-            GUILayout.Space(5);
+            int count = string.IsNullOrEmpty(defines) ? 0 : defines.Split(';').Length;
+            string tooltip = string.IsNullOrEmpty(defines) ? "(none)" : defines.Replace(";", "\n");
+
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+            EditorGUILayout.LabelField(new GUIContent(targetGroup.ToString(), tooltip),
+                EditorStyles.boldLabel, GUILayout.Width(90));
+            EditorGUILayout.LabelField(new GUIContent(
+                string.IsNullOrEmpty(defines) ? "(none)" : defines,
+                tooltip),
+                EditorStyles.miniLabel);
+            EditorGUILayout.LabelField($"{count} define{(count == 1 ? "" : "s")}",
+                EditorStyles.miniLabel, GUILayout.Width(60));
+            EditorGUILayout.EndHorizontal();
+        }
+
+        // Foldout untuk semua platform lainnya
+        GUILayout.Space(4);
+        showAllPlatforms = EditorGUILayout.Foldout(showAllPlatforms, "Other Platforms", true);
+        if (showAllPlatforms)
+        {
+            EditorGUI.indentLevel++;
+            foreach (var targetGroup in SDKDefinesManager.GetValidBuildTargetGroups())
+            {
+                if (System.Array.IndexOf(releventPlatforms, targetGroup) >= 0)
+                    continue;
+
+                string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
+                int count = string.IsNullOrEmpty(defines) ? 0 : defines.Split(';').Length;
+                string tooltip = string.IsNullOrEmpty(defines) ? "(none)" : defines.Replace(";", "\n");
+
+                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+                EditorGUILayout.LabelField(new GUIContent(targetGroup.ToString(), tooltip),
+                    EditorStyles.miniLabel, GUILayout.Width(180));
+                EditorGUILayout.LabelField($"{count} define{(count == 1 ? "" : "s")}",
+                    EditorStyles.miniLabel, GUILayout.Width(60));
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUI.indentLevel--;
         }
 #pragma warning restore 0618
 

@@ -51,7 +51,6 @@ namespace MobileCore.Advertisements.Providers
         [SerializeField] BannerPlacementType bannerType = BannerPlacementType.Banner;
         public BannerPlacementType BannerType => bannerType;
 
-        [Header("Test Devices")]
         [SerializeField] List<string> testDevicesIDs = new List<string>();
         public List<string> TestDevicesIDs => testDevicesIDs;
 
