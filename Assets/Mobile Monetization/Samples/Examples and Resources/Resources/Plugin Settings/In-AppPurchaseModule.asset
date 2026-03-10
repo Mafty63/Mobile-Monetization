@@ -15,4 +15,30 @@ MonoBehaviour:
   ModuleName: IAP Manager
   ModuleDescription: Module to show IAP
   isEnabled: 1
-  Settings: {fileID: 11400000, guid: 598bf7a58133c3949aeff8095a8b9df9, type: 2}
+  Settings: {fileID: 1755816348081934507}
+--- !u!114 &1755816348081934507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f28faf74e3de2b4bb5f8724582e5ceb, type: 3}
+  m_Name: IAPSettings
+  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.IAPModule.IAPSettings
+  useTestMode: 0
+  storeItems:
+  - androidID: com.company.product.new1
+    iOSID: com.company.product.new1
+    productKeyType: 0
+    productType: 1
+  - androidID: com.company.product.new2
+    iOSID: com.company.product.new2
+    productKeyType: 1
+    productType: 0
+  - androidID: com.company.product.new3
+    iOSID: com.company.product.new3
+    productKeyType: 2
+    productType: 0

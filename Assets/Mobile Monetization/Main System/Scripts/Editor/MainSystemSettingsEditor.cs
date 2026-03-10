@@ -572,23 +572,21 @@ namespace MobileCore.MainModule.Editor
                     Debug.LogError("Module asset path not found.");
                     return;
                 }
-                string dirPath = System.IO.Path.GetDirectoryName(modulePath);
 
                 var newSettings = ScriptableObject.CreateInstance(settingsType);
-                string name = settingsType.Name;
-                
-                string filename = $"{name}.asset";
-                string uniquePath = AssetDatabase.GenerateUniqueAssetPath(System.IO.Path.Combine(dirPath, filename));
+                newSettings.name = settingsType.Name;
 
-                AssetDatabase.CreateAsset(newSettings, uniquePath);
-                
+                // Tambahkan sebagai sub-asset (child) dari module initializer-nya
+                AssetDatabase.AddObjectToAsset(newSettings, data.Initializer);
+
                 data.SettingsProp.objectReferenceValue = newSettings;
                 data.SerializedObject.ApplyModifiedProperties();
-                
+
                 AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
                 EditorUtility.SetDirty(data.Initializer);
-                
-                Debug.Log($"Created {name} for {data.DisplayName} at {uniquePath}");
+
+                Debug.Log($"Created {settingsType.Name} as sub-asset of {data.DisplayName}");
             }
             catch (Exception e)
             {
