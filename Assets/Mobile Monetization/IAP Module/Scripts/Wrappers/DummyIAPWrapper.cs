@@ -11,6 +11,7 @@ namespace MobileCore.IAPModule
             if (!IAPManager.IsInitialized)
             {
                 SystemManager.ShowMessage("Network error. Please try again later");
+                IAPManager.OnPurchaseFailed(productKeyType, (MobileCore.IAPModule.PurchaseFailureReason)7);
                 return;
             }
 

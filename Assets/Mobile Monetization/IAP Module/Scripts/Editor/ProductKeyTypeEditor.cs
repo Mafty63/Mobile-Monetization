@@ -31,7 +31,7 @@ namespace MobileCore.IAPModule.Editor
         private void OnEnable()
         {
             // Set path yang benar ke Wrappers folder
-            enumFilePath = "Assets/Mobile Core/IAP Module/Scripts/ProductKeyType.cs";
+            enumFilePath = "Assets/Mobile Monetization/IAP Module/Scripts/ProductKeyType.cs";
 
             // Jika file tidak ada di path tersebut, cari file yang ada
             if (!File.Exists(enumFilePath))
@@ -51,13 +51,12 @@ namespace MobileCore.IAPModule.Editor
                 foreach (string guid in guids)
                 {
                     string path = AssetDatabase.GUIDToAssetPath(guid);
-                    if (path.Contains("IAP Module"))
+                    if (Path.GetFileName(path) == "ProductKeyType.cs")
                     {
                         enumFilePath = path;
                         return;
                     }
                 }
-                enumFilePath = AssetDatabase.GUIDToAssetPath(guids[0]);
             }
         }
 
@@ -173,11 +172,18 @@ namespace MobileCore.IAPModule.Editor
             newName = EditorGUILayout.TextField(newName, textFieldStyle);
             EditorGUILayout.EndHorizontal();
 
-            // Validasi: cek apakah ada space
-            bool hasSpace = !string.IsNullOrEmpty(newName) && newName.Contains(" ");
+            // Validasi Add Value
+            bool isAddEmpty = string.IsNullOrEmpty(newName);
+            bool hasSpace = !isAddEmpty && newName.Contains(" ");
+            bool isDuplicate = !isAddEmpty && enumValues.Any(v => v.name == newName);
+
             if (hasSpace)
             {
                 EditorGUILayout.HelpBox("Enum name cannot contain spaces. Use camelCase or PascalCase instead (e.g., 'NoAds', 'RemoveAds').", MessageType.Warning);
+            }
+            else if (isDuplicate)
+            {
+                EditorGUILayout.HelpBox($"Name '{newName}' already exists!", MessageType.Warning);
             }
 
             EditorGUILayout.Space(5);
@@ -187,30 +193,23 @@ namespace MobileCore.IAPModule.Editor
             var buttonStyle = EditorStyleTemplate.GrayButtonStyle;
             buttonStyle.fixedHeight = 22f;
 
-            // Nonaktifkan tombol jika ada space atau kosong
-            bool canAdd = !string.IsNullOrEmpty(newName) && !hasSpace;
+            // Nonaktifkan tombol jika tidak valid
+            bool canAdd = !isAddEmpty && !hasSpace && !isDuplicate;
             EditorGUI.BeginDisabledGroup(!canAdd);
             if (GUILayout.Button("Add Value", buttonStyle, GUILayout.Width(100)) && canAdd)
             {
-                if (enumValues.Any(v => v.name == newName))
-                {
-                    EditorUtility.DisplayDialog("Error", $"Name '{newName}' already exists!", "OK");
-                }
-                else
-                {
-                    // Cari value tertinggi dan tambah 1
-                    int newValue = enumValues.Count > 0 ? enumValues.Max(v => v.value) + 1 : 0;
+                // Cari value tertinggi dan tambah 1
+                int newValue = enumValues.Count > 0 ? enumValues.Max(v => v.value) + 1 : 0;
 
-                    enumValues.Add(new EnumValue
-                    {
-                        name = newName,
-                        value = newValue
-                    });
+                enumValues.Add(new EnumValue
+                {
+                    name = newName,
+                    value = newValue
+                });
 
-                    // Urutkan ulang
-                    enumValues = enumValues.OrderBy(v => v.value).ToList();
-                    newName = "";
-                }
+                // Urutkan ulang
+                enumValues = enumValues.OrderBy(v => v.value).ToList();
+                newName = "";
             }
             EditorGUI.EndDisabledGroup();
             EditorGUILayout.EndHorizontal();
@@ -259,14 +258,7 @@ namespace MobileCore.IAPModule.Editor
                         string newNameValue = EditorGUILayout.TextField(enumValue.name, textFieldStyle);
                         if (newNameValue != enumValue.name)
                         {
-                            if (!string.IsNullOrEmpty(newNameValue) && !enumValues.Any(v => v.name == newNameValue))
-                            {
-                                enumValue.name = newNameValue;
-                            }
-                            else if (enumValues.Any(v => v.name == newNameValue))
-                            {
-                                EditorUtility.DisplayDialog("Error", $"Name '{newNameValue}' already exists!", "OK");
-                            }
+                            enumValue.name = newNameValue;
                         }
                     }
                     EditorGUILayout.EndVertical();
@@ -327,15 +319,46 @@ namespace MobileCore.IAPModule.Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
 
+            // Validation check untuk current values
+            bool hasError = false;
+            string errorMessage = "";
+
+            var invalidItem = enumValues.FirstOrDefault(v => string.IsNullOrEmpty(v.name) || v.name.Contains(" "));
+            if (invalidItem != null)
+            {
+                hasError = true;
+                if (string.IsNullOrEmpty(invalidItem.name))
+                    errorMessage = "One or more enum names are empty.";
+                else
+                    errorMessage = "Enum names cannot contain spaces. Use camelCase or PascalCase instead.";
+            }
+            else
+            {
+                var duplicate = enumValues.GroupBy(v => v.name).FirstOrDefault(g => g.Count() > 1);
+                if (duplicate != null)
+                {
+                    hasError = true;
+                    errorMessage = $"Duplicate enum name found: '{duplicate.Key}'. Names must be unique.";
+                }
+            }
+
+            if (hasError)
+            {
+                EditorGUILayout.HelpBox(errorMessage, MessageType.Error);
+                EditorGUILayout.Space(5);
+            }
+
             EditorGUILayout.BeginVertical(EditorStyles.textArea);
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
 
+            EditorGUI.BeginDisabledGroup(hasError);
             if (GUILayout.Button("Update Enum File", buttonStyle, GUILayout.Width(120)))
             {
                 UpdateEnumFile();
             }
+            EditorGUI.EndDisabledGroup();
 
             GUILayout.Space(10);
 

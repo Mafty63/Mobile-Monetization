@@ -20,21 +20,8 @@ namespace MobileCore.IAPModule
     public class IAPWrapper : BaseIAPWrapper
     {
 #if MODULE_IAP
-        // We will use the new StoreController and PurchaseService classes/interfaces
-        // Note: IStoreController is obsolete, so we avoid exposing it publicly if possible.
-        // We persist a private reference to the controller interface if needed, or just use services.
-        
-        // However, since UnityIAPServices.StoreController() returns the controller, we can cache it.
-        // But the type returned might be 'StoreController' (concrete) not 'IStoreController'.
-        
-        // To fix IAPManager errors, we will expose a method to get the product, instead of exposing Controller.
-        // We will mock the 'Controller' property to return null or throw because it should NOT be used.
-        // We will update IAPManager to not use it.
-        
-        // Cache
         private HashSet<string> purchasedProductIds = new HashSet<string>();
 #endif
-
 
         public override async void Initialize(IAPSettings settings)
         {
@@ -48,33 +35,33 @@ namespace MobileCore.IAPModule
                 IAPItem[] items = settings.StoreItems;
                 for (int i = 0; i < items.Length; i++)
                 {
-                     productDefinitions.Add(new ProductDefinition(items[i].ID, items[i].ID, (UnityEngine.Purchasing.ProductType)items[i].ProductType));
+                    productDefinitions.Add(new ProductDefinition(items[i].ID, items[i].ID, (UnityEngine.Purchasing.ProductType)items[i].ProductType));
                 }
 
-                 // Subscribe to all events BEFORE calling Connect/Fetch methods
-                 var storeController = UnityIAPServices.StoreController();
-                 var purchaseService = UnityIAPServices.DefaultPurchase();
-                 var productService = UnityIAPServices.DefaultProduct();
-                 
-                 // Store connection events
-                 storeController.OnStoreDisconnected += OnStoreDisconnectedHandler;
-                 
-                 // Product fetch events
-                 productService.OnProductsFetched += OnProductsFetchedHandler;
-                 productService.OnProductsFetchFailed += OnProductsFetchFailedHandler;
-                 
-                 // Purchase fetch events
-                 purchaseService.OnPurchasesFetched += OnPurchasesFetchedHandler;
-                 purchaseService.OnPurchasesFetchFailed += OnPurchasesFetchFailedHandler;
-                 
-                 // Purchase pending/failed events
-                 purchaseService.OnPurchasePending += OnPurchasePendingHandler;
-                 purchaseService.OnPurchaseFailed += OnPurchaseFailedHandler;
-                 
-                 // Now we can call the methods
-                 await storeController.Connect();
-                 storeController.FetchProducts(productDefinitions);
-                 storeController.FetchPurchases();
+                // Subscribe to all events BEFORE calling Connect/Fetch methods
+                var storeController = UnityIAPServices.StoreController();
+                var purchaseService = UnityIAPServices.DefaultPurchase();
+                var productService = UnityIAPServices.DefaultProduct();
+
+                // Store connection events
+                storeController.OnStoreDisconnected += OnStoreDisconnectedHandler;
+
+                // Product fetch events
+                productService.OnProductsFetched += OnProductsFetchedHandler;
+                productService.OnProductsFetchFailed += OnProductsFetchFailedHandler;
+
+                // Purchase fetch events
+                purchaseService.OnPurchasesFetched += OnPurchasesFetchedHandler;
+                purchaseService.OnPurchasesFetchFailed += OnPurchasesFetchFailedHandler;
+
+                // Purchase pending/failed events
+                purchaseService.OnPurchasePending += OnPurchasePendingHandler;
+                purchaseService.OnPurchaseFailed += OnPurchaseFailedHandler;
+
+                // Now we can call the methods
+                await storeController.Connect();
+                storeController.FetchProducts(productDefinitions);
+                storeController.FetchPurchases();
 
                 IAPManager.OnModuleInitialized();
             }
@@ -91,57 +78,59 @@ namespace MobileCore.IAPModule
 #if MODULE_IAP
         private void OnPurchasePendingHandler(PendingOrder order)
         {
-             // Get product ID from the order info
-             string id = null;
-             if (order.Info.PurchasedProductInfo != null && order.Info.PurchasedProductInfo.Count > 0)
-             {
-                 id = order.Info.PurchasedProductInfo[0].productId;
-             }
-             
-             if (string.IsNullOrEmpty(id))
-             {
-                 Debug.LogError("[IAPManager]: Could not get product ID from PendingOrder");
-                 return;
-             }
-             
-             Debug.Log("[IAPManager]: Purchasing - " + id + " is completed!");
-             purchasedProductIds.Add(id);
+            // Get product ID from the order info
+            string id = null;
+            if (order.Info.PurchasedProductInfo != null && order.Info.PurchasedProductInfo.Count > 0)
+            {
+                id = order.Info.PurchasedProductInfo[0].productId;
+            }
 
-             IAPItem item = IAPManager.GetIAPItem(id);
-             if (item != null)
-             {
-                 IAPManager.OnPurchaseCompled(item.ProductKeyType);
-             }
-             SystemManager.ShowMessage("Payment complete!");
-             
-             // Confirm the purchase
-             UnityIAPServices.DefaultPurchase().ConfirmPurchase(order);
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("[IAPManager]: Could not get product ID from PendingOrder");
+                return;
+            }
+
+            Debug.Log("[IAPManager]: Purchasing - " + id + " is completed!");
+            purchasedProductIds.Add(id);
+
+            IAPItem item = IAPManager.GetIAPItem(id);
+            if (item != null)
+            {
+                IAPManager.OnPurchaseCompled(item.ProductKeyType);
+            }
+            SystemManager.ShowMessage("Payment complete!");
+
+            // Confirm the purchase
+            UnityIAPServices.DefaultPurchase().ConfirmPurchase(order);
         }
 
         private void OnPurchaseFailedHandler(FailedOrder order)
         {
-             // Get product ID from the order info
-             string id = null;
-             if (order.Info.PurchasedProductInfo != null && order.Info.PurchasedProductInfo.Count > 0)
-             {
-                 id = order.Info.PurchasedProductInfo[0].productId;
-             }
-             
-             if (string.IsNullOrEmpty(id))
-             {
-                 Debug.LogError("[IAPManager]: Could not get product ID from FailedOrder");
-                 return;
-             }
-             
-             Debug.Log("[IAPManager]: Purchasing - " + id + " is failed!");
-             Debug.Log("[IAPManager]: Fail reason - " + order.FailureReason + ": " + order.Details);
-             
-             IAPItem item = IAPManager.GetIAPItem(id);
-             if (item != null)
-             {
-                 IAPManager.OnPurchaseFailed(item.ProductKeyType, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
-             }
-             SystemManager.ShowMessage("Payment failed!");
+            IAPManager.IsPurchasing = false; // Release the lock immediately
+            SystemManager.ShowMessage("Payment failed or cancelled!");
+
+            // Get product ID from the order info
+            string id = null;
+            if (order.Info != null && order.Info.PurchasedProductInfo != null && order.Info.PurchasedProductInfo.Count > 0)
+            {
+                id = order.Info.PurchasedProductInfo[0].productId;
+            }
+
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogWarning("[IAPManager]: Cancelled without product ID from FailedOrder.");
+                return;
+            }
+
+            Debug.Log("[IAPManager]: Purchasing - " + id + " is failed!");
+            Debug.Log("[IAPManager]: Fail reason - " + order.FailureReason + ": " + order.Details);
+
+            IAPItem item = IAPManager.GetIAPItem(id);
+            if (item != null)
+            {
+                IAPManager.OnPurchaseFailed(item.ProductKeyType, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
+            }
         }
 
         private void OnStoreDisconnectedHandler(StoreConnectionFailureDescription description)
@@ -187,12 +176,12 @@ namespace MobileCore.IAPModule
 
         public Product GetProduct(string id)
         {
-             var products = UnityIAPServices.StoreController().GetProducts();
-             if (products != null)
-             {
-                 return products.FirstOrDefault(p => p.definition.id == id);
-             }
-             return null;
+            var products = UnityIAPServices.StoreController().GetProducts();
+            if (products != null)
+            {
+                return products.FirstOrDefault(p => p.definition.id == id);
+            }
+            return null;
         }
 #endif
 
@@ -206,8 +195,14 @@ namespace MobileCore.IAPModule
             {
                 UnityIAPServices.StoreController().PurchaseProduct(item.ID);
             }
+            else
+            {
+                SystemManager.ShowMessage("Product not found.");
+                IAPManager.OnPurchaseFailed(productKeyType, (MobileCore.IAPModule.PurchaseFailureReason)7);
+            }
 #else
             SystemManager.ShowMessage("Network error.");
+            IAPManager.OnPurchaseFailed(productKeyType, (MobileCore.IAPModule.PurchaseFailureReason)7);
 #endif
         }
 
@@ -222,15 +217,16 @@ namespace MobileCore.IAPModule
 
             SystemManager.ShowMessage("Restoring purchased products..");
 
-            UnityIAPServices.StoreController().RestoreTransactions((result, error) => {
-                 if (result)
-                 {
+            UnityIAPServices.StoreController().RestoreTransactions((result, error) =>
+            {
+                if (result)
+                {
                     SystemManager.ShowMessage("Restoration completed!");
-                 }
-                 else
-                 {
+                }
+                else
+                {
                     SystemManager.ShowMessage("Restoration failed: " + error);
-                 }
+                }
             });
 #endif
         }
@@ -259,9 +255,9 @@ namespace MobileCore.IAPModule
             IAPItem item = IAPManager.GetIAPItem(productKeyType);
             if (item != null)
             {
-                 // Check if in our local purchased set
-                 if (purchasedProductIds.Contains(item.ID)) return true;
-                 return false; 
+                // Check if in our local purchased set
+                if (purchasedProductIds.Contains(item.ID)) return true;
+                return false;
             }
 #endif
             return false;

@@ -94,8 +94,12 @@ namespace MobileCore.IAPModule
                 OnPurchaseModuleInitted += callback;
         }
 
+        public static bool IsPurchasing { get; set; }
+
         public static void BuyProduct(ProductKeyType productKeyType)
         {
+            if (IsPurchasing) return;
+            IsPurchasing = true;
             wrapper.BuyProduct(productKeyType);
         }
 
@@ -130,11 +134,13 @@ namespace MobileCore.IAPModule
 
         public static void OnPurchaseCompled(ProductKeyType productKey)
         {
+            IsPurchasing = false;
             OnPurchaseComplete?.Invoke(productKey);
         }
 
         public static void OnPurchaseFailed(ProductKeyType productKey, PurchaseFailureReason failureReason)
         {
+            IsPurchasing = false;
             OnPurchaseFailded?.Invoke(productKey, failureReason);
         }
 
