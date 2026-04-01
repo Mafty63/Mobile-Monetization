@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -17,6 +17,7 @@ namespace MobileCore.Advertisements.Editor
             public int Order;
             public string FieldName;
             public string SdkDownloadUrl;
+            public bool IsPackageManager;
         }
 
         private List<ProviderInfo> providerInfos = new List<ProviderInfo>();
@@ -101,7 +102,8 @@ namespace MobileCore.Advertisements.Editor
                             Property = prop,
                             Order = attribute.Order,
                             FieldName = field.Name,
-                            SdkDownloadUrl = attribute.SdkDownloadUrl
+                            SdkDownloadUrl = attribute.SdkDownloadUrl,
+                            IsPackageManager = attribute.IsPackageManager
                         });
                     }
                 }
@@ -275,6 +277,7 @@ namespace MobileCore.Advertisements.Editor
             var containerProp = providerInfo.Property;
             var providerName = providerInfo.DisplayName;
             var sdkUrl = providerInfo.SdkDownloadUrl;
+            var isPackageManager = providerInfo.IsPackageManager;
 
             EditorGUILayout.BeginVertical(EditorStyles.textArea);
             EditorGUILayout.LabelField($"{providerName} Settings", EditorStyles.boldLabel);
@@ -324,22 +327,40 @@ namespace MobileCore.Advertisements.Editor
             }
 
             // Download SDK button - SEKARANG OTOMATIS DARI ATTRIBUTE
-            if (!string.IsNullOrEmpty(sdkUrl))
+            if (!string.IsNullOrEmpty(sdkUrl) || isPackageManager)
             {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                string buttonText = $"Download {providerName} SDK";
+                string buttonText = isPackageManager ? $"Open {providerName} in Package Manager" : $"Download {providerName} SDK";
                 var downloadButtonStyle = EditorStyleTemplate.GrayButtonStyle;
-                if (GUILayout.Button(buttonText, downloadButtonStyle, GUILayout.Height(25), GUILayout.Width(150)))
+                if (GUILayout.Button(buttonText, downloadButtonStyle, GUILayout.Height(25), GUILayout.Width(250)))
                 {
-                    Application.OpenURL(sdkUrl);
+                    if (isPackageManager)
+                    {
+#if UNITY_2020_1_OR_NEWER
+                        UnityEditor.PackageManager.UI.Window.Open(sdkUrl);
+#else
+                        Debug.LogWarning("Package Manager cannot be opened automatically in this Unity version.");
+#endif
+                    }
+                    else
+                    {
+                        Application.OpenURL(sdkUrl);
+                    }
                 }
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(5);
-                EditorGUILayout.HelpBox($"Click the button above to download and install the {providerName} SDK documentation and integration guide.", MessageType.Info);
+                if (isPackageManager)
+                {
+                    EditorGUILayout.HelpBox($"Click the button above to open the Package Manager and manage the {providerName} package.", MessageType.Info);
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox($"Click the button above to download and install the {providerName} SDK documentation and integration guide.", MessageType.Info);
+                }
             }
 
             EditorGUILayout.EndVertical();

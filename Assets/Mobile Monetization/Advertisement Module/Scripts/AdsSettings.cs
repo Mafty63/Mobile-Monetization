@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0414
+#pragma warning disable 0414
 
 using MobileCore.Advertisements.Providers;
 using UnityEngine;
@@ -20,11 +20,11 @@ namespace MobileCore.Advertisements
         [SerializeField] private AdMobContainer adMobContainer;
         public AdMobContainer AdMobContainer => adMobContainer;
 
-        [AdsProviderContainer("Unity Ads", 2, "https://docs.unity.com/ads/InstallingTheUnityAdsSDK.html")]
+        [AdsProviderContainer("Unity Ads", 2, "com.unity.ads", true)]
         [SerializeField] private UnityAdsLegacyContainer unityAdsContainer;
         public UnityAdsLegacyContainer UnityAdsContainer => unityAdsContainer;
 
-        [AdsProviderContainer("LevelPlay", 3, "https://developers.is.com/ironsource-mobile/unity/sdk-integration-guide/")]
+        [AdsProviderContainer("LevelPlay", 3, "com.unity.services.levelplay", true)]
         [SerializeField] private LevelPlayContainer levelPlayContainer;
         public LevelPlayContainer LevelPlayContainer => levelPlayContainer;
 
@@ -33,7 +33,7 @@ namespace MobileCore.Advertisements
         public AppLovinContainer AppLovinContainer => appLovinContainer;
 
 
-        [AdsProviderContainer("Mintegral", 6, "https://developer.mintegral.com/doc.html?channel=unity&id=1")]
+        [AdsProviderContainer("Mintegral", 6, "https://www.mintegral.com/en/support")]
         [SerializeField] private MintegralContainer mintegralContainer;
         public MintegralContainer MintegralContainer => mintegralContainer;
 

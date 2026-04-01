@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   messagePanelRectTransform: {fileID: 1642765127463791354}
-  messageText: {fileID: 0}
+  messageText: {fileID: 774598658282304638}
   loadingPanelObject: {fileID: 5476730254138928758}
   loadingStatusText: {fileID: 3736745009506571253}
   loadingIconRectTransform: {fileID: 8563210327119152867}

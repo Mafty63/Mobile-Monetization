@@ -6,24 +6,24 @@ namespace MobileCore.Advertisements.Providers
     [System.Serializable]
     public class MetaAudienceNetworkContainer
     {
-        // Meta Audience Network Test Placement IDs
-        // Note: For real ads, you must use IDs from your Monetization Manager.
-        // For testing, you can use these or add your device hash to test devices.
-        // See: https://developers.facebook.com/docs/audience-network/setting-up/test/placement-ids
-        
-        public static readonly string ANDROID_BANNER_TEST_ID = "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID";
-        public static readonly string IOS_BANNER_TEST_ID = "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID";
-        public static readonly string ANDROID_INTERSTITIAL_TEST_ID = "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID";
-        public static readonly string IOS_INTERSTITIAL_TEST_ID = "IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID";
-        public static readonly string ANDROID_REWARDED_TEST_ID = "VID_HD_9_16_39S_APP_INSTALL#YOUR_PLACEMENT_ID";
-        public static readonly string IOS_REWARDED_TEST_ID = "VID_HD_9_16_39S_APP_INSTALL#YOUR_PLACEMENT_ID";
+        // Meta Audience Network Official Test Placement IDs
+        // Source: https://developers.facebook.com/docs/audience-network/setting-up/test/placement-ids
+        // These are global test IDs provided by Meta — safe to use during development.
+        public static readonly string ANDROID_APP_TEST_ID = "1484169265118381";
+        public static readonly string IOS_APP_TEST_ID = "1484169265118381";
+        public static readonly string ANDROID_BANNER_TEST_ID = "IMG_16_9_APP_INSTALL#1484169265118381_1484172318451409";
+        public static readonly string IOS_BANNER_TEST_ID = "IMG_16_9_APP_INSTALL#1484169265118381_1484172198451421";
+        public static readonly string ANDROID_INTERSTITIAL_TEST_ID = "IMG_16_9_APP_INSTALL#1484169265118381_1484171998451441";
+        public static readonly string IOS_INTERSTITIAL_TEST_ID = "IMG_16_9_APP_INSTALL#1484169265118381_1484171848451456";
+        public static readonly string ANDROID_REWARDED_TEST_ID = "VID_HD_9_16_39S_APP_INSTALL#1484169265118381_1484170641784910";
+        public static readonly string IOS_REWARDED_TEST_ID = "VID_HD_9_16_39S_APP_INSTALL#1484169265118381_1484170508451590";
 
-        // Application ID (Not always required for initialization in code, but good for reference)
+        // Application ID
         [Header("Application ID")]
-        [Tooltip("Meta Audience Network usually reads App ID from AndroidManifest/Info.plist or during initialization.")]
-        [SerializeField] string androidAppID = "";
+        [Tooltip("Meta Audience Network App ID. For testing, the test App ID is pre-filled.")]
+        [SerializeField] string androidAppID = ANDROID_APP_TEST_ID;
         public string AndroidAppID => androidAppID;
-        [SerializeField] string iOSAppID = "";
+        [SerializeField] string iOSAppID = IOS_APP_TEST_ID;
         public string IOSAppID => iOSAppID;
 
         // Banner ID
@@ -50,10 +50,5 @@ namespace MobileCore.Advertisements.Providers
         [Header("Banner Settings")]
         [SerializeField] BannerPosition bannerPosition = BannerPosition.Bottom;
         public BannerPosition BannerPosition => bannerPosition;
-
-        [Header("Test Devices")]
-        [Tooltip("Add device hash IDs here to enable test ads on specific devices.")]
-        [SerializeField] List<string> testDevicesIDs = new List<string>();
-        public List<string> TestDevicesIDs => testDevicesIDs;
     }
 }

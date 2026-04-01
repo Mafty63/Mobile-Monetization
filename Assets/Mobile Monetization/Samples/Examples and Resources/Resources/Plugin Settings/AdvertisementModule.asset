@@ -93,7 +93,6 @@ MonoBehaviour:
     androidRewardedVideoID: VID_HD_9_16_39S_APP_INSTALL#YOUR_PLACEMENT_ID
     iOSRewardedVideoID: VID_HD_9_16_39S_APP_INSTALL#YOUR_PLACEMENT_ID
     bannerPosition: 0
-    testDevicesIDs: []
   dummyContainer:
     bannerPosition: 0
   testMode: 0
@@ -103,7 +102,7 @@ MonoBehaviour:
   interstitialShowingDelay: 30
   adOnStart: 1
   autoShowInterstitial: 0
-  isGDPREnabled: 0
+  isGDPREnabled: 1
   isIDFAEnabled: 0
   trackingDescription: Your data will be used to deliver personalized ads to you.
   privacyLink: https://mywebsite.com/privacy

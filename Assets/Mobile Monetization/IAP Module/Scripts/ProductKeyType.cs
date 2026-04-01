@@ -3,11 +3,11 @@ namespace MobileCore.IAPModule
     public enum ProductKeyType
     {
         NoAds = 0,
-        Coin500 = 1,
-        Coin1000 = 2,
-        Coin2000 = 3,
-        Coin4000 = 4,
-        Coin8000 = 5,
-        Coin10000 = 6,
+        Product1 = 1,
+        Product2 = 2,
+        Product3 = 3,
+        Product4 = 4,
+        Product5 = 5,
+        Product6 = 6,
     }
 }

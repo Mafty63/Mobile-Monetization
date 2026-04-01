@@ -8,12 +8,14 @@ namespace MobileCore.Advertisements
         public string DisplayName { get; }
         public int Order { get; }
         public string SdkDownloadUrl { get; }
+        public bool IsPackageManager { get; }
 
-        public AdsProviderContainerAttribute(string displayName, int order = 0, string sdkDownloadUrl = "")
+        public AdsProviderContainerAttribute(string displayName, int order = 0, string sdkDownloadUrl = "", bool isPackageManager = false)
         {
             DisplayName = displayName;
             Order = order;
             SdkDownloadUrl = sdkDownloadUrl;
+            IsPackageManager = isPackageManager;
         }
     }
 }
