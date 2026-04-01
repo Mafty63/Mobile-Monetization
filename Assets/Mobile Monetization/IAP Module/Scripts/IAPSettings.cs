@@ -1,13 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace MobileCore.IAPModule
 {
-    [HelpURL("https://google.com/")]
+    [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/iap-inspector/")]
     public class IAPSettings : ScriptableObject
     {
-        [SerializeField] bool useTestMode;
-        public bool UseTestMode => useTestMode;
-
         [SerializeField] IAPItem[] storeItems;
         public IAPItem[] StoreItems => storeItems;
     }

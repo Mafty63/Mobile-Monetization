@@ -21,7 +21,13 @@ namespace MobileCore.Advertisements
         public void OnPreprocessBuild(BuildReport report)
         {
 #if ADMOB_PROVIDER
-            AdsSettings adsData = EditorUtilities.GetAsset<AdsSettings>();
+            AdsSettings adsData = null;
+            string[] guids = AssetDatabase.FindAssets("t:AdsSettings");
+            if (guids.Length > 0)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                adsData = AssetDatabase.LoadAssetAtPath<AdsSettings>(path);
+            }
 
             if (adsData == null)
             {
@@ -33,7 +39,11 @@ namespace MobileCore.Advertisements
 
             if (settingsFile == null)
             {
-                GoogleMobileAds.Editor.GoogleMobileAdsSettingsEditor.OpenInspector(); // Creates addmob settings file
+                System.Type settingsEditorType = System.Type.GetType("GoogleMobileAds.Editor.GoogleMobileAdsSettingsEditor, GoogleMobileAds.Editor");
+                if (settingsEditorType != null)
+                {
+                    settingsEditorType.GetMethod("OpenInspector", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public)?.Invoke(null, null);
+                }
                 settingsFile = AssetDatabase.LoadMainAssetAtPath(SETTINGS_FILE_PATH);
 
                 if (settingsFile == null)

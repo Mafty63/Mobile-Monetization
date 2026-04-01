@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0414
+#pragma warning disable 0414
 
 using UnityEngine;
 using System;
@@ -63,7 +63,7 @@ namespace MobileCore.Advertisements.Providers
                 LevelPlay.OnInitSuccess += OnInitSuccess;
                 LevelPlay.OnInitFailed += OnInitFailed;
 
-                if (adsSettings.TestMode)
+                if (adsSettings.LevelPlayContainer.TestMode)
                 {
                     LevelPlay.SetMetaData("is_test_suite", "enable");
                     LevelPlay.ValidateIntegration();
@@ -92,8 +92,8 @@ namespace MobileCore.Advertisements.Providers
             }
         }
 
-        // Signature event menggunakan FQN tipe data lama
-        private void OnInitSuccess(com.unity3d.mediation.LevelPlayConfiguration configuration)
+        // SDK v9+: OnInitSuccess now uses LevelPlayConfiguration from Unity.Services.LevelPlay
+        private void OnInitSuccess(LevelPlayConfiguration configuration)
         {
             AdsManager.CallEventInMainThread(() =>
             {
@@ -107,8 +107,8 @@ namespace MobileCore.Advertisements.Providers
             });
         }
 
-        // Signature event menggunakan FQN tipe data lama
-        private void OnInitFailed(com.unity3d.mediation.LevelPlayInitError error)
+        // SDK v9+: OnInitFailed now uses LevelPlayInitError from Unity.Services.LevelPlay
+        private void OnInitFailed(LevelPlayInitError error)
         {
             AdsManager.CallEventInMainThread(() =>
             {
@@ -170,12 +170,14 @@ namespace MobileCore.Advertisements.Providers
 
             try
             {
-                var bannerSize = GetBannerSize();
-                var bannerPosition = GetBannerPosition();
+                // SDK v9+: LevelPlayBannerAd now uses Config.Builder pattern
+                var configBuilder = new LevelPlayBannerAd.Config.Builder();
+                configBuilder.SetSize(GetBannerSize());
+                configBuilder.SetPosition(GetBannerPosition());
+                configBuilder.SetDisplayOnLoad(false); // We control show/hide manually
+                var bannerConfig = configBuilder.Build();
 
-                // LevelPlayBannerAd constructor mengharapkan tipe data lama, 
-                // yang dipenuhi oleh GetBannerSize/Position yang sudah dikoreksi.
-                bannerAd = new LevelPlayBannerAd(GetBannerID(), bannerSize, bannerPosition);
+                bannerAd = new LevelPlayBannerAd(GetBannerID(), bannerConfig);
 
                 bannerAd.OnAdLoaded += HandleBannerLoaded;
                 bannerAd.OnAdLoadFailed += HandleBannerLoadFailed;
@@ -394,7 +396,7 @@ namespace MobileCore.Advertisements.Providers
             });
         }
 
-        private void HandleInterstitialDisplayFailed(LevelPlayAdDisplayInfoError error)
+        private void HandleInterstitialDisplayFailed(LevelPlayAdInfo adInfo, LevelPlayAdError error)
         {
             AdsManager.CallEventInMainThread(() =>
             {
@@ -403,7 +405,7 @@ namespace MobileCore.Advertisements.Providers
                 currentInterstitialCallback = null;
 
                 RequestInterstitial();
-                DebugLogError($"[LevelPlay]: Interstitial display failed: {error.LevelPlayError.ErrorMessage}");
+                DebugLogError($"[LevelPlay]: Interstitial display failed: {error.ErrorMessage}");
             });
         }
 
@@ -468,7 +470,7 @@ namespace MobileCore.Advertisements.Providers
             });
         }
 
-        private void HandleRewardedShowFailed(LevelPlayAdDisplayInfoError error)
+        private void HandleRewardedShowFailed(LevelPlayAdInfo adInfo, LevelPlayAdError error)
         {
             AdsManager.CallEventInMainThread(() =>
             {
@@ -478,7 +480,7 @@ namespace MobileCore.Advertisements.Providers
 
                 RequestRewardedVideo();
 
-                DebugLogError($"[LevelPlay]: Rewarded video display failed: {error.LevelPlayError.ErrorMessage}");
+                DebugLogError($"[LevelPlay]: Rewarded video display failed: {error.ErrorMessage}");
             });
         }
 
@@ -495,23 +497,23 @@ namespace MobileCore.Advertisements.Providers
         // --- Helper Methods & Internal Logic ---
 
         #region Helper Methods
-        // KOREKSI: Menggunakan FQN untuk tipe data lama com.unity3d.mediation.LevelPlayAdSize
-        private com.unity3d.mediation.LevelPlayAdSize GetBannerSize()
+        // SDK v9+: LevelPlayAdSize is now in Unity.Services.LevelPlay namespace
+        private LevelPlayAdSize GetBannerSize()
         {
             return adsSettings.LevelPlayContainer.BannerType switch
             {
-                LevelPlayContainer.BannerPlacementType.Large => com.unity3d.mediation.LevelPlayAdSize.LARGE,
-                LevelPlayContainer.BannerPlacementType.Rectangle => com.unity3d.mediation.LevelPlayAdSize.MEDIUM_RECTANGLE,
-                LevelPlayContainer.BannerPlacementType.Leaderboard => com.unity3d.mediation.LevelPlayAdSize.LEADERBOARD,
-                _ => com.unity3d.mediation.LevelPlayAdSize.BANNER,
+                LevelPlayContainer.BannerPlacementType.Large => LevelPlayAdSize.LARGE,
+                LevelPlayContainer.BannerPlacementType.Rectangle => LevelPlayAdSize.MEDIUM_RECTANGLE,
+                LevelPlayContainer.BannerPlacementType.Leaderboard => LevelPlayAdSize.LEADERBOARD,
+                _ => LevelPlayAdSize.BANNER,
             };
         }
 
-        // KOREKSI: Menggunakan FQN untuk tipe data lama com.unity3d.mediation.LevelPlayBannerPosition
-        private com.unity3d.mediation.LevelPlayBannerPosition GetBannerPosition()
+        // SDK v9+: LevelPlayBannerPosition is now in Unity.Services.LevelPlay namespace
+        private LevelPlayBannerPosition GetBannerPosition()
         {
             return adsSettings.LevelPlayContainer.BannerPosition == BannerPosition.Top ?
-                com.unity3d.mediation.LevelPlayBannerPosition.TopCenter : com.unity3d.mediation.LevelPlayBannerPosition.BottomCenter;
+                LevelPlayBannerPosition.TopCenter : LevelPlayBannerPosition.BottomCenter;
         }
 
         private void HandleAdLoadFailure(string adType, string error, ref int retryAttempt, Action retryAction)

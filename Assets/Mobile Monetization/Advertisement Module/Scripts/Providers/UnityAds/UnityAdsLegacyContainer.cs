@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace MobileCore.Advertisements.Providers
 {
@@ -10,8 +10,8 @@ namespace MobileCore.Advertisements.Providers
         public static readonly string IOS_BANNER_TEST_ID = "banner";
         public static readonly string ANDROID_INTERSTITIAL_TEST_ID = "video";
         public static readonly string IOS_INTERSTITIAL_TEST_ID = "video";
-        public static readonly string ANDROID_REWARDED_TEST_ID = "rewardedVideo";
-        public static readonly string IOS_REWARDED_TEST_ID = "rewardedVideo";
+        public static readonly string ANDROID_REWARDED_VIDEO_TEST_ID = "rewardedVideo";
+        public static readonly string IOS_REWARDED_VIDEO_TEST_ID = "rewardedVideo";
         public static readonly string ANDROID_APP_TEST_ID = "1234567";
         public static readonly string IOS_APP_TEST_ID = "1234567";
 
@@ -38,10 +38,15 @@ namespace MobileCore.Advertisements.Providers
 
         //Rewarded Video ID
         [Header("Rewarded Video ID")]
-        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_TEST_ID;
+        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_VIDEO_TEST_ID;
         public string AndroidRewardedVideoID => androidRewardedVideoID;
-        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_TEST_ID;
+        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_VIDEO_TEST_ID;
         public string IOSRewardedVideoID => iOSRewardedVideoID;
+
+        [Space]
+        [Tooltip("Enables Test Mode for Unity Ads")]
+        [SerializeField] private bool testMode = false;
+        public bool TestMode => testMode;
 
         [Space]
         [SerializeField] BannerPlacement bannerPosition = BannerPlacement.BOTTOM_CENTER;

@@ -21,8 +21,8 @@ namespace MobileCore.Advertisements.Providers
         [SerializeField] private string androidSdkKey = ANDROID_SDK_KEY_TEMPLATE;
         public string AndroidSdkKey => androidSdkKey;
 
-        [SerializeField] private string iosSdkKey = IOS_SDK_KEY_TEMPLATE;
-        public string IosSdkKey => iosSdkKey;
+        [SerializeField] private string iOSSdkKey = IOS_SDK_KEY_TEMPLATE;
+        public string IOSSdkKey => iOSSdkKey;
 
         [SerializeField] private string androidBannerID = ANDROID_BANNER_TEST_ID;
         public string AndroidBannerID => androidBannerID;
@@ -45,8 +45,8 @@ namespace MobileCore.Advertisements.Providers
         [SerializeField] private BannerPosition bannerPosition = BannerPosition.Bottom;
         public BannerPosition BannerPosition => bannerPosition;
 
-        [SerializeField] private BannerPlacementType bannerSize = BannerPlacementType.Banner;
-        public BannerPlacementType BannerSize => bannerSize;
+        [SerializeField] private BannerPlacementType bannerType = BannerPlacementType.Banner;
+        public BannerPlacementType BannerType => bannerType;
 
         [SerializeField] private bool enableVerboseLogging = false;
         public bool EnableVerboseLogging => enableVerboseLogging;

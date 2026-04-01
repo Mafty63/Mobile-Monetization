@@ -27,7 +27,6 @@ namespace MobileCore.Advertisements.Editor
         private SerializedProperty p_bannerType;
         private SerializedProperty p_interstitialType;
         private SerializedProperty p_rewardedVideoType;
-        private SerializedProperty p_testMode;
         private SerializedProperty p_systemLogs;
         private SerializedProperty p_adOnStart;
 
@@ -57,7 +56,6 @@ namespace MobileCore.Advertisements.Editor
             p_bannerType = serializedObject.FindProperty("bannerType");
             p_interstitialType = serializedObject.FindProperty("interstitialType");
             p_rewardedVideoType = serializedObject.FindProperty("rewardedVideoType");
-            p_testMode = serializedObject.FindProperty("testMode");
             p_systemLogs = serializedObject.FindProperty("systemLogs");
             p_adOnStart = serializedObject.FindProperty("adOnStart");
 
@@ -432,13 +430,6 @@ namespace MobileCore.Advertisements.Editor
 
                 var toggleStyle = EditorStyleTemplate.GrayToggleBackgroundStyle;
 
-                // Test Mode
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Test Mode", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
-                p_testMode.boolValue = EditorGUILayout.Toggle(p_testMode.boolValue, toggleStyle);
-                EditorGUILayout.LabelField(new GUIContent("", "Enables development mode to setup advertisement providers"), EditorStyles.miniLabel, GUILayout.Width(20));
-                EditorGUILayout.EndHorizontal();
-
                 // System Logs
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("System Logs", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
@@ -452,8 +443,6 @@ namespace MobileCore.Advertisements.Editor
                 p_adOnStart.boolValue = EditorGUILayout.Toggle(p_adOnStart.boolValue, toggleStyle);
                 EditorGUILayout.LabelField(new GUIContent("", "Enable ads when the application starts"), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
-
-                if (p_testMode.boolValue) EditorGUILayout.HelpBox("Test Mode: Using test ads", MessageType.Warning);
 
                 EditorGUILayout.EndVertical();
             }

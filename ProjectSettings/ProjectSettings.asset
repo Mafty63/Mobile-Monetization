@@ -262,11 +262,11 @@ PlayerSettings:
   templateDefaultScene: Assets/Scenes/SampleScene.unity
   useCustomMainManifest: 0
   useCustomLauncherManifest: 0
-  useCustomMainGradleTemplate: 0
+  useCustomMainGradleTemplate: 1
   useCustomLauncherGradleManifest: 0
   useCustomBaseGradleTemplate: 0
-  useCustomGradlePropertiesTemplate: 0
-  useCustomGradleSettingsTemplate: 0
+  useCustomGradlePropertiesTemplate: 1
+  useCustomGradleSettingsTemplate: 1
   useCustomProguardFile: 0
   AndroidTargetArchitectures: 2
   AndroidAllowedArchitectures: -13
@@ -830,22 +830,22 @@ PlayerSettings:
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
-    Android: 
-    EmbeddedLinux: 
-    GameCoreScarlett: 
-    GameCoreXboxOne: 
-    Kepler: 
-    LinuxHeadlessSimulation: 
-    Nintendo Switch: 
-    Nintendo Switch 2: 
-    PS4: 
-    PS5: 
-    QNX: 
-    Standalone: 
-    VisionOS: 
-    WebGL: 
-    XboxOne: 
-    tvOS: 
+    Android: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_DEPENDENCIES_INSTALLED;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    EmbeddedLinux: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    GameCoreScarlett: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    GameCoreXboxOne: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    Kepler: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    LinuxHeadlessSimulation: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    Nintendo Switch: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    Nintendo Switch 2: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    PS4: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    PS5: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    QNX: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    Standalone: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    VisionOS: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    WebGL: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    XboxOne: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
+    tvOS: ADMOB_PROVIDER;APPLOVIN_PROVIDER;LEVELPLAY_PROVIDER;UNITYADS_PROVIDER
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

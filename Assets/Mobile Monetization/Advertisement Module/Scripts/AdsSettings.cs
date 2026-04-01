@@ -50,10 +50,6 @@ namespace MobileCore.Advertisements
         public AdDummyContainer DummyContainer => dummyContainer;
 
 
-        [Tooltip("Enables development mode to setup advertisement providers.")]
-        [SerializeField] private bool testMode = false;
-        public bool TestMode => testMode;
-
         [Tooltip("Enables logging. Use it to debug advertisement logic.")]
         [SerializeField] private bool systemLogs = false;
         public bool SystemLogs => systemLogs;

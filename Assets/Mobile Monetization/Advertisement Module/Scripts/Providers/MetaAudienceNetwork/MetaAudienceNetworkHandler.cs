@@ -453,7 +453,21 @@ namespace MobileCore.Advertisements.Providers
         #region Privacy
         public override void SetGDPR(bool state) 
         { 
-            // Meta handles GDPR via their settings or platform CMP
+            // Meta GDPR: Use SetDataProcessingOptions to disable personalized ads when consent is denied.
+            // Passing an empty array means "no processing restrictions" (consent given).
+            // Passing {"LDU"} with country/state = 0 means "limit data use" (consent denied / NPA mode).
+            if (state)
+            {
+                // User gave consent – no data processing restrictions
+                AudienceNetwork.AdSettings.SetDataProcessingOptions(new string[] { });
+                DebugLog("[MetaAN]: GDPR consent given. No data processing restrictions.");
+            }
+            else
+            {
+                // User denied consent – limit data use (serve non-personalized ads)
+                AudienceNetwork.AdSettings.SetDataProcessingOptions(new string[] { "LDU" }, 0, 0);
+                DebugLog("[MetaAN]: GDPR consent denied. Limiting data use (Non-Personalized Ads).");
+            }
         }
         
         public override void SetCCPA(bool state) { }

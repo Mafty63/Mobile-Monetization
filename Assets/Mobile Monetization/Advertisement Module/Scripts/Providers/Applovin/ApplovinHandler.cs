@@ -108,7 +108,7 @@ namespace MobileCore.Advertisements.Providers
                 MaxSdk.CreateBanner(bannerId, bannerPosition);
 
                 // Set adaptive banner if configured
-                if (adsSettings.AppLovinContainer.BannerSize == AppLovinContainer.BannerPlacementType.Adaptive)
+                if (adsSettings.AppLovinContainer.BannerType == AppLovinContainer.BannerPlacementType.Adaptive)
                 {
                     MaxSdk.SetBannerExtraParameter(bannerId, "adaptive_banner", "true");
                 }
@@ -442,8 +442,8 @@ namespace MobileCore.Advertisements.Providers
                 ? adsSettings.AppLovinContainer.AndroidSdkKey 
                 : "YOUR_ANDROID_SDK_KEY";
 #elif UNITY_IOS
-            return !string.IsNullOrEmpty(adsSettings.AppLovinContainer.IosSdkKey) 
-                ? adsSettings.AppLovinContainer.IosSdkKey 
+            return !string.IsNullOrEmpty(adsSettings.AppLovinContainer.IOSSdkKey) 
+                ? adsSettings.AppLovinContainer.IOSSdkKey 
                 : "YOUR_IOS_SDK_KEY";
 #else
             return "unexpected_platform";

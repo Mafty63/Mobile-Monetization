@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
@@ -10,7 +10,6 @@ namespace MobileCore.IAPModule.Editor
     [CustomEditor(typeof(IAPSettings))]
     public class IAPSettingsEditor : UnityEditor.Editor
     {
-        private SerializedProperty p_useTestMode;
         private SerializedProperty p_storeItems;
 
         // Foldout states
@@ -24,7 +23,6 @@ namespace MobileCore.IAPModule.Editor
 
             try
             {
-                p_useTestMode = serializedObject.FindProperty("useTestMode");
                 p_storeItems = serializedObject.FindProperty("storeItems");
             }
             catch (System.Exception e)
@@ -60,19 +58,9 @@ namespace MobileCore.IAPModule.Editor
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            // Header dengan status
+            // Header
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("IN-APP PURCHASE SETTINGS", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
-
-            // Status indicator di kanan
-            string status = p_useTestMode.boolValue ?
-                "<color=orange>TEST MODE</color>" :
-                "<color=green>LIVE MODE</color>";
-            GUIStyle statusStyle = new GUIStyle(EditorStyles.miniLabel);
-            statusStyle.richText = true;
-            statusStyle.alignment = TextAnchor.MiddleRight;
-            EditorGUILayout.LabelField(status, statusStyle, GUILayout.Width(80));
-
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.HelpBox("Configure your IAP products and store behavior.", MessageType.Info);
@@ -106,32 +94,24 @@ namespace MobileCore.IAPModule.Editor
 
                 EditorGUILayout.Space();
 
-                // Test Mode setting - CORRECTED VERSION
-                EditorGUILayout.BeginVertical(EditorStyles.textArea);
-
-                var toggleStyle = EditorStyleTemplate.GrayToggleBackgroundStyle;
-
-                // Use horizontal layout like in AdsSettingsEditor
+                // Tombol Install SDK (Unity IAP)
+                EditorGUILayout.Space(10);
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Test Mode", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
-                p_useTestMode.boolValue = EditorGUILayout.Toggle(p_useTestMode.boolValue, toggleStyle);
-                EditorGUILayout.LabelField(new GUIContent("", "Enable test mode for testing without real purchases"), EditorStyles.miniLabel, GUILayout.Width(20));
+                GUILayout.FlexibleSpace();
+                var downloadButtonStyle = EditorStyleTemplate.GrayButtonStyle;
+                if (GUILayout.Button("Open Unity IAP in Package Manager", downloadButtonStyle, GUILayout.Height(25), GUILayout.Width(250)))
+                {
+#if UNITY_2020_1_OR_NEWER
+                    UnityEditor.PackageManager.UI.Window.Open("com.unity.purchasing");
+#else
+                    Debug.LogWarning("Package Manager cannot be opened automatically in this Unity version.");
+#endif
+                }
+                GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
 
-                if (p_useTestMode.boolValue)
-                {
-                    EditorGUILayout.HelpBox(
-                        "Test Mode is active. Use this for testing purchases without real transactions.",
-                        MessageType.Warning);
-                }
-                else
-                {
-                    EditorGUILayout.HelpBox(
-                        "Real store is active. Make sure to configure proper product IDs for each platform.",
-                        MessageType.Info);
-                }
-
-                EditorGUILayout.EndVertical();
+                EditorGUILayout.Space(5);
+                EditorGUILayout.HelpBox("Click the button above to open the Package Manager and manage the Unity In-App Purchasing package.", MessageType.Info);
             }
 
             EditorGUILayout.EndVertical();

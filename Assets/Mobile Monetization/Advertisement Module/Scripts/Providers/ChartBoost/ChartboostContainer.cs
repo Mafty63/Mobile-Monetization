@@ -11,8 +11,8 @@ namespace MobileCore.Advertisements.Providers
         public static readonly string IOS_BANNER_TEST_ID = "default_banner";
         public static readonly string ANDROID_INTERSTITIAL_TEST_ID = "default_interstitial";
         public static readonly string IOS_INTERSTITIAL_TEST_ID = "default_interstitial";
-        public static readonly string ANDROID_REWARDED_TEST_ID = "default_rewarded";
-        public static readonly string IOS_REWARDED_TEST_ID = "default_rewarded";
+        public static readonly string ANDROID_REWARDED_VIDEO_TEST_ID = "default_rewarded";
+        public static readonly string IOS_REWARDED_VIDEO_TEST_ID = "default_rewarded";
 
         public static readonly string ANDROID_APP_TEST_ID = "test_android_app_id";
         public static readonly string IOS_APP_TEST_ID = "test_ios_app_id";
@@ -46,9 +46,9 @@ namespace MobileCore.Advertisements.Providers
         public string IOSInterstitialID => iOSInterstitialID;
 
         [Header("Rewarded Video Placement Name")]
-        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_TEST_ID;
+        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_VIDEO_TEST_ID;
         public string AndroidRewardedVideoID => androidRewardedVideoID;
-        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_TEST_ID;
+        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_VIDEO_TEST_ID;
         public string IOSRewardedVideoID => iOSRewardedVideoID;
 
         [Header("Banner Settings (use enums to avoid manual sizes)")]

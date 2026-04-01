@@ -741,8 +741,31 @@ namespace MobileCore.Advertisements.Providers
         #region Privacy & Compliance
         public override void SetGDPR(bool state)
         {
-            DebugLog($"[Chartboost]: GDPR state updated to: {state}");
-            // Note: Chartboost typically uses CMP for consent management
+            try
+            {
+                // Chartboost uses ChartboostCore consent observer.
+                // We set the consent status via the Publisher (API-based) provider.
+                var statusMap = new System.Collections.Generic.Dictionary<Chartboost.Core.Consent.ConsentKey, Chartboost.Core.Consent.ConsentValue>();
+
+                if (state)
+                {
+                    // User gave consent - GDPR = granted
+                    statusMap[Chartboost.Core.Consent.ConsentKeys.GDPR] = Chartboost.Core.Consent.ConsentValues.Granted;
+                }
+                else
+                {
+                    // User denied consent - GDPR = denied (serve non-personalized ads)
+                    statusMap[Chartboost.Core.Consent.ConsentKeys.GDPR] = Chartboost.Core.Consent.ConsentValues.Denied;
+                }
+
+                ChartboostCore.Consent.GrantConsents(statusMap);
+                DebugLog($"[Chartboost]: GDPR state updated to: {state}");
+            }
+            catch (Exception e)
+            {
+                // Fallback: Chartboost Core consent API might differ by SDK version
+                DebugLogWarning($"[Chartboost]: Could not set GDPR via Core API ({e.Message}). Consent may need to be handled via a CMP.");
+            }
         }
 
         public override void SetCCPA(bool state)

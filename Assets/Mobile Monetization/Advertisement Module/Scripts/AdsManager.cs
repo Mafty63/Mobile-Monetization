@@ -1,4 +1,4 @@
-﻿// Summary
+// Summary
 
 #pragma warning disable 0649
 #pragma warning disable 0162
@@ -15,7 +15,7 @@ using MobileCore.DefineSystem;
 namespace MobileCore.Advertisements
 {
     [Define("ADMOB_PROVIDER", "GoogleMobileAds.Api.MobileAds", "Google AdMob SDK")]
-    [Define("LEVELPLAY_PROVIDER", "IronSource", "IronSource LevelPlay SDK")]
+    [Define("LEVELPLAY_PROVIDER", "Unity.Services.LevelPlay.LevelPlay", "IronSource LevelPlay SDK")]
     [Define("UNITYADS_PROVIDER", "UnityEngine.Advertisements.Advertisement", "Unity Ads SDK")]
     [Define("APPLOVIN_PROVIDER", "MaxSdk", "AppLovin MAX SDK")]
     [Define("MINTEGRAL_PROVIDER", "Mintegral", "Mintegral SDK")]
@@ -169,12 +169,18 @@ namespace MobileCore.Advertisements
             {
                 ShowGDPRPanel(() =>
                 {
-                    InitializeAllProvider(settings.AdOnStart);
+                    CheckAndRequestIDFA(() => 
+                    {
+                        InitializeAllProvider(settings.AdOnStart);
+                    });
                 });
                 return;
             }
 
-            InitializeAllProvider(settings.AdOnStart);
+            CheckAndRequestIDFA(() => 
+            {
+                InitializeAllProvider(settings.AdOnStart);
+            });
         }
 
         private static void ShowGDPRPanel(System.Action onCompleted)
@@ -185,6 +191,33 @@ namespace MobileCore.Advertisements
             GDPRPanel gdprPanel = gdprPanelObject.GetComponent<GDPRPanel>();
             gdprPanel.Initialize(onCompleted);
         }
+
+        private static void CheckAndRequestIDFA(System.Action onCompleted)
+        {
+#if UNITY_IOS
+            if (settings.IsIDFAEnabled && !IsIDFADetermined())
+            {
+                if (settings.SystemLogs)
+                    Debug.Log("[Ads Manager]: Requesting IDFA..");
+                
+                Unity.Advertisement.IosSupport.ATTrackingStatusBinding.RequestAuthorizationTracking();
+                MonoBehaviourExecution.Instance.StartCoroutine(WaitForIDFACoroutine(onCompleted));
+                return;
+            }
+#endif
+            onCompleted?.Invoke();
+        }
+
+#if UNITY_IOS
+        private static IEnumerator WaitForIDFACoroutine(System.Action onCompleted)
+        {
+            while (!IsIDFADetermined())
+            {
+                yield return null;
+            }
+            onCompleted?.Invoke();
+        }
+#endif
 
         /// <summary>
         /// Initialize all ads provider.

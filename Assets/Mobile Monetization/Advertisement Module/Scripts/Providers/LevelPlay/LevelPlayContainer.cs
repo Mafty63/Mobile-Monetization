@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace MobileCore.Advertisements.Providers
 {
@@ -9,12 +9,15 @@ namespace MobileCore.Advertisements.Providers
         public static readonly string IOS_BANNER_TEST_ID = "iep3rxsyp9na3rw8";
         public static readonly string ANDROID_INTERSTITIAL_TEST_ID = "aeyqi3vqlv6o8sh9";
         public static readonly string IOS_INTERSTITIAL_TEST_ID = "wmgt0712uuux8ju4";
-        public static readonly string ANDROID_OPEN_TEST_ID = "85460dcd";
-        public static readonly string IOS_OPEN_TEST_ID = "8545d445";
+        public static readonly string ANDROID_REWARDED_VIDEO_TEST_ID = "76yy3nay3ceui2a3";
+        public static readonly string IOS_REWARDED_VIDEO_TEST_ID = "qwouvdrkuwivay5q";
 
-        [SerializeField] string androidAppKey = ANDROID_OPEN_TEST_ID;
+        public static readonly string ANDROID_APP_TEST_ID = "85460dcd";
+        public static readonly string IOS_APP_TEST_ID = "8545d445";
+
+        [SerializeField] string androidAppKey = ANDROID_APP_TEST_ID;
         public string AndroidAppKey => androidAppKey;
-        [SerializeField] string iOSAppKey = IOS_OPEN_TEST_ID;
+        [SerializeField] string iOSAppKey = IOS_APP_TEST_ID;
         public string IOSAppKey => iOSAppKey;
 
         [Space]
@@ -28,6 +31,19 @@ namespace MobileCore.Advertisements.Providers
         public string AndroidInterstitialID => androidInterstitialID;
         [SerializeField] string iOSInterstitialID = IOS_INTERSTITIAL_TEST_ID;
         public string IOSInterstitialID => iOSInterstitialID;
+
+
+        [Space]
+        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_VIDEO_TEST_ID;
+        public string AndroidRewardedVideoID => androidRewardedVideoID;
+        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_VIDEO_TEST_ID;
+        public string IOSRewardedVideoID => iOSRewardedVideoID;
+
+
+        [Space]
+        [Tooltip("Enables Test Mode for LevelPlay")]
+        [SerializeField] private bool testMode = false;
+        public bool TestMode => testMode;
 
         [Space]
         [SerializeField] BannerPosition bannerPosition;

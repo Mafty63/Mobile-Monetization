@@ -47,7 +47,7 @@ public static class SDKDefinesManager
     private static List<DefineConfig> ScanDefineAttributes()
     {
         var configs = new List<DefineConfig>();
-        var defineAttributeType = Type.GetType("MobileCore.DefineSystem.DefineAttribute");
+        var defineAttributeType = GetTypeFromAllAssemblies("MobileCore.DefineSystem.DefineAttribute");
 
         if (defineAttributeType == null)
         {
@@ -162,6 +162,19 @@ public static class SDKDefinesManager
         }
 
         return false;
+    }
+
+    public static Type GetTypeFromAllAssemblies(string typeName)
+    {
+        var type = Type.GetType(typeName);
+        if (type != null) return type;
+
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            type = assembly.GetType(typeName);
+            if (type != null) return type;
+        }
+        return null;
     }
 
 #pragma warning disable 0618
@@ -291,7 +304,7 @@ public class SDKDefinesEditorWindow : EditorWindow
     private void RefreshDefineInfo()
     {
         defineInfos.Clear();
-        var defineAttributeType = Type.GetType("MobileCore.DefineSystem.DefineAttribute");
+        var defineAttributeType = SDKDefinesManager.GetTypeFromAllAssemblies("MobileCore.DefineSystem.DefineAttribute");
 
         if (defineAttributeType == null)
         {

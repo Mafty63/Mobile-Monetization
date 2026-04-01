@@ -1,4 +1,4 @@
-﻿using MobileCore.MainModule;
+using MobileCore.MainModule;
 using UnityEngine;
 
 #if UNITY_IOS
@@ -30,15 +30,6 @@ namespace MobileCore.Advertisements
 
             AdsManager.Initialize(this);
 
-#if UNITY_IOS
-            if (Settings.IsIDFAEnabled && !AdsManager.IsIDFADetermined())
-            {
-                if (Settings.SystemLogs)
-                    Debug.Log("[Ads Manager]: Requesting IDFA..");
-
-                ATTrackingStatusBinding.RequestAuthorizationTracking();
-            }
-#endif
         }
 
         // Helper method to ensure we have settings

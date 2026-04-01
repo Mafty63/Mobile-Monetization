@@ -556,15 +556,15 @@ namespace MobileCore.Advertisements.Providers
         {
 #if UNITY_EDITOR
             // Use test App ID from container even in editor for consistency
-            return adsSettings?.MintegralContainer?.AndroidAppId ?? MintegralContainer.ANDROID_APP_ID_TEMPLATE;
+            return adsSettings?.MintegralContainer?.AndroidAppID ?? MintegralContainer.ANDROID_APP_ID_TEMPLATE;
 #elif UNITY_ANDROID
-            string appId = string.IsNullOrEmpty(adsSettings?.MintegralContainer?.AndroidAppId) ? 
-                MintegralContainer.ANDROID_APP_ID_TEMPLATE : adsSettings.MintegralContainer.AndroidAppId;
+            string appId = string.IsNullOrEmpty(adsSettings?.MintegralContainer?.AndroidAppID) ? 
+                MintegralContainer.ANDROID_APP_ID_TEMPLATE : adsSettings.MintegralContainer.AndroidAppID;
             DebugLog($"[Mintegral]: Using Android App ID: {appId}");
             return appId;
 #elif UNITY_IOS
-            string appId = string.IsNullOrEmpty(adsSettings?.MintegralContainer?.IOSAppId) ? 
-                MintegralContainer.IOS_APP_ID_TEMPLATE : adsSettings.MintegralContainer.IOSAppId;
+            string appId = string.IsNullOrEmpty(adsSettings?.MintegralContainer?.IOSAppID) ? 
+                MintegralContainer.IOS_APP_ID_TEMPLATE : adsSettings.MintegralContainer.IOSAppID;
             DebugLog($"[Mintegral]: Using iOS App ID: {appId}");
             return appId;
 #else

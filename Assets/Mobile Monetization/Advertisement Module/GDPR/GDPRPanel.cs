@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0649 
+#pragma warning disable 0649 
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -53,10 +53,10 @@ namespace MobileCore.Advertisements
             agreePrivacyToggle.isOn = false;
             agreeTermsToggle.isOn = false;
 
-            acceptButton.onClick.AddListener(() => SetGDPRStateButton(false));
+            acceptButton.onClick.AddListener(() => SetGDPRStateButton(true));
             acceptButton.interactable = false;
 
-            declineButton.onClick.AddListener(CloseApplication);
+            declineButton.onClick.AddListener(DeclineGDPR);
         }
 
         private void OnToggleValueChanged(bool value)
@@ -81,15 +81,14 @@ namespace MobileCore.Advertisements
             onCompleted?.Invoke();
         }
 
-        private void CloseApplication()
+        private void DeclineGDPR()
         {
-            Debug.Log("[GDPRPanel] Closing application due to GDPR rejection.");
-
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
+            Debug.Log("[GDPRPanel] GDPR declined. Continuing with Non-Personalized Ads.");
+            // Per GDPR law, we cannot force-close the app if the user declines.
+            // Instead, we set GDPR to false so ad networks serve non-personalized ads.
+            AdsManager.SetGDPR(false);
+            CloseWindow();
+            onCompleted?.Invoke();
         }
 
         public void CloseWindow()

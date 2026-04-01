@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MobileCore.Advertisements.Providers
@@ -11,8 +11,8 @@ namespace MobileCore.Advertisements.Providers
         public static readonly string IOS_BANNER_TEST_ID = "ca-app-pub-3940256099942544/2934735716";
         public static readonly string ANDROID_INTERSTITIAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712";
         public static readonly string IOS_INTERSTITIAL_TEST_ID = "ca-app-pub-3940256099942544/4411468910";
-        public static readonly string ANDROID_REWARDED_TEST_ID = "ca-app-pub-3940256099942544/5224354917";
-        public static readonly string IOS_REWARDED_TEST_ID = "ca-app-pub-3940256099942544/1712485313";
+        public static readonly string ANDROID_REWARDED_VIDEO_TEST_ID = "ca-app-pub-3940256099942544/5224354917";
+        public static readonly string IOS_REWARDED_VIDEO_TEST_ID = "ca-app-pub-3940256099942544/1712485313";
         public static readonly string ANDROID_APP_TEST_ID = "ca-app-pub-3940256099942544~3347511713";
         public static readonly string IOS_APP_TEST_ID = "ca-app-pub-3940256099942544~1458002511";
 
@@ -39,9 +39,9 @@ namespace MobileCore.Advertisements.Providers
 
         // Rewarded Video ID
         [Header("Rewarded Video ID")]
-        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_TEST_ID;
+        [SerializeField] string androidRewardedVideoID = ANDROID_REWARDED_VIDEO_TEST_ID;
         public string AndroidRewardedVideoID => androidRewardedVideoID;
-        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_TEST_ID;
+        [SerializeField] string iOSRewardedVideoID = IOS_REWARDED_VIDEO_TEST_ID;
         public string IOSRewardedVideoID => iOSRewardedVideoID;
 
         [Header("Banner Settings")]

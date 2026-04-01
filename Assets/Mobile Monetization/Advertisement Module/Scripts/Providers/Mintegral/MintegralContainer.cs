@@ -20,17 +20,17 @@ namespace MobileCore.Advertisements.Providers
         public static readonly string ANDROID_REWARDED_VIDEO_TEST_ID = "176875";
         public static readonly string IOS_REWARDED_VIDEO_TEST_ID = "176876";
 
-        [SerializeField] private string androidAppId = ANDROID_APP_ID_TEMPLATE;
-        public string AndroidAppId => androidAppId;
+        [SerializeField] private string androidAppID = ANDROID_APP_ID_TEMPLATE;
+        public string AndroidAppID => androidAppID;
 
-        [SerializeField] private string iosAppId = IOS_APP_ID_TEMPLATE;
-        public string IOSAppId => iosAppId;
+        [SerializeField] private string iOSAppID = IOS_APP_ID_TEMPLATE;
+        public string IOSAppID => iOSAppID;
 
         [SerializeField] private string androidAppKey = ANDROID_APP_KEY_TEMPLATE;
         public string AndroidAppKey => androidAppKey;
 
-        [SerializeField] private string iosAppKey = IOS_APP_KEY_TEMPLATE;
-        public string IOSAppKey => iosAppKey;
+        [SerializeField] private string iOSAppKey = IOS_APP_KEY_TEMPLATE;
+        public string IOSAppKey => iOSAppKey;
 
         [SerializeField] private string androidBannerID = ANDROID_BANNER_TEST_ID;
         public string AndroidBannerID => androidBannerID;

@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0414
+#pragma warning disable 0414
 
 using UnityEngine;
 using System;
@@ -18,7 +18,7 @@ namespace MobileCore.Advertisements.Providers
         private string rewardedPlacement;
 
         // Ad state tracking
-        private new bool isBannerShowing = false;
+        // NOTE: Do NOT shadow isBannerShowing from base class — use base class state via UpdateBannerState()
         private bool isInterstitialLoaded = false;
         private bool isRewardedLoaded = false;
 
@@ -74,7 +74,7 @@ namespace MobileCore.Advertisements.Providers
                 CreateListener();
 
                 // Initialize SDK
-                Advertisement.Initialize(appId, adsSettings.TestMode, listener);
+                Advertisement.Initialize(appId, adsSettings.UnityAdsContainer.TestMode, listener);
 
                 // Set banner position
                 Advertisement.Banner.SetPosition((UnityEngine.Advertisements.BannerPosition)adsSettings.UnityAdsContainer.BannerPosition);
@@ -85,7 +85,7 @@ namespace MobileCore.Advertisements.Providers
                     SetGDPR(AdsManager.GetGDPRState());
                 }
 
-                DebugLog($"[UnityAds]: Initialization started (Test Mode: {adsSettings.TestMode})");
+                DebugLog($"[UnityAds]: Initialization started (Test Mode: {adsSettings.UnityAdsContainer.TestMode})");
             }
             catch (Exception e)
             {
@@ -130,7 +130,7 @@ namespace MobileCore.Advertisements.Providers
                     MonoBehaviourExecution.Instance.StartCoroutine(DelayedCall(retryDelay, () =>
                     {
                         string appId = GetAppID();
-                        Advertisement.Initialize(appId, adsSettings.TestMode, listener);
+                        Advertisement.Initialize(appId, adsSettings.UnityAdsContainer.TestMode, listener);
                     }));
                 }
             });
@@ -142,19 +142,29 @@ namespace MobileCore.Advertisements.Providers
         {
             if (!isInitialized) return;
 
+            // Unity Ads SDK 3.x: Banner.Show() handles load + display in one call.
+            // We mark as showing so HideBanner/DestroyBanner work correctly.
             UpdateBannerState(true, true);
 
-            Advertisement.Banner.Show(bannerPlacement);
-            OnAdDisplayed(AdType.Banner);
-            DebugLog("[UnityAds]: Banner shown");
+            try
+            {
+                Advertisement.Banner.Show(bannerPlacement);
+                OnAdDisplayed(AdType.Banner);
+                DebugLog("[UnityAds]: Banner shown");
+            }
+            catch (Exception e)
+            {
+                UpdateBannerState(false, false);
+                DebugLogError($"[UnityAds]: Banner failed to show: {e.Message}");
+            }
         }
 
         public override void HideBanner()
         {
-            if (!isBannerShowing) 
-            {
-                return;
-            }
+            // Use base class isBannerShowing (set by UpdateBannerState) — not a local shadow
+            if (!isBannerShowing) return;
+
+            UpdateBannerState(false, true);
 
             try
             {
@@ -166,27 +176,24 @@ namespace MobileCore.Advertisements.Providers
             {
                 // Suppress errors during shutdown/cleanup
             }
-            finally
-            {
-                UpdateBannerState(false, true);
-            }
         }
 
         public override void DestroyBanner()
         {
+            // Unity Ads SDK 3.x does not have a true "unload" API for banners without
+            // first showing the banner (which would cause a visible flash).
+            // The best we can do is Hide(false) and reset all banner state.
+            UpdateBannerState(false, false);
+
             try
             {
-                Advertisement.Banner.Hide(true);
+                Advertisement.Banner.Hide(false);
                 OnAdClosed(AdType.Banner);
-                DebugLog("[UnityAds]: Banner destroyed");
+                DebugLog("[UnityAds]: Banner destroyed (hidden and state reset)");
             }
             catch (Exception)
             {
                 // Suppress errors during shutdown
-            }
-            finally
-            {
-                UpdateBannerState(false, false);
             }
         }
         #endregion
