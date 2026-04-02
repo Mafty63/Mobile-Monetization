@@ -224,9 +224,16 @@ namespace MobileCore.IAPModule.Editor
 
             EditorGUILayout.BeginVertical(EditorStyles.textArea);
 
-            // Header dengan delete button
+            // Header dengan foldout dan delete button
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"Product #{index + 1}", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+            
+            string productTitle = $"Product #{index + 1}";
+            if (productKeyTypeProperty.enumValueIndex >= 0 && productKeyTypeProperty.enumValueIndex < productKeyTypeProperty.enumDisplayNames.Length)
+            {
+                productTitle += $" - {productKeyTypeProperty.enumDisplayNames[productKeyTypeProperty.enumValueIndex]}";
+            }
+
+            itemProperty.isExpanded = EditorGUILayout.Foldout(itemProperty.isExpanded, productTitle, true, EditorStyles.foldoutHeader);
 
             var buttonStyle = EditorStyleTemplate.GrayButtonStyle;
             if (GUILayout.Button("Delete", buttonStyle, GUILayout.Width(60)))
@@ -239,10 +246,13 @@ namespace MobileCore.IAPModule.Editor
             }
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.Space();
+            if (itemProperty.isExpanded)
+            {
+                EditorGUILayout.Space();
 
-            // Layout vertikal selalu untuk konsistensi
-            DrawProductFieldsVertical(androidIDProperty, iOSIDProperty, productKeyTypeProperty, productTypeProperty);
+                // Layout vertikal selalu untuk konsistensi
+                DrawProductFieldsVertical(androidIDProperty, iOSIDProperty, productKeyTypeProperty, productTypeProperty);
+            }
 
             EditorGUILayout.EndVertical();
         }

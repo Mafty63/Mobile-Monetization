@@ -28,7 +28,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f28faf74e3de2b4bb5f8724582e5ceb, type: 3}
   m_Name: IAPSettings
   m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.IAPModule.IAPSettings
-  useTestMode: 0
   storeItems:
   - androidID: com.company.product.new1
     iOSID: com.company.product.new1
