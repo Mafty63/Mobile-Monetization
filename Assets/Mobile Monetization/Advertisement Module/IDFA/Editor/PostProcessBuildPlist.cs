@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Build.Reporting;
 
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     internal class PostProcessBuildPlist : IPostprocessBuildWithReport
     {

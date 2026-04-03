@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using System.Runtime.InteropServices;
 
-namespace Unity.Advertisement.IosSupport
+namespace MobileCore.Advertisement.IosSupport
 {
     public class SkAdNetworkBinding
     {

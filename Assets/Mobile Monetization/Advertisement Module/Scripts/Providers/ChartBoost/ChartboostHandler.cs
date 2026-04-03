@@ -3,6 +3,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using MobileCore.Utilities;
 
 #if CHARTBOOST_PROVIDER
 using Chartboost.Core;

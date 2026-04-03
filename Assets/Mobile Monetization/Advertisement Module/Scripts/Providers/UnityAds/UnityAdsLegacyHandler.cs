@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using System;
+using MobileCore.Utilities;
 
 #if UNITYADS_PROVIDER
 using UnityEngine.Advertisements;
@@ -10,6 +11,8 @@ using UnityEngine.Advertisements;
 namespace MobileCore.Advertisements.Providers
 {
 #if UNITYADS_PROVIDER
+    using Advertisement = UnityEngine.Advertisements.Advertisement;
+
     public class UnityAdsLegacyHandler : BaseAdProviderHandler
     {
         // Placement IDs

@@ -10,6 +10,7 @@
   <Project Path="UnityEngine.Advertisements.csproj" />
   <Project Path="Unity.VisualScripting.Core.Editor.csproj" />
   <Project Path="Unity.PerformanceTesting.Editor.csproj" />
+  <Project Path="asset-store-tools-editor.csproj" />
   <Project Path="Unity.Burst.csproj" />
   <Project Path="Unity.Services.Core.Environments.Editor.csproj" />
   <Project Path="Unity.VisualScripting.Flow.Editor.csproj" />

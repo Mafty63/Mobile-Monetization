@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Collections.Generic;
+using MobileCore.Utilities;
 
 #if ADMOB_PROVIDER
 using GoogleMobileAds.Api;

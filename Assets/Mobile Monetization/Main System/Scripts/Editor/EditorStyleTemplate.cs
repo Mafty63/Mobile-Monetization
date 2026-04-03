@@ -40,7 +40,7 @@ namespace MobileCore.MainModule.Editor
         /// </summary>
         public static void InitializeStyles()
         {
-            if (_stylesInitialized) return;
+            if (_stylesInitialized && _texGray != null) return;
 
             try
             {
@@ -143,6 +143,7 @@ namespace MobileCore.MainModule.Editor
             Color[] pix = new Color[width * height];
             for (int i = 0; i < pix.Length; i++) pix[i] = col;
             Texture2D result = new Texture2D(width, height, TextureFormat.ARGB32, false);
+            result.hideFlags = HideFlags.HideAndDontSave;
             result.SetPixels(pix);
             result.Apply();
             return result;

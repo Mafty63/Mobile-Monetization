@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     internal class SkAdNetworkJsonParser : ISkAdNetworkParser
     {

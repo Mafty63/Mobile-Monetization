@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using MobileCore.Utilities;
 using UnityEngine;
 
+namespace MobileCore.Utilities
+{
 public class MonoBehaviourExecution : SingletonMonoBehaviour<MonoBehaviourExecution>
 {
     private static readonly List<Action> updatables = new();
@@ -161,3 +163,4 @@ public class MonoBehaviourExecution : SingletonMonoBehaviour<MonoBehaviourExecut
     public static void UnregisterUnscaleUpdate(Action obj) => unscaledUpdatables.Remove(obj);
 
 }
+} // namespace MobileCore.Utilities

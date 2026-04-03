@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     internal interface ISkAdNetworkSource
     {

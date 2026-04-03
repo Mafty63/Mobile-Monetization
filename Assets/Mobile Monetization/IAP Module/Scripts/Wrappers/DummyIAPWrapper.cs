@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using MobileCore.SystemModule;
+using MobileCore.Utilities;
 using UnityEngine;
 
 namespace MobileCore.IAPModule

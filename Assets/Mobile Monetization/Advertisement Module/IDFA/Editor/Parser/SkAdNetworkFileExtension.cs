@@ -1,4 +1,4 @@
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     public static class SkAdNetworkFileExtension
     {

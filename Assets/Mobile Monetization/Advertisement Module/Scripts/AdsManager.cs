@@ -198,7 +198,7 @@ namespace MobileCore.Advertisements
                 if (settings.SystemLogs)
                     Debug.Log("[Ads Manager]: Requesting IDFA..");
                 
-                Unity.Advertisement.IosSupport.ATTrackingStatusBinding.RequestAuthorizationTracking();
+                MobileCore.Advertisement.IosSupport.ATTrackingStatusBinding.RequestAuthorizationTracking();
                 MonoBehaviourExecution.Instance.StartCoroutine(WaitForIDFACoroutine(onCompleted));
                 return;
             }

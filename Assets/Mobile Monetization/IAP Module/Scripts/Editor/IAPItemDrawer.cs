@@ -3,8 +3,10 @@ using UnityEditor;
 using UnityEngine;
 using MobileCore.IAPModule;
 
-[CustomPropertyDrawer(typeof(IAPItem))]
-public class IAPItemDrawer : PropertyDrawer
+namespace MobileCore.IAPModule.Editor
+{
+    [CustomPropertyDrawer(typeof(IAPItem))]
+    public class IAPItemDrawer : PropertyDrawer
 {
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
@@ -72,5 +74,6 @@ public class IAPItemDrawer : PropertyDrawer
 
         return $"Current Platform: {currentPlatform}\nWill Use ID: {currentID}";
     }
+}
 }
 #endif

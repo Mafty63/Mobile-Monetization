@@ -8,9 +8,7 @@ dependencies {
 // Android Resolver Dependencies Start
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4' // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:12
     implementation 'androidx.lifecycle:lifecycle-process:2.6.2' // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:17
-    implementation 'com.android.support:support-annotations:28.0.0' // Assets/AudienceNetwork/Editor/AudienceNetworkDependencies.xml:4
     implementation 'com.applovin:applovin-sdk:13.6.2' // Assets/MaxSdk/AppLovin/Editor/Dependencies.xml:4
-    implementation 'com.facebook.android:audience-network-sdk:6.4.0' // Assets/AudienceNetwork/Editor/AudienceNetworkDependencies.xml:5
     implementation 'com.google.android.gms:play-services-ads:25.0.0' // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7
     implementation 'com.google.android.gms:play-services-ads-identifier:18.1.0' // Assets/LevelPlay/Editor/IronSourceSDKDependencies.xml:12
     implementation 'com.google.android.ump:user-messaging-platform:4.0.0' // Assets/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7

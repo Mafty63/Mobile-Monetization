@@ -2,7 +2,7 @@ using MobileCore.MainModule;
 using UnityEngine;
 
 #if UNITY_IOS
-using Unity.Advertisement.IosSupport;
+using MobileCore.Advertisement.IosSupport;
 #endif
 
 namespace MobileCore.Advertisements

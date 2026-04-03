@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using MobileCore.Utilities;
 
 #if APPLOVIN_PROVIDER
 #endif

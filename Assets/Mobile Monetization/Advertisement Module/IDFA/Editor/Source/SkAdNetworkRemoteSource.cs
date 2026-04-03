@@ -2,7 +2,7 @@ using System.IO;
 using System.Net;
 using UnityEngine;
 
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     internal class SkAdNetworkRemoteSource : ISkAdNetworkSource
     {

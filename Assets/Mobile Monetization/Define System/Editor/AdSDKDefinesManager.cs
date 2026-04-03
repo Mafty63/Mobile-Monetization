@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using System;
 using System.Reflection;
 
-/// <summary>
-/// Manager for handling define symbols based on DefineAttribute declared in Manager classes.
-/// </summary>
-public static class SDKDefinesManager
+namespace MobileCore.DefineSystem.Editor
+{
+    /// <summary>
+    /// Manager for handling define symbols based on DefineAttribute declared in Manager classes.
+    /// </summary>
+    public static class SDKDefinesManager
 {
     static SDKDefinesManager()
     {
@@ -523,6 +525,7 @@ public class SDKDefinesEditorWindow : EditorWindow
         public bool TypeExists;
         public bool DefineExists;
     }
+}
 }
 #endif
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using MobileCore.Utilities;
 
 namespace MobileCore.Advertisements.Providers
 {

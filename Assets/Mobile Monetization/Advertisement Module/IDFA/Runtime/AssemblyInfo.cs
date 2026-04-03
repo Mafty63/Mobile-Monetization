@@ -18,7 +18,7 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle("Unity.Advertisement.IosSupport")]
+[assembly: AssemblyTitle("MobileCore.Advertisement.IosSupport")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Unity Technologies")]
@@ -33,5 +33,5 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("0.1.0")]
 
-[assembly: InternalsVisibleTo("Unity.Advertisement.IosSupport.Tests")]
+[assembly: InternalsVisibleTo("MobileCore.Advertisement.IosSupport.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

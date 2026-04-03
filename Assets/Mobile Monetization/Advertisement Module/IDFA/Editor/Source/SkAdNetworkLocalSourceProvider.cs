@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     /// <summary>
     /// Responsible for finding all SkAdNetwork files on the local filesystem by searching through the users project directory and all includes packages.

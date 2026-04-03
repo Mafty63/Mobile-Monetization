@@ -3,6 +3,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using MobileCore.Utilities;
 #if LEVELPLAY_PROVIDER
 using Unity.Services.LevelPlay;
 #endif

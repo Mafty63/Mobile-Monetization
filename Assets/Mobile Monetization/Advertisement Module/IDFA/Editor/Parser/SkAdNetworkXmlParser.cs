@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
 
-namespace Unity.Advertisement.IosSupport.Editor
+namespace MobileCore.Advertisement.IosSupport.Editor
 {
     internal class SkAdNetworkXmlParser : ISkAdNetworkParser
     {
