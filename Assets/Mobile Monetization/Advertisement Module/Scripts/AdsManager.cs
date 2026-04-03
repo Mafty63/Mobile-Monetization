@@ -20,7 +20,7 @@ namespace MobileCore.Advertisements
     [Define("APPLOVIN_PROVIDER", "MaxSdk", "AppLovin MAX SDK")]
     [Define("MINTEGRAL_PROVIDER", "Mintegral", "Mintegral SDK")]
     [Define("CHARTBOOST_PROVIDER", "Chartboost.Mediation.ChartboostMediation", "Chartboost SDK")]
-    [Define("META_AUDIENCE_NETWORK_PROVIDER", "AudienceNetwork.AudienceNetworkAds", "Meta Audience Network SDK")]
+
     public static class AdsManager
     {
         // Constants
@@ -53,9 +53,7 @@ namespace MobileCore.Advertisements
         #if CHARTBOOST_PROVIDER
             new ChartboostHandler(AdProvider.Chartboost),
         #endif
-        #if META_AUDIENCE_NETWORK_PROVIDER
-            new MetaAudienceNetworkHandler(AdProvider.MetaAudienceNetwork),
-        #endif
+
         };
 
         // Module state variables

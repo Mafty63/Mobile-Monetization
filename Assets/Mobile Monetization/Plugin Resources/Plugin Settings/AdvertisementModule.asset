@@ -87,16 +87,6 @@ MonoBehaviour:
     iOSRewardedVideoID: default_rewarded
     bannerPosition: 0
     bannerType: 0
-  metaAudienceNetworkContainer:
-    androidAppID: 1484169265118381
-    iOSAppID: 1484169265118381
-    androidBannerID: IMG_16_9_APP_INSTALL#1484169265118381_1484172318451409
-    iOSBannerID: IMG_16_9_APP_INSTALL#1484169265118381_1484172198451421
-    androidInterstitialID: IMG_16_9_APP_INSTALL#1484169265118381_1484171998451441
-    iOSInterstitialID: IMG_16_9_APP_INSTALL#1484169265118381_1484171848451456
-    androidRewardedVideoID: VID_HD_9_16_39S_APP_INSTALL#1484169265118381_1484170641784910
-    iOSRewardedVideoID: VID_HD_9_16_39S_APP_INSTALL#1484169265118381_1484170508451590
-    bannerPosition: 0
   dummyContainer:
     bannerPosition: 0
   systemLogs: 0

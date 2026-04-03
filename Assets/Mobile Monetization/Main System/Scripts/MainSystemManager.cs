@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0649
+#pragma warning disable 0649
 
 using System;
 
@@ -11,7 +11,7 @@ namespace MobileCore.MainModule
     [DefaultExecutionOrder(-999)]
     public class MainSystemManager : SingletonMonoBehaviour<MainSystemManager>
     {
-        [SerializeField] private MainSystemSettings initSettings;
+        [SerializeField] private MainSystemSettings mainSystemSettings;
         [SerializeField] private EventSystem eventSystem;
 
 
@@ -26,7 +26,7 @@ namespace MobileCore.MainModule
             {
                 IsInitialized = true;
 
-                InitSettings = initSettings;
+                InitSettings = mainSystemSettings;
 
                 gameObject.AddComponent<MonoBehaviourExecution>();
 
@@ -38,7 +38,7 @@ namespace MobileCore.MainModule
 
                 DontDestroyOnLoad(gameObject);
 
-                initSettings.Initialize(this);
+                mainSystemSettings.Initialize(this);
             }
         }
 

@@ -41,10 +41,6 @@ namespace MobileCore.Advertisements
         [SerializeField] private ChartboostContainer chartboostContainer;
         public ChartboostContainer ChartboostContainer => chartboostContainer;
 
-        [AdsProviderContainer("Meta Audience Network", 8, "https://developers.facebook.com/docs/audience-network/setting-up/platform-steup/unity/add-sdk")]
-        [SerializeField] private MetaAudienceNetworkContainer metaAudienceNetworkContainer;
-        public MetaAudienceNetworkContainer MetaAudienceNetworkContainer => metaAudienceNetworkContainer;
-
         [AdsProviderContainer("Dummy", 1000)]
         [SerializeField] private AdDummyContainer dummyContainer;
         public AdDummyContainer DummyContainer => dummyContainer;
@@ -126,8 +122,6 @@ namespace MobileCore.Advertisements
 #if CHARTBOOST_PROVIDER
         Chartboost = 8,
 #endif
-#if META_AUDIENCE_NETWORK_PROVIDER
-        MetaAudienceNetwork = 9,
-#endif
+
     }
 }

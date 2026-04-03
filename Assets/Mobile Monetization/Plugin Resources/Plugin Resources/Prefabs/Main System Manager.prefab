@@ -92,5 +92,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836bc27011b015943a903153cd837bb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initSettings: {fileID: 11400000, guid: a03611bc74f10db45aee602034f9913d, type: 2}
+  mainSystemSettings: {fileID: 11400000, guid: a03611bc74f10db45aee602034f9913d, type: 2}
   eventSystem: {fileID: 2518051744478622781}

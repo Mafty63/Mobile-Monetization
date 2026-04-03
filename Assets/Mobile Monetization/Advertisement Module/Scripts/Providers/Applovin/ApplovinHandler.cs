@@ -43,7 +43,9 @@ namespace MobileCore.Advertisements.Providers
             {
                 // Set SDK key
                 string sdkKey = GetSdkKey();
+#pragma warning disable CS0618
                 MaxSdk.SetSdkKey(sdkKey);
+#pragma warning restore CS0618
 
                 // Set user ID
                 MaxSdk.SetUserId(SystemInfo.deviceUniqueIdentifier);
@@ -105,13 +107,13 @@ namespace MobileCore.Advertisements.Providers
                 string bannerId = GetBannerID();
                 var bannerPosition = GetBannerPosition();
 
-                MaxSdk.CreateBanner(bannerId, bannerPosition);
-
-                // Set adaptive banner if configured
-                if (adsSettings.AppLovinContainer.BannerType == AppLovinContainer.BannerPlacementType.Adaptive)
+                // Build modern banner configuration
+                var bannerConfig = new MaxSdkBase.AdViewConfiguration(bannerPosition)
                 {
-                    MaxSdk.SetBannerExtraParameter(bannerId, "adaptive_banner", "true");
-                }
+                    IsAdaptive = adsSettings.AppLovinContainer.BannerType == AppLovinContainer.BannerPlacementType.Adaptive
+                };
+
+                MaxSdk.CreateBanner(bannerId, bannerConfig);
 
                 // Set transparent background
                 MaxSdk.SetBannerBackgroundColor(bannerId, Color.clear);
@@ -177,12 +179,12 @@ namespace MobileCore.Advertisements.Providers
             UpdateBannerState(false, false);
         }
 
-        private MaxSdkBase.BannerPosition GetBannerPosition()
+        private MaxSdkBase.AdViewPosition GetBannerPosition()
         {
             return adsSettings.AppLovinContainer.BannerPosition switch
             {
-                BannerPosition.Top => MaxSdkBase.BannerPosition.TopCenter,
-                _ => MaxSdkBase.BannerPosition.BottomCenter,
+                BannerPosition.Top => MaxSdkBase.AdViewPosition.TopCenter,
+                _ => MaxSdkBase.AdViewPosition.BottomCenter,
             };
         }
         #endregion
