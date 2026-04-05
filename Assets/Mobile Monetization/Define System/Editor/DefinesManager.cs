@@ -123,12 +123,16 @@ namespace MobileCore.DefineSystem.Editor
             string   result  = current;
             bool     changed = false;
 
+            string   ignored = EditorPrefs.GetString("MobileCore_IgnoredDefines", "");
+
             foreach (var state in states)
             {
                 bool alreadySet = Array.FindIndex(arr, x => x == state.DefineSymbol) != -1;
 
                 if (state.IsEnabled && !alreadySet)
                 {
+                    if (ignored.Contains(state.DefineSymbol)) continue;
+
                     result  = state.DefineSymbol + ";" + result;
                     changed = true;
                     Debug.Log($"[Define System] Added: {state.DefineSymbol}");
@@ -441,24 +445,20 @@ namespace MobileCore.DefineSystem.Editor
                 GUI.backgroundColor = prevBg;
                 EditorGUILayout.EndHorizontal();
                 GUILayout.Space(4);
+
+                string ignored = "";
+                foreach (var d in _defines)
+                {
+                    if (!d.IsEnabled) ignored += d.Symbol + ";";
+                }
+                EditorPrefs.SetString("MobileCore_IgnoredDefines", ignored);
+
                 SDKDefinesManager.SetDefines(GetActiveDefinesLine());
                 return;
             }
             EditorGUI.EndDisabledGroup();
 
             GUILayout.Space(4);
-
-            GUI.backgroundColor = ColorDark;
-            if (GUILayout.Button("⟳  Check Auto Defines", _btnCheck))
-            {
-                GUI.backgroundColor = prevBg;
-                EditorGUILayout.EndHorizontal();
-                GUILayout.Space(4);
-                SDKDefinesManager.CheckAutoDefines();
-                CacheDefines();
-                return;
-            }
-            GUI.backgroundColor = prevBg;
 
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(4);

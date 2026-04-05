@@ -106,3 +106,6 @@ InitTestScene*.unity*
 /[Aa]ssets/AudienceNetwork.meta
 /[Aa]ssets/TapjoySDK/
 /[Aa]ssets/TapjoySDK.meta
+
+# Unity Cloud settings
+ProjectSettings/Packages/com.unity.services.core/Settings.json
