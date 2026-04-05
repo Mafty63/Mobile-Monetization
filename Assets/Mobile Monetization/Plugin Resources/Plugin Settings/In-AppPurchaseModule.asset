@@ -33,11 +33,27 @@ MonoBehaviour:
     iOSID: com.company.product.new1
     productKeyType: 0
     productType: 1
-  - androidID: com.company.product.new2
-    iOSID: com.company.product.new2
-    productKeyType: 1
+  - androidID: com.company.product.new1
+    iOSID: com.company.product.new1
+    productKeyType: 0
     productType: 0
-  - androidID: com.company.product.new3
-    iOSID: com.company.product.new3
+  - androidID: com.company.product.new1
+    iOSID: com.company.product.new1
     productKeyType: 2
     productType: 0
+  - androidID: com.company.product.new4
+    iOSID: com.company.product.new4
+    productKeyType: 3
+    productType: 0
+  - androidID: com.company.product.new5
+    iOSID: com.company.product.new5
+    productKeyType: 4
+    productType: 0
+  - androidID: com.company.product.new6
+    iOSID: com.company.product.new6
+    productKeyType: 5
+    productType: 0
+  - androidID: com.company.product.new7
+    iOSID: com.company.product.new7
+    productKeyType: 6
+    productType: 2

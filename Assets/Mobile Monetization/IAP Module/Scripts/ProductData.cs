@@ -1,4 +1,4 @@
-﻿#if MODULE_IAP
+#if MODULE_IAP
 using UnityEngine.Purchasing;
 #endif
 
@@ -46,11 +46,11 @@ namespace MobileCore.IAPModule
         }
 
 #if MODULE_IAP
-        public ProductData(Product product, bool isPurchased)
+        public ProductData(Product product, ProductType originalType, bool isPurchased)
         {
             Product = product;
 
-            ProductType = (ProductType)product.definition.type;
+            ProductType = originalType;
 
             IsPurchased = isPurchased;
 

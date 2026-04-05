@@ -1,4 +1,4 @@
-﻿
+
 #pragma warning disable 0649
 #pragma warning disable 0162
 
@@ -35,7 +35,18 @@ namespace MobileCore.IAPModule
                 IAPItem[] items = settings.StoreItems;
                 for (int i = 0; i < items.Length; i++)
                 {
-                    productDefinitions.Add(new ProductDefinition(items[i].ID, items[i].ID, (UnityEngine.Purchasing.ProductType)items[i].ProductType));
+                    var existingDef = productDefinitions.FirstOrDefault(p => p.id == items[i].ID);
+                    if (existingDef == null)
+                    {
+                        productDefinitions.Add(new ProductDefinition(items[i].ID, items[i].ID, (UnityEngine.Purchasing.ProductType)items[i].ProductType));
+                    }
+                    else
+                    {
+                        if (existingDef.type != (UnityEngine.Purchasing.ProductType)items[i].ProductType)
+                        {
+                            Debug.LogWarning($"[IAPManager]: FATAL LOGIC ERROR! ID '{items[i].ID}' is used for both {existingDef.type} and {items[i].ProductType}. Google Play and App Store FORBID a single ID to have multiple types! The ID will be forced to {existingDef.type}. Please create separate Tier IDs for Consumable and NonConsumable.");
+                        }
+                    }
                 }
 
                 // Subscribe to all events BEFORE calling Connect/Fetch methods
@@ -57,6 +68,8 @@ namespace MobileCore.IAPModule
                 // Purchase pending/failed events
                 purchaseService.OnPurchasePending += OnPurchasePendingHandler;
                 purchaseService.OnPurchaseFailed += OnPurchaseFailedHandler;
+                purchaseService.OnPurchaseDeferred += OnPurchaseDeferredHandler;
+                purchaseService.OnPurchaseConfirmed += OnPurchaseConfirmedHandler;
 
                 // Now we can call the methods
                 await storeController.Connect();
@@ -94,11 +107,7 @@ namespace MobileCore.IAPModule
             Debug.Log("[IAPManager]: Purchasing - " + id + " is completed!");
             purchasedProductIds.Add(id);
 
-            IAPItem item = IAPManager.GetIAPItem(id);
-            if (item != null)
-            {
-                IAPManager.OnPurchaseCompled(item.ProductKeyType);
-            }
+            IAPManager.OnPurchaseCompled(IAPManager.PendingProductKey);
             SystemManager.ShowMessage("Payment complete!");
 
             // Confirm the purchase
@@ -126,10 +135,26 @@ namespace MobileCore.IAPModule
             Debug.Log("[IAPManager]: Purchasing - " + id + " is failed!");
             Debug.Log("[IAPManager]: Fail reason - " + order.FailureReason + ": " + order.Details);
 
-            IAPItem item = IAPManager.GetIAPItem(id);
-            if (item != null)
+            IAPManager.OnPurchaseFailed(IAPManager.PendingProductKey, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
+        }
+
+        private void OnPurchaseDeferredHandler(DeferredOrder order)
+        {
+            IAPManager.IsPurchasing = false;
+            SystemManager.ShowMessage("Purchase deferred. Waiting for approval.");
+            Debug.Log("[IAPManager]: Purchase is deferred!");
+        }
+
+        private void OnPurchaseConfirmedHandler(Order order)
+        {
+            if (order is ConfirmedOrder confirmedOrder)
             {
-                IAPManager.OnPurchaseFailed(item.ProductKeyType, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
+                var productInfo = confirmedOrder.CartOrdered?.Items()?.FirstOrDefault()?.Product?.definition;
+                Debug.Log($"[IAPManager]: Purchase confirmation is successful for {productInfo?.id}");
+            }
+            else if (order is FailedOrder failedOrder)
+            {
+                Debug.LogWarning($"[IAPManager]: Purchase confirmation failed: {failedOrder.Details}");
             }
         }
 
@@ -241,8 +266,8 @@ namespace MobileCore.IAPModule
                 Product product = GetProduct(item.ID);
                 if (product != null)
                 {
-                    bool isPurchased = purchasedProductIds.Contains(item.ID);
-                    return new ProductData(product, isPurchased);
+                        bool isPurchased = purchasedProductIds.Contains(item.ID);
+                    return new ProductData(product, item.ProductType, isPurchased);
                 }
             }
 #endif

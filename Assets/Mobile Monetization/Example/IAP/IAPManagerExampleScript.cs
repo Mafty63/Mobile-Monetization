@@ -48,11 +48,26 @@ namespace MobileCore.IAPModule.Example
 
                 itemPanelScript.SetPurchasedTextActive(product.IsPurchased);
 
-                if (product.ProductType == ProductType.Subscription && IAPManager.IsSubscribed(values[i]))
+                if (product.IsPurchased)
                 {
-                    itemPanelScript.Purchased = "(subscribed)";
+                    if (product.ProductType == ProductType.Subscription && IAPManager.IsSubscribed(values[i]))
+                    {
+                        itemPanelScript.Purchased = "(subscribed)";
+                    }
+                    else if (product.ProductType == ProductType.NonConsumable)
+                    {
+                        itemPanelScript.Purchased = "(owned)";
+                    }
+                    else
+                    {
+                        itemPanelScript.Purchased = "(purchased)";
+                    }
                 }
 
+                if (product.IsPurchased && product.ProductType != ProductType.Consumable)
+                {
+                    itemPanelScript.SetButtonInteractable(false);
+                }
             }
             contentParent.sizeDelta = new Vector2(contentParent.sizeDelta.x, values.Length * 200);
 #else

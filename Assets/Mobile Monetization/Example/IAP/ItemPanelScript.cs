@@ -26,11 +26,13 @@ namespace MobileCore.IAPModule.Example
         private void OnEnable()
         {
             buyButton.onClick.AddListener(BuyButton);
+            IAPManager.OnPurchaseComplete += HandlePurchaseComplete;
         }
 
         private void OnDisable()
         {
             buyButton.onClick.RemoveListener(BuyButton);
+            IAPManager.OnPurchaseComplete -= HandlePurchaseComplete;
         }
 
         public void SetPurchasedTextActive(bool isActive)
@@ -38,10 +40,14 @@ namespace MobileCore.IAPModule.Example
             purchasedText.gameObject.SetActive(isActive);
         }
 
+        public void SetButtonInteractable(bool interactable)
+        {
+            buyButton.interactable = interactable;
+        }
+
         private void BuyButton()
         {
             IAPManager.BuyProduct(item);
-            IAPManager.OnPurchaseComplete += HandlePurchaseComplete;
         }
 
         private void HandlePurchaseComplete(ProductKeyType productKeyType)
@@ -49,6 +55,28 @@ namespace MobileCore.IAPModule.Example
             if (productKeyType == item)
             {
                 SetPurchasedTextActive(true);
+                
+                ProductData data = IAPManager.GetProductData(item);
+                if (data != null)
+                {
+                    if (data.ProductType == ProductType.Subscription)
+                    {
+                        Purchased = "(subscribed)";
+                    }
+                    else if (data.ProductType == ProductType.NonConsumable)
+                    {
+                        Purchased = "(owned)";
+                    }
+                    else
+                    {
+                        Purchased = "(purchased)";
+                    }
+                    
+                    if (data.ProductType != ProductType.Consumable)
+                    {
+                        SetButtonInteractable(false);
+                    }
+                }
             }
         }
     }

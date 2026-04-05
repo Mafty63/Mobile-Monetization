@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using MobileCore.Utilities;
 using MobileCore.DefineSystem;
@@ -35,8 +35,11 @@ namespace MobileCore.IAPModule
             IAPItem[] items = managerInitializer.Settings.StoreItems;
             for (int i = 0; i < items.Length; i++)
             {
-                productsTypeToProductLink.Add(items[i].ProductKeyType, items[i]);
-                productsKeyToProductLink.Add(items[i].ID, items[i]);
+                if (!productsTypeToProductLink.ContainsKey(items[i].ProductKeyType))
+                    productsTypeToProductLink.Add(items[i].ProductKeyType, items[i]);
+                
+                if (!productsKeyToProductLink.ContainsKey(items[i].ID))
+                    productsKeyToProductLink.Add(items[i].ID, items[i]);
             }
 
 #if MODULE_IAP
@@ -96,10 +99,13 @@ namespace MobileCore.IAPModule
 
         public static bool IsPurchasing { get; set; }
 
+        public static ProductKeyType PendingProductKey { get; private set; }
+
         public static void BuyProduct(ProductKeyType productKeyType)
         {
             if (IsPurchasing) return;
             IsPurchasing = true;
+            PendingProductKey = productKeyType;
             wrapper.BuyProduct(productKeyType);
         }
 

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
   m_Name: AdsSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsSettings
-  bannerType: 5
-  interstitialType: 5
-  rewardedVideoType: 5
+  bannerType: 3
+  interstitialType: 4
+  rewardedVideoType: 3
   adMobContainer:
     androidAppID: ca-app-pub-3940256099942544~3347511713
     iOSAppID: ca-app-pub-3940256099942544~1458002511
