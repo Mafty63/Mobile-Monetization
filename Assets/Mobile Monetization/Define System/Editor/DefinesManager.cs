@@ -216,7 +216,7 @@ namespace MobileCore.DefineSystem.Editor
         public static void EmergencyRemoveAll()
         {
             if (!EditorUtility.DisplayDialog("⚠️ Remove All Defines",
-                "Hapus semua define MobileCore dari Player Settings?", "Ya, Hapus", "Batal")) return;
+                "Remove all MobileCore defines from Player Settings?", "Yes, Remove", "Cancel")) return;
 
             string current   = SDKDefinesManager.GetCurrentDefines();
             var    managed   = new List<string>();
@@ -424,7 +424,7 @@ namespace MobileCore.DefineSystem.Editor
             else
             {
                 EditorGUILayout.HelpBox(
-                    "Tidak ada define terdeteksi.\nKlik 'Check Auto Defines' untuk memindai SDK.",
+                    "No defines detected.\nClick 'Check Auto Defines' to scan the SDK.",
                     MessageType.Info);
             }
 
