@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.IO;
@@ -47,7 +47,7 @@ namespace MobileCore.IAPModule.Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
             // Header sederhana
-            EditorGUILayout.LabelField("IAP MANAGER", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("IAP MANAGER", EditorStyleTemplate.GrayBoldLabelStyle);
 
             EditorGUILayout.HelpBox("Initialize and manage In-App Purchases in your application.", MessageType.Info);
             EditorGUILayout.EndVertical();

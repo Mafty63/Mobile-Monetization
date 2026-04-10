@@ -142,7 +142,7 @@ namespace MobileCore.IAPModule.Editor
 
             // Header
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("ProductKeyType Enum Editor", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("ProductKeyType Enum Editor", EditorStyleTemplate.GrayBoldLabelStyle);
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.Space();
@@ -162,12 +162,12 @@ namespace MobileCore.IAPModule.Editor
 
             // Add new value section
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("Add New Value", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Add New Value", EditorStyleTemplate.GrayBoldLabelStyle);
 
             EditorGUILayout.BeginVertical(EditorStyles.textArea);
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Name:", EditorStyles.miniLabel, GUILayout.Width(40));
+            EditorGUILayout.LabelField("Name:", EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(40));
             var textFieldStyle = EditorStyleTemplate.GrayTextFieldBackgroundStyle;
             newName = EditorGUILayout.TextField(newName, textFieldStyle);
             EditorGUILayout.EndHorizontal();
@@ -221,7 +221,7 @@ namespace MobileCore.IAPModule.Editor
 
             // Current values section
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField($"Current Values ({enumValues.Count})", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Current Values ({enumValues.Count})", EditorStyleTemplate.GrayBoldLabelStyle);
 
             if (enumValues.Count > 0)
             {
@@ -238,13 +238,13 @@ namespace MobileCore.IAPModule.Editor
 
                     // Value (readonly)
                     EditorGUILayout.BeginVertical(GUILayout.Width(60));
-                    EditorGUILayout.LabelField("Value:", EditorStyles.miniLabel);
-                    EditorGUILayout.LabelField(enumValue.value.ToString(), EditorStyles.miniBoldLabel);
+                    EditorGUILayout.LabelField("Value:", EditorStyleTemplate.GrayMiniLabelStyle);
+                    EditorGUILayout.LabelField(enumValue.value.ToString(), EditorStyleTemplate.GrayBoldLabelStyle);
                     EditorGUILayout.EndVertical();
 
                     // Name (editable)
                     EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-                    EditorGUILayout.LabelField("Name:", EditorStyles.miniLabel);
+                    EditorGUILayout.LabelField("Name:", EditorStyleTemplate.GrayMiniLabelStyle);
 
                     // Nonaktifkan editing untuk NoAds
                     if (enumValue.name == "NoAds")
@@ -265,7 +265,7 @@ namespace MobileCore.IAPModule.Editor
 
                     // Delete button
                     EditorGUILayout.BeginVertical(GUILayout.Width(60));
-                    EditorGUILayout.LabelField(" ", EditorStyles.miniLabel);
+                    EditorGUILayout.LabelField(" ", EditorStyleTemplate.GrayMiniLabelStyle);
 
                     // Nonaktifkan tombol delete untuk NoAds
                     if (enumValue.name == "NoAds")
@@ -317,7 +317,7 @@ namespace MobileCore.IAPModule.Editor
 
             // Action buttons
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Actions", EditorStyleTemplate.GrayBoldLabelStyle);
 
             // Validation check untuk current values
             bool hasError = false;

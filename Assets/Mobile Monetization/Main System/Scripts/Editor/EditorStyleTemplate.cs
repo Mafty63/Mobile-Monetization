@@ -44,24 +44,24 @@ namespace MobileCore.MainModule.Editor
 
             try
             {
-                float overlayAlpha = 0.08f;
+                float overlayAlpha = 0.05f;
                 bool isDark = EditorGUIUtility.isProSkin;
 
-                // Define colors
-                Color grayBackgroundColor = isDark ? new Color(0.12f, 0.12f, 0.12f, 1f) : new Color(0.95f, 0.95f, 0.95f, 1f);
-                Color grayToggleColor = isDark ? new Color(0.15f, 0.15f, 0.15f, 1f) : new Color(0.9f, 0.9f, 0.9f, 1f);
-                Color grayButtonColor = isDark ? new Color(0.18f, 0.18f, 0.18f, 1f) : new Color(0.85f, 0.85f, 0.85f, 1f);
-                Color selectedButtonColor = isDark ? new Color(0.3f, 0.5f, 0.9f, 1f) : new Color(0.7f, 0.7f, 0.9f, 1f);
+                // Modern minimalist colors
+                Color grayBackgroundColor = isDark ? new Color(0.16f, 0.16f, 0.18f, 1f) : new Color(0.96f, 0.96f, 0.97f, 1f);
+                Color grayToggleColor = isDark ? new Color(0.18f, 0.18f, 0.20f, 1f) : new Color(0.92f, 0.92f, 0.94f, 1f);
+                Color grayButtonColor = isDark ? new Color(0.20f, 0.20f, 0.22f, 1f) : new Color(0.88f, 0.88f, 0.90f, 1f);
+                Color selectedButtonColor = isDark ? new Color(0.23f, 0.45f, 0.85f, 1f) : new Color(0.30f, 0.55f, 0.95f, 1f);
                 Color overlayColor = isDark ? new Color(1f, 1f, 1f, overlayAlpha) : new Color(0f, 0f, 0f, overlayAlpha);
-                Color grayTextColor = new Color(0.7f, 0.7f, 0.7f);
+                Color grayTextColor = isDark ? new Color(0.85f, 0.85f, 0.85f) : new Color(0.25f, 0.25f, 0.25f);
 
                 // Create textures
                 _texGray = MakeTex(2, 2, grayBackgroundColor);
                 _texToggle = MakeTex(2, 2, grayToggleColor);
                 _texButton = MakeTex(2, 2, grayButtonColor);
-                _texButtonActive = MakeTex(2, 2, grayButtonColor * 0.9f);
+                _texButtonActive = MakeTex(2, 2, grayButtonColor * 0.85f);
                 _texSelectedButton = MakeTex(2, 2, selectedButtonColor);
-                _texSelectedButtonActive = MakeTex(2, 2, selectedButtonColor * 0.9f);
+                _texSelectedButtonActive = MakeTex(2, 2, selectedButtonColor * 0.85f);
                 _texOverlay = MakeTex(2, 2, overlayColor);
 
                 // Gray text styles
@@ -74,7 +74,12 @@ namespace MobileCore.MainModule.Editor
                 _grayBoldLabelStyle = new GUIStyle(EditorStyles.boldLabel);
                 _grayBoldLabelStyle.normal.textColor = grayTextColor;
 
+#if UNITY_2019_3_OR_NEWER
                 _grayFoldoutHeaderStyle = new GUIStyle(EditorStyles.foldoutHeader);
+#else
+                _grayFoldoutHeaderStyle = new GUIStyle(EditorStyles.foldout);
+                _grayFoldoutHeaderStyle.fontStyle = FontStyle.Bold;
+#endif
                 _grayFoldoutHeaderStyle.normal.textColor = grayTextColor;
                 _grayFoldoutHeaderStyle.onNormal.textColor = grayTextColor;
                 _grayFoldoutHeaderStyle.onActive.textColor = grayTextColor;
@@ -83,37 +88,35 @@ namespace MobileCore.MainModule.Editor
 
                 // Text field background style
                 _grayTextFieldBackgroundStyle = new GUIStyle(EditorStyles.textField ?? new GUIStyle());
-                _grayTextFieldBackgroundStyle.normal.background = _texGray;
-                _grayTextFieldBackgroundStyle.hover.background = _texOverlay;
-                _grayTextFieldBackgroundStyle.active.background = _texOverlay;
-                _grayTextFieldBackgroundStyle.onNormal.background = _texGray;
-                _grayTextFieldBackgroundStyle.padding = new RectOffset(4, 4, 4, 4);
 
                 // Popup background style
                 _grayPopupBackgroundStyle = new GUIStyle(EditorStyles.popup ?? new GUIStyle());
-                _grayPopupBackgroundStyle.normal.background = _texGray;
 
                 // Toggle background style
                 _grayToggleBackgroundStyle = new GUIStyle(EditorStyles.toggle ?? new GUIStyle());
-                _grayToggleBackgroundStyle.normal.background = _texToggle;
-                _grayToggleBackgroundStyle.onNormal.background = _texToggle;
 
                 // Button style
-                _grayButtonStyle = new GUIStyle(EditorStyles.miniButton ?? new GUIStyle());
+                _grayButtonStyle = new GUIStyle();
                 _grayButtonStyle.normal.background = _texButton;
                 _grayButtonStyle.hover.background = _texOverlay;
                 _grayButtonStyle.active.background = _texButtonActive;
                 _grayButtonStyle.onNormal.background = _texButton;
                 _grayButtonStyle.onHover.background = _texOverlay;
                 _grayButtonStyle.onActive.background = _texButtonActive;
-                _grayButtonStyle.padding = new RectOffset(4, 4, 2, 2);
+                _grayButtonStyle.normal.textColor = grayTextColor;
+                _grayButtonStyle.alignment = TextAnchor.MiddleCenter;
+                _grayButtonStyle.padding = new RectOffset(4, 4, 4, 4);
 
                 // Toggle button style (for selected state)
-                _grayToggleButtonStyle = new GUIStyle(EditorStyles.miniButton ?? new GUIStyle());
+                _grayToggleButtonStyle = new GUIStyle();
                 _grayToggleButtonStyle.normal.background = _texButton;
                 _grayToggleButtonStyle.active.background = _texButtonActive;
                 _grayToggleButtonStyle.onNormal.background = _texSelectedButton;
                 _grayToggleButtonStyle.onActive.background = _texSelectedButtonActive;
+                _grayToggleButtonStyle.normal.textColor = grayTextColor;
+                _grayToggleButtonStyle.onNormal.textColor = Color.white;
+                _grayToggleButtonStyle.alignment = TextAnchor.MiddleCenter;
+                _grayToggleButtonStyle.padding = new RectOffset(4, 4, 4, 4);
 
                 // Field background style
                 _grayFieldBackgroundStyle = new GUIStyle(EditorStyles.label ?? new GUIStyle());
@@ -127,7 +130,11 @@ namespace MobileCore.MainModule.Editor
                 _grayTextStyle = EditorStyles.label;
                 _grayMiniLabelStyle = EditorStyles.miniLabel;
                 _grayBoldLabelStyle = EditorStyles.boldLabel;
+#if UNITY_2019_3_OR_NEWER
                 _grayFoldoutHeaderStyle = EditorStyles.foldoutHeader;
+#else
+                _grayFoldoutHeaderStyle = EditorStyles.foldout;
+#endif
                 _grayTextFieldBackgroundStyle = EditorStyles.textField ?? new GUIStyle();
                 _grayPopupBackgroundStyle = EditorStyles.popup ?? new GUIStyle();
                 _grayToggleBackgroundStyle = EditorStyles.toggle ?? new GUIStyle();
@@ -247,7 +254,7 @@ namespace MobileCore.MainModule.Editor
         {
             if (!_stylesInitialized) InitializeStyles();
 
-            var style = new GUIStyle(EditorStyles.miniButton)
+            var style = new GUIStyle()
             {
                 fixedHeight = height,
                 alignment = TextAnchor.MiddleCenter,
@@ -273,7 +280,7 @@ namespace MobileCore.MainModule.Editor
         {
             if (!_stylesInitialized) InitializeStyles();
 
-            var style = new GUIStyle(EditorStyles.miniButton)
+            var style = new GUIStyle()
             {
                 fixedHeight = height,
                 alignment = TextAnchor.MiddleCenter,

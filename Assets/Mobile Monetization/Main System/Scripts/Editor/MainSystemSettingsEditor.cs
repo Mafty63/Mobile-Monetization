@@ -211,7 +211,7 @@ namespace MobileCore.MainModule.Editor
         {
              EditorGUILayout.BeginVertical(EditorStyles.helpBox);
              EditorGUILayout.BeginHorizontal();
-             EditorGUILayout.LabelField("PROJECT INITIALIZATION SETTINGS", EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+             EditorGUILayout.LabelField("PROJECT INITIALIZATION SETTINGS", EditorStyleTemplate.GrayBoldLabelStyle, GUILayout.ExpandWidth(true));
              EditorGUILayout.EndHorizontal();
              EditorGUILayout.HelpBox("Manage all initialization modules for your project. Core module is always enabled, feature modules can be toggled.", MessageType.Info);
              EditorGUILayout.EndVertical();

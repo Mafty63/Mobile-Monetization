@@ -51,7 +51,7 @@ namespace MobileCore.Advertisements.Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
             // Header sederhana
-            EditorGUILayout.LabelField("ADVERTISEMENT MANAGER", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("ADVERTISEMENT MANAGER", EditorStyleTemplate.GrayBoldLabelStyle);
 
             EditorGUILayout.HelpBox("Initialize and manage advertisement systems in your application.", MessageType.Info);
             EditorGUILayout.EndVertical();

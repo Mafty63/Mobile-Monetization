@@ -71,7 +71,7 @@ MonoBehaviour:
   adOnStart: 1
   grantRewardIfNoAds: 1
   autoShowInterstitial: 0
-  isGDPREnabled: 0
+  isGDPREnabled: 1
   isIDFAEnabled: 0
   trackingDescription: Your data will be used to deliver personalized ads to you.
   privacyLink: https://mywebsite.com/privacy
