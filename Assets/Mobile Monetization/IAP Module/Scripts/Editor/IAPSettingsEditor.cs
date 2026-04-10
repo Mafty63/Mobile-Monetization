@@ -158,6 +158,8 @@ namespace MobileCore.IAPModule.Editor
                 var items = (target as IAPSettings)?.StoreItems;
                 if (items != null && items.Length > 0)
                 {
+                    DrawProductValidationWarnings();
+
                     int consumableCount = items.Count(i => i.ProductType == ProductType.Consumable);
                     int nonConsumableCount = items.Count(i => i.ProductType == ProductType.NonConsumable);
                     int subscriptionCount = items.Count(i => i.ProductType == ProductType.Subscription);
@@ -205,6 +207,45 @@ namespace MobileCore.IAPModule.Editor
             }
 
             EditorGUILayout.EndVertical();
+        }
+
+        private void DrawProductValidationWarnings()
+        {
+            if (p_storeItems == null || p_storeItems.arraySize == 0) return;
+
+            Dictionary<string, HashSet<int>> androidTypes = new Dictionary<string, HashSet<int>>();
+            Dictionary<string, HashSet<int>> iosTypes = new Dictionary<string, HashSet<int>>();
+
+            for (int i = 0; i < p_storeItems.arraySize; i++)
+            {
+                var el = p_storeItems.GetArrayElementAtIndex(i);
+                string aID = el.FindPropertyRelative("androidID").stringValue;
+                string iID = el.FindPropertyRelative("iOSID").stringValue;
+                int pType = el.FindPropertyRelative("productType").enumValueIndex;
+
+                if (!string.IsNullOrEmpty(aID))
+                {
+                    if (!androidTypes.ContainsKey(aID)) androidTypes[aID] = new HashSet<int>();
+                    androidTypes[aID].Add(pType);
+                }
+                
+                if (!string.IsNullOrEmpty(iID))
+                {
+                    if (!iosTypes.ContainsKey(iID)) iosTypes[iID] = new HashSet<int>();
+                    iosTypes[iID].Add(pType);
+                }
+            }
+
+            var conflictingAndroid = androidTypes.Where(kvp => kvp.Value.Count > 1).Select(kvp => kvp.Key).ToList();
+            var conflictingIos = iosTypes.Where(kvp => kvp.Value.Count > 1).Select(kvp => kvp.Key).ToList();
+
+            var conflictingIds = conflictingAndroid.Union(conflictingIos).Distinct().ToList();
+
+            if (conflictingIds.Count > 0)
+            {
+                EditorGUILayout.HelpBox($"CRITICAL ERROR: ID '{string.Join(", ", conflictingIds)}' is assigned to MULTIPLE Conflicting Product Types! Apple/Google forbid a single ID from having multiple behavior types.", MessageType.Error);
+                EditorGUILayout.Space();
+            }
         }
 
         private void DrawProductItem(int index)

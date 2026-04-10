@@ -44,7 +44,7 @@ namespace MobileCore.IAPModule
                     {
                         if (existingDef.type != (UnityEngine.Purchasing.ProductType)items[i].ProductType)
                         {
-                            Debug.LogWarning($"[IAPManager]: FATAL LOGIC ERROR! ID '{items[i].ID}' is used for both {existingDef.type} and {items[i].ProductType}. Google Play and App Store FORBID a single ID to have multiple types! The ID will be forced to {existingDef.type}. Please create separate Tier IDs for Consumable and NonConsumable.");
+                            IAPManager.LogWarning($"[IAPManager]: FATAL LOGIC ERROR! ID '{items[i].ID}' is used for both {existingDef.type} and {items[i].ProductType}. Google Play and App Store FORBID a single ID to have multiple types! The ID will be forced to {existingDef.type}. Please create separate Tier IDs for Consumable and NonConsumable.");
                         }
                     }
                 }
@@ -80,11 +80,11 @@ namespace MobileCore.IAPModule
             }
             catch (System.Exception exception)
             {
-                Debug.LogError("[IAPWrapper] Init Error: " + exception.Message);
+                IAPManager.LogError("[IAPWrapper] Init Error: " + exception.Message);
                 OnInitializeFailed(exception.Message);
             }
 #else
-            await Task.Run(() => Debug.Log("[IAP Manager]: Define MODULE_IAP is disabled!"));
+            await Task.Run(() => IAPManager.Log("[IAP Manager]: Define MODULE_IAP is disabled!"));
 #endif
         }
 
@@ -100,14 +100,17 @@ namespace MobileCore.IAPModule
 
             if (string.IsNullOrEmpty(id))
             {
-                Debug.LogError("[IAPManager]: Could not get product ID from PendingOrder");
+                IAPManager.LogError("[IAPManager]: Could not get product ID from PendingOrder");
                 return;
             }
 
-            Debug.Log("[IAPManager]: Purchasing - " + id + " is completed!");
+            IAPManager.Log("[IAPManager]: Purchasing - " + id + " is completed!");
             purchasedProductIds.Add(id);
 
-            IAPManager.OnPurchaseCompled(IAPManager.PendingProductKey);
+            IAPItem item = IAPManager.GetIAPItem(id);
+            ProductKeyType actualKey = item != null ? item.ProductKeyType : IAPManager.PendingProductKey;
+
+            IAPManager.OnPurchaseCompled(actualKey);
             SystemManager.ShowMessage("Payment complete!");
 
             // Confirm the purchase
@@ -128,21 +131,24 @@ namespace MobileCore.IAPModule
 
             if (string.IsNullOrEmpty(id))
             {
-                Debug.LogWarning("[IAPManager]: Cancelled without product ID from FailedOrder.");
+                IAPManager.LogWarning("[IAPManager]: Cancelled without product ID from FailedOrder.");
                 return;
             }
 
-            Debug.Log("[IAPManager]: Purchasing - " + id + " is failed!");
-            Debug.Log("[IAPManager]: Fail reason - " + order.FailureReason + ": " + order.Details);
+            IAPManager.Log("[IAPManager]: Purchasing - " + id + " is failed!");
+            IAPManager.Log("[IAPManager]: Fail reason - " + order.FailureReason + ": " + order.Details);
 
-            IAPManager.OnPurchaseFailed(IAPManager.PendingProductKey, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
+            IAPItem item = IAPManager.GetIAPItem(id);
+            ProductKeyType actualKey = item != null ? item.ProductKeyType : IAPManager.PendingProductKey;
+
+            IAPManager.OnPurchaseFailed(actualKey, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
         }
 
         private void OnPurchaseDeferredHandler(DeferredOrder order)
         {
             IAPManager.IsPurchasing = false;
             SystemManager.ShowMessage("Purchase deferred. Waiting for approval.");
-            Debug.Log("[IAPManager]: Purchase is deferred!");
+            IAPManager.Log("[IAPManager]: Purchase is deferred!");
         }
 
         private void OnPurchaseConfirmedHandler(Order order)
@@ -150,34 +156,34 @@ namespace MobileCore.IAPModule
             if (order is ConfirmedOrder confirmedOrder)
             {
                 var productInfo = confirmedOrder.CartOrdered?.Items()?.FirstOrDefault()?.Product?.definition;
-                Debug.Log($"[IAPManager]: Purchase confirmation is successful for {productInfo?.id}");
+                IAPManager.Log($"[IAPManager]: Purchase confirmation is successful for {productInfo?.id}");
             }
             else if (order is FailedOrder failedOrder)
             {
-                Debug.LogWarning($"[IAPManager]: Purchase confirmation failed: {failedOrder.Details}");
+                IAPManager.LogWarning($"[IAPManager]: Purchase confirmation failed: {failedOrder.Details}");
             }
         }
 
         private void OnStoreDisconnectedHandler(StoreConnectionFailureDescription description)
         {
-            Debug.LogError("[IAPManager]: Store disconnected - " + description.Message);
+            IAPManager.LogError("[IAPManager]: Store disconnected - " + description.Message);
             SystemManager.ShowMessage("Unable to connect to store. Please check your internet connection.");
         }
 
         private void OnProductsFetchedHandler(List<Product> products)
         {
-            Debug.Log("[IAPManager]: Products fetched successfully. Count: " + products.Count);
+            IAPManager.Log("[IAPManager]: Products fetched successfully. Count: " + products.Count);
         }
 
         private void OnProductsFetchFailedHandler(ProductFetchFailed failed)
         {
-            Debug.LogError("[IAPManager]: Product fetch failed - " + failed.FailureReason);
+            IAPManager.LogError("[IAPManager]: Product fetch failed - " + failed.FailureReason);
             SystemManager.ShowMessage("Failed to load products. Please try again later.");
         }
 
         private void OnPurchasesFetchedHandler(Orders orders)
         {
-            Debug.Log("[IAPManager]: Purchases fetched. Pending: " + orders.PendingOrders.Count);
+            IAPManager.Log("[IAPManager]: Purchases fetched. Pending: " + orders.PendingOrders.Count);
             // Update our cache with fetched products
             foreach (var pendingOrder in orders.PendingOrders)
             {
@@ -191,12 +197,12 @@ namespace MobileCore.IAPModule
 
         private void OnPurchasesFetchFailedHandler(PurchasesFetchFailureDescription failed)
         {
-            Debug.LogError("[IAPManager]: Purchases fetch failed - " + failed.Message);
+            IAPManager.LogError("[IAPManager]: Purchases fetch failed - " + failed.Message);
         }
 
         private void OnInitializeFailed(string message)
         {
-            Debug.Log("[IAPManager]: Module initialization failed! " + message);
+            IAPManager.Log("[IAPManager]: Module initialization failed! " + message);
         }
 
         public Product GetProduct(string id)
@@ -266,7 +272,7 @@ namespace MobileCore.IAPModule
                 Product product = GetProduct(item.ID);
                 if (product != null)
                 {
-                        bool isPurchased = purchasedProductIds.Contains(item.ID);
+                    bool isPurchased = purchasedProductIds.Contains(item.ID);
                     return new ProductData(product, item.ProductType, isPurchased);
                 }
             }

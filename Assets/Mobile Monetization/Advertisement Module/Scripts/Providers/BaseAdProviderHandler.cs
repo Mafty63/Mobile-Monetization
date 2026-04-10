@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using System.Threading.Tasks;
 
@@ -35,9 +35,7 @@ namespace MobileCore.Advertisements
         {
             isInitialized = true;
             AdsManager.OnProviderInitialized(providerType);
-
-            if (adsSettings?.SystemLogs == true)
-                Debug.Log($"[AdsManager]: {providerType} is initialized!");
+            AdsManager.Log($"[AdsManager]: {providerType} is initialized!");
         }
 
         protected void OnAdLoaded(AdType adType)
@@ -68,8 +66,7 @@ namespace MobileCore.Advertisements
             }
             catch (Exception ex)
             {
-                if (adsSettings?.SystemLogs == true)
-                    Debug.LogError($"[AdsManager]: {providerType} initialization failed: {ex.Message}");
+                AdsManager.LogError($"[AdsManager]: {providerType} initialization failed: {ex.Message}");
                 return Task.FromResult(false);
             }
         }
@@ -128,20 +125,17 @@ namespace MobileCore.Advertisements
         #region Helper Methods for Derived Classes
         protected void DebugLog(string message)
         {
-            if (adsSettings?.SystemLogs == true)
-                Debug.Log(message);
+            AdsManager.Log(message);
         }
 
         protected void DebugLogWarning(string message)
         {
-            if (adsSettings?.SystemLogs == true)
-                Debug.LogWarning(message);
+            AdsManager.LogWarning(message);
         }
 
         protected void DebugLogError(string message)
         {
-            if (adsSettings?.SystemLogs == true)
-                Debug.LogError(message);
+            AdsManager.LogError(message);
         }
 
         protected void UpdateBannerState(bool showing, bool loaded)

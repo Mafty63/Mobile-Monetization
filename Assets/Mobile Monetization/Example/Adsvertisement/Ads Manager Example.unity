@@ -872,6 +872,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -983,7 +984,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 300007674}
   m_HandleRect: {fileID: 300007673}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1224,6 +1225,7 @@ MonoBehaviour:
   rewardedVideoStatusButton: {fileID: 1729595140}
   requestRewardedVideoButton: {fileID: 1843148119}
   showRewardedVideoButton: {fileID: 730740623}
+  showRewardedVideoButtonText: {fileID: 795267026}
   rewardVideoButtons:
   - {fileID: 1729595140}
   - {fileID: 1843148119}

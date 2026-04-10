@@ -29,6 +29,7 @@ namespace MobileCore.Advertisements.Example
         [SerializeField] private Button rewardedVideoStatusButton;
         [SerializeField] private Button requestRewardedVideoButton;
         [SerializeField] private Button showRewardedVideoButton;
+        [SerializeField] private Text showRewardedVideoButtonText;
         [SerializeField] private Button[] rewardVideoButtons;
 
         private AdsSettings settings;
@@ -51,6 +52,8 @@ namespace MobileCore.Advertisements.Example
             rewardedVideoStatusButton.onClick.AddListener(RewardedVideoStatusButton);
             requestRewardedVideoButton.onClick.AddListener(RequestRewardedVideoButton);
             showRewardedVideoButton.onClick.AddListener(ShowRewardedVideoButton);
+
+            AdsManager.ForcedAdDisabled += RefreshRewardedVideoButtonLabel;
         }
 
         private void OnDisable()
@@ -66,6 +69,8 @@ namespace MobileCore.Advertisements.Example
             rewardedVideoStatusButton.onClick.RemoveListener(RewardedVideoStatusButton);
             requestRewardedVideoButton.onClick.RemoveListener(RequestRewardedVideoButton);
             showRewardedVideoButton.onClick.RemoveListener(ShowRewardedVideoButton);
+
+            AdsManager.ForcedAdDisabled -= RefreshRewardedVideoButtonLabel;
         }
 
         private void OnDestroy()
@@ -106,15 +111,26 @@ namespace MobileCore.Advertisements.Example
                     rewardVideoButtons[i].interactable = false;
                 }
             }
+
+            RefreshRewardedVideoButtonLabel();
+        }
+
+        private void RefreshRewardedVideoButtonLabel()
+        {
+            if (showRewardedVideoButtonText == null) return;
+
+            showRewardedVideoButtonText.text = AdsManager.IsNoAdsActive ? "Claim Reward" : "Watch Ad";
         }
 
         private void Log(string condition, string stackTrace, LogType type)
         {
+            if (settings == null || !settings.SystemLogs) return;
             logText.text = logText.text.Insert(0, condition + "\n");
         }
 
         private void Log(string condition)
         {
+            if (settings == null || !settings.SystemLogs) return;
             logText.text = logText.text.Insert(0, condition + "\n");
         }
 

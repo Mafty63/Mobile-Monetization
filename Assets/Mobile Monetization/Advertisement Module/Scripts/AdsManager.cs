@@ -187,8 +187,7 @@ namespace MobileCore.Advertisements
 #if UNITY_IOS
             if (settings.IsIDFAEnabled && !IsIDFADetermined())
             {
-                if (settings.SystemLogs)
-                    Debug.Log("[Ads Manager]: Requesting IDFA..");
+                Log("[Ads Manager]: Requesting IDFA..");
                 
                 MobileCore.Advertisement.IosSupport.ATTrackingStatusBinding.RequestAuthorizationTracking();
                 MonoBehaviourExecution.Instance.StartCoroutine(WaitForIDFACoroutine(onCompleted));
@@ -609,6 +608,8 @@ namespace MobileCore.Advertisements
 
         /// <summary>
         /// Shows a rewarded video ad.
+        /// If NoAds is purchased and <see cref="AdsSettings.GrantRewardIfNoAds"/> is enabled,
+        /// the ad is skipped and the reward is granted directly without showing any ad.
         /// </summary>
         /// <param name="callback"></param>
         /// <param name="showErrorMessage"></param>
@@ -620,9 +621,18 @@ namespace MobileCore.Advertisements
                 return;
             }
 
-            AdProvider advertisingModule = settings.RewardedVideoType;
             rewardedVideoCallback = callback;
             waitingForRewardVideoCallback = true;
+
+            // If NoAds is purchased and the setting allows it, skip the ad and grant reward directly.
+            if (!isForcedAdEnabled && settings.GrantRewardIfNoAds)
+            {
+                Log("[AdsManager]: NoAds is active — granting reward without showing ad.");
+                ExecuteRewardVideoCallback(true);
+                return;
+            }
+
+            AdProvider advertisingModule = settings.RewardedVideoType;
 
             if (!IsModuleActive(advertisingModule) ||
                 !advertisingActiveHandlers[advertisingModule].IsInitialized() ||
@@ -832,6 +842,13 @@ namespace MobileCore.Advertisements
         }
 
         /// <summary>
+        /// Returns <c>true</c> if the player has purchased the NoAds product
+        /// and banner/interstitial ads are permanently disabled.
+        /// Use this to adapt game UI (e.g. hide "Remove Ads" button, skip rewarded ad prompts).
+        /// </summary>
+        public static bool IsNoAdsActive => isModuleInitialized && !isForcedAdEnabled;
+
+        /// <summary>
         /// Checks if the forced ad is enabled.
         /// This is used to determine if ads should be displayed or not.
         /// </summary>
@@ -957,9 +974,10 @@ namespace MobileCore.Advertisements
 
         #endregion
         /// <summary>
-        /// Logs a message if system logs are enabled.
+        /// Logs a message if system logs are enabled in AdsSettings.
+        /// Use this from any ads-related class instead of calling Debug.Log directly.
         /// </summary>
-        private static void Log(string message)
+        public static void Log(string message)
         {
             if (settings != null && settings.SystemLogs)
             {
@@ -968,13 +986,26 @@ namespace MobileCore.Advertisements
         }
 
         /// <summary>
-        /// Logs a warning if system logs are enabled.
+        /// Logs a warning if system logs are enabled in AdsSettings.
+        /// Use this from any ads-related class instead of calling Debug.LogWarning directly.
         /// </summary>
-        private static void LogWarning(string message)
+        public static void LogWarning(string message)
         {
             if (settings != null && settings.SystemLogs)
             {
                 Debug.LogWarning(message);
+            }
+        }
+
+        /// <summary>
+        /// Logs an error if system logs are enabled in AdsSettings.
+        /// Use this from any ads-related class instead of calling Debug.LogError directly.
+        /// </summary>
+        public static void LogError(string message)
+        {
+            if (settings != null && settings.SystemLogs)
+            {
+                Debug.LogError(message);
             }
         }
     }

@@ -58,6 +58,11 @@ namespace MobileCore.Advertisements
         [SerializeField] private bool adOnStart = true;
         public bool AdOnStart => adOnStart;
 
+        [Tooltip("If NoAds is purchased, skip the rewarded video ad and grant the reward directly. " +
+                 "Common UX pattern: players who paid should not be forced to watch ads to earn rewards.")]
+        [SerializeField] private bool grantRewardIfNoAds = true;
+        public bool GrantRewardIfNoAds => grantRewardIfNoAds;
+
         [SerializeField] private bool autoShowInterstitial;
         public bool AutoShowInterstitial => autoShowInterstitial;
 

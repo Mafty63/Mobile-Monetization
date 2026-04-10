@@ -19,18 +19,42 @@ namespace MobileCore.IAPModule
         public static bool IsInitialized => isInitialized;
 
         private static BaseIAPWrapper wrapper;
+        
+        public static IAPSettings Settings { get; private set; }
 
         public static event PrimitiveCallback OnPurchaseModuleInitted;
         public static event ProductCallback OnPurchaseComplete;
         public static event ProductFailCallback OnPurchaseFailded;
 
+        #region Centralized Logging
+        public static void Log(string message)
+        {
+            if (Settings == null || !Settings.SystemLogs) return;
+            Debug.Log(message);
+        }
+
+        public static void LogWarning(string message)
+        {
+            if (Settings == null || !Settings.SystemLogs) return;
+            Debug.LogWarning(message);
+        }
+
+        public static void LogError(string message)
+        {
+            if (Settings == null || !Settings.SystemLogs) return;
+            Debug.LogError(message);
+        }
+        #endregion
+
         public static void Initialize(GameObject initObject, IAPManagerInitializer managerInitializer)
         {
             if (isInitialized)
             {
-                Debug.Log("[IAP Manager]: Module is already initialized!");
+                LogWarning("[IAPManager]: Module is already initialized!");
                 return;
             }
+
+            Settings = managerInitializer.Settings;
 
             IAPItem[] items = managerInitializer.Settings.StoreItems;
             for (int i = 0; i < items.Length; i++)
@@ -135,7 +159,7 @@ namespace MobileCore.IAPModule
 
             OnPurchaseModuleInitted?.Invoke();
 
-            Debug.Log("[IAPManager]: Module is initialized!");
+            Log("[IAPManager]: Module is initialized!");
         }
 
         public static void OnPurchaseCompled(ProductKeyType productKey)

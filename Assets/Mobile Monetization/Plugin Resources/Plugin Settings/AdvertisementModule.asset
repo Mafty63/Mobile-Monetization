@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
   m_Name: AdsSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsSettings
-  bannerType: 3
+  bannerType: 2
   interstitialType: 4
   rewardedVideoType: 3
   adMobContainer:
@@ -62,31 +62,6 @@ MonoBehaviour:
     bannerPosition: 0
     bannerType: 0
     enableVerboseLogging: 0
-  mintegralContainer:
-    androidAppID: 118690
-    iOSAppID: 118692
-    androidAppKey: 7c22942a749fe6a6e361c675ddc4e5a9
-    iOSAppKey: 854d0a8c6b34f5ae84905b87a4b6c5b7
-    androidBannerID: 176869
-    iOSBannerID: 176870
-    androidInterstitialID: 176873
-    iOSInterstitialID: 176874
-    androidRewardedVideoID: 176875
-    iOSRewardedVideoID: 176876
-    bannerPosition: 0
-  chartboostContainer:
-    androidAppID: test_android_app_id
-    iOSAppID: test_ios_app_id
-    androidAppSignature: test_android_app_signature
-    iOSAppSignature: test_ios_app_signature
-    androidBannerID: default_banner
-    iOSBannerID: default_banner
-    androidInterstitialID: default_interstitial
-    iOSInterstitialID: default_interstitial
-    androidRewardedVideoID: default_rewarded
-    iOSRewardedVideoID: default_rewarded
-    bannerPosition: 0
-    bannerType: 0
   dummyContainer:
     bannerPosition: 0
   systemLogs: 0
@@ -94,6 +69,7 @@ MonoBehaviour:
   interstitialStartDelay: 40
   interstitialShowingDelay: 30
   adOnStart: 1
+  grantRewardIfNoAds: 1
   autoShowInterstitial: 0
   isGDPREnabled: 0
   isIDFAEnabled: 0

@@ -83,7 +83,7 @@ namespace MobileCore.Advertisements
 
         private void DeclineGDPR()
         {
-            Debug.Log("[GDPRPanel] GDPR declined. Continuing with Non-Personalized Ads.");
+            AdsManager.Log("[GDPRPanel] GDPR declined. Continuing with Non-Personalized Ads.");
             // Per GDPR law, we cannot force-close the app if the user declines.
             // Instead, we set GDPR to false so ad networks serve non-personalized ads.
             AdsManager.SetGDPR(false);

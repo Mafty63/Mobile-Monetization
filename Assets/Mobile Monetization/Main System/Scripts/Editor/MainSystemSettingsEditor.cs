@@ -34,7 +34,7 @@ namespace MobileCore.MainModule.Editor
             public string Description;
         }
 
-        private Dictionary<int, ModuleEditorData> _moduleEditorCache = new Dictionary<int, ModuleEditorData>();
+        private Dictionary<string, ModuleEditorData> _moduleEditorCache = new Dictionary<string, ModuleEditorData>();
         private List<ModuleEditorData> _currentModulesList = new List<ModuleEditorData>();
 
         // Layout Constants
@@ -110,7 +110,7 @@ namespace MobileCore.MainModule.Editor
         private void RefreshModuleCache()
         {
             _currentModulesList.Clear();
-            HashSet<int> currentIds = new HashSet<int>();
+            HashSet<string> currentIds = new HashSet<string>();
 
             if (_modulesProperty != null && _modulesProperty.isArray)
             {
@@ -121,7 +121,7 @@ namespace MobileCore.MainModule.Editor
 
                     if (moduleObj == null) continue;
 
-                    int id = moduleObj.GetInstanceID();
+                    string id = GlobalObjectId.GetGlobalObjectIdSlow(moduleObj).ToString();
                     currentIds.Add(id);
 
                     if (!_moduleEditorCache.TryGetValue(id, out ModuleEditorData data))

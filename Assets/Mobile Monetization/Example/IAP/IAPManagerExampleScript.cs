@@ -10,6 +10,8 @@ namespace MobileCore.IAPModule.Example
     public class IAPManagerExampleScript : MonoBehaviour
     {
         [SerializeField] private Text logText;
+        [SerializeField] private Button restoreButton;
+        [Space]
         [SerializeField] private GameObject itemPrefab;
         [SerializeField] private RectTransform contentParent;
 
@@ -34,7 +36,7 @@ namespace MobileCore.IAPModule.Example
 
                 if (product == null)
                 {
-                    Debug.Log("Null product :" + values[i]);
+                    Log("Null product :" + values[i]);
                     continue;
                 }
 
@@ -75,7 +77,7 @@ namespace MobileCore.IAPModule.Example
 #endif
         }
 
-        public void RestoreButton()
+        private void RestoreButton()
         {
             IAPManager.RestorePurchases();
         }
@@ -84,20 +86,24 @@ namespace MobileCore.IAPModule.Example
         private void OnEnable()
         {
             Application.logMessageReceived += Log;
+            restoreButton.onClick.AddListener(RestoreButton);
         }
 
         private void OnDisable()
         {
             Application.logMessageReceived -= Log;
+            restoreButton.onClick.RemoveListener(RestoreButton);
         }
 
         private void Log(string condition, string stackTrace, LogType type)
         {
+            if (IAPManager.Settings == null || !IAPManager.Settings.SystemLogs) return;
             logText.text = logText.text.Insert(0, condition + "\n");
         }
 
         private void Log(string condition)
         {
+            if (IAPManager.Settings == null || !IAPManager.Settings.SystemLogs) return;
             logText.text = logText.text.Insert(0, condition + "\n");
         }
         #endregion

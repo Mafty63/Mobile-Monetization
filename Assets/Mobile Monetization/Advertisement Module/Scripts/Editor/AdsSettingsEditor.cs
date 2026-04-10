@@ -29,6 +29,7 @@ namespace MobileCore.Advertisements.Editor
         private SerializedProperty p_rewardedVideoType;
         private SerializedProperty p_systemLogs;
         private SerializedProperty p_adOnStart;
+        private SerializedProperty p_grantRewardIfNoAds;
 
         // Privacy / Tracking props
         private SerializedProperty p_isGDPREnabled;
@@ -58,6 +59,7 @@ namespace MobileCore.Advertisements.Editor
             p_rewardedVideoType = serializedObject.FindProperty("rewardedVideoType");
             p_systemLogs = serializedObject.FindProperty("systemLogs");
             p_adOnStart = serializedObject.FindProperty("adOnStart");
+            p_grantRewardIfNoAds = serializedObject.FindProperty("grantRewardIfNoAds");
 
             p_isGDPREnabled = serializedObject.FindProperty("isGDPREnabled");
             p_isIDFAEnabled = serializedObject.FindProperty("isIDFAEnabled");
@@ -442,6 +444,16 @@ namespace MobileCore.Advertisements.Editor
                 EditorGUILayout.LabelField("Ads On Start", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
                 p_adOnStart.boolValue = EditorGUILayout.Toggle(p_adOnStart.boolValue, toggleStyle);
                 EditorGUILayout.LabelField(new GUIContent("", "Enable ads when the application starts"), EditorStyles.miniLabel, GUILayout.Width(20));
+                EditorGUILayout.EndHorizontal();
+
+                // Grant Reward If No Ads
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(new GUIContent("Reward If NoAds", "Automatically grant rewards for rewared ad placements if user has purchased NoAds"), EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
+                if (p_grantRewardIfNoAds != null)
+                {
+                    p_grantRewardIfNoAds.boolValue = EditorGUILayout.Toggle(p_grantRewardIfNoAds.boolValue, toggleStyle);
+                }
+                EditorGUILayout.LabelField(new GUIContent("", "Automatically grant rewards for rewared ad placements if user has purchased NoAds"), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.EndVertical();

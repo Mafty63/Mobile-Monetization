@@ -61,9 +61,9 @@ public class MonoBehaviourExecution : SingletonMonoBehaviour<MonoBehaviourExecut
         }
         return obj;
     }
-    public static T[] FindObjects<T>(FindObjectsSortMode findObjectsSortMode = FindObjectsSortMode.None) where T : MonoBehaviour
+    public static T[] FindObjects<T>() where T : MonoBehaviour
     {
-        var obj = FindObjectsByType<T>(findObjectsSortMode);
+        var obj = FindObjectsByType<T>(FindObjectsInactive.Exclude);
         if (obj == null || obj.Length == 0)
         {
             Debug.LogError($"No {typeof(T)} found in the scene.");

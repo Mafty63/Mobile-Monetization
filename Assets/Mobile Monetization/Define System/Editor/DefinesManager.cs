@@ -137,15 +137,30 @@ namespace MobileCore.DefineSystem.Editor
                     changed = true;
                     Debug.Log($"[Define System] Added: {state.DefineSymbol}");
                 }
-                else if (!state.IsEnabled && alreadySet)
+                else if (!state.IsEnabled)
                 {
-                    string[] p = result.Split(';');
-                    result = "";
-                    foreach (string s in p)
-                        if (s != state.DefineSymbol && !string.IsNullOrEmpty(s))
-                            result += s + ";";
-                    changed = true;
-                    Debug.Log($"[Define System] Removed: {state.DefineSymbol}");
+                    if (alreadySet)
+                    {
+                        string[] p = result.Split(';');
+                        result = "";
+                        foreach (string s in p)
+                            if (s != state.DefineSymbol && !string.IsNullOrEmpty(s))
+                                result += s + ";";
+                        changed = true;
+                        Debug.Log($"[Define System] Removed: {state.DefineSymbol}");
+                    }
+
+                    // Auto-clear from Ignore List if the SDK is physically missing
+                    if (ignored.Contains(state.DefineSymbol))
+                    {
+                        string[] pIgnored = ignored.Split(';');
+                        ignored = "";
+                        foreach (string s in pIgnored)
+                            if (s != state.DefineSymbol && !string.IsNullOrEmpty(s))
+                                ignored += s + ";";
+                        
+                        EditorPrefs.SetString("MobileCore_IgnoredDefines", ignored);
+                    }
                 }
             }
 
