@@ -18,8 +18,6 @@ namespace MobileCore.Advertisements
     [Define("LEVELPLAY_PROVIDER", "Unity.Services.LevelPlay.LevelPlay", "IronSource LevelPlay SDK")]
     [Define("UNITYADS_PROVIDER", "UnityEngine.Advertisements.Advertisement", "Unity Ads SDK")]
     [Define("APPLOVIN_PROVIDER", "MaxSdk", "AppLovin MAX SDK")]
-    [Define("MINTEGRAL_PROVIDER", "Mintegral", "Mintegral SDK")]
-    [Define("CHARTBOOST_PROVIDER", "Chartboost.Mediation.ChartboostMediation", "Chartboost SDK")]
 
     public static class AdsManager
     {
@@ -47,12 +45,6 @@ namespace MobileCore.Advertisements
         #if LEVELPLAY_PROVIDER
             new LevelPlayHandler(AdProvider.LevelPlay),
         #endif
-        #if MINTEGRAL_PROVIDER
-            new MintegralHandler(AdProvider.Mintegral),
-        #endif
-        #if CHARTBOOST_PROVIDER
-            new ChartboostHandler(AdProvider.Chartboost),
-        #endif
 
         };
 
@@ -70,7 +62,7 @@ namespace MobileCore.Advertisements
         private static bool isBannerActive = true;
         private static Coroutine loadingCoroutine;
         private static bool isForcedAdEnabled;
-        
+
         /// <summary>
         /// Delay in seconds to auto-show banner if it's hidden. 0 to disable.
         /// </summary>
@@ -90,12 +82,12 @@ namespace MobileCore.Advertisements
         public static event AdsEventsCallback AdDisplayed;
         public static event AdsEventsCallback AdClosed;
         public static AdsBoolCallback InterstitialConditions;
-        
+
         /// <summary>
         /// Event triggered when banner ad is shown. UI adapters can subscribe to this.
         /// </summary>
         public static event PrimitiveCallback BannerShown;
-        
+
         /// <summary>
         /// Event triggered when banner ad is hidden. UI adapters can subscribe to this.
         /// </summary>
@@ -167,7 +159,7 @@ namespace MobileCore.Advertisements
             {
                 ShowGDPRPanel(() =>
                 {
-                    CheckAndRequestIDFA(() => 
+                    CheckAndRequestIDFA(() =>
                     {
                         InitializeAllProvider(settings.AdOnStart);
                     });
@@ -175,7 +167,7 @@ namespace MobileCore.Advertisements
                 return;
             }
 
-            CheckAndRequestIDFA(() => 
+            CheckAndRequestIDFA(() =>
             {
                 InitializeAllProvider(settings.AdOnStart);
             });
@@ -658,7 +650,8 @@ namespace MobileCore.Advertisements
                 CallEventInMainThread(() => rewardedVideoCallback.Invoke(result));
                 waitingForRewardVideoCallback = false;
 
-                Log("[AdsManager]: Reward received: " + result);            }
+                Log("[AdsManager]: Reward received: " + result);
+            }
         }
 
         #endregion
@@ -685,7 +678,7 @@ namespace MobileCore.Advertisements
 
             advertisingActiveHandlers[advertisingModule].ShowBanner();
             isBannerActuallyVisible = true; // Mark as visible
-            
+
             // Notify UI adapters that banner is shown
             BannerShown?.Invoke();
         }
@@ -730,7 +723,7 @@ namespace MobileCore.Advertisements
             advertisingActiveHandlers[advertisingModule].HideBanner();
             isBannerActuallyVisible = false; // Mark as hidden
             nextBannerAutoShowTime = Time.time + BannerAutoShowDelay; // Reset timer
-            
+
             // Notify UI adapters that banner is hidden
             BannerHidden?.Invoke();
         }

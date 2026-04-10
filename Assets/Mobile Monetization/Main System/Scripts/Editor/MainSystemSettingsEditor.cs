@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
@@ -234,11 +234,6 @@ namespace MobileCore.MainModule.Editor
                 if (coreObj != null)
                 {
                     EditorGUILayout.BeginHorizontal();
-                    // Status Checkmark
-                    var statusRect = GUILayoutUtility.GetRect(20, 20, GUILayout.Width(20));
-                    EditorGUI.DrawRect(statusRect, new Color(0.1f, 0.5f, 0.9f, 0.8f));
-                    var statusStyle = new GUIStyle(EditorStyles.whiteMiniLabel) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
-                    GUI.Label(statusRect, "✓", statusStyle);
 
                     // Module Info
                     EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));

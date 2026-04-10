@@ -32,15 +32,6 @@ namespace MobileCore.Advertisements
         [SerializeField] private AppLovinContainer appLovinContainer;
         public AppLovinContainer AppLovinContainer => appLovinContainer;
 
-
-        [AdsProviderContainer("Mintegral", 6, "https://www.mintegral.com/en/support")]
-        [SerializeField] private MintegralContainer mintegralContainer;
-        public MintegralContainer MintegralContainer => mintegralContainer;
-
-        [AdsProviderContainer("Chartboost", 7, "https://answers.chartboost.com/en-us/articles/download")]
-        [SerializeField] private ChartboostContainer chartboostContainer;
-        public ChartboostContainer ChartboostContainer => chartboostContainer;
-
         [AdsProviderContainer("Dummy", 1000)]
         [SerializeField] private AdDummyContainer dummyContainer;
         public AdDummyContainer DummyContainer => dummyContainer;
@@ -115,12 +106,6 @@ namespace MobileCore.Advertisements
 #endif
 #if APPLOVIN_PROVIDER
         AppLovin = 5,
-#endif
-#if MINTEGRAL_PROVIDER
-        Mintegral = 7,
-#endif
-#if CHARTBOOST_PROVIDER
-        Chartboost = 8,
 #endif
 
     }
