@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0649
+#pragma warning disable 0649
 
 using MobileCore.Advertisements;
 using UnityEngine;
@@ -148,7 +148,7 @@ namespace MobileCore.Advertisements.Example
         {
             AdsManager.ShowInterstitial((isDisplayed) =>
             {
-                Debug.Log("[AdsManager]: Interstitial " + (isDisplayed ? "is" : "isn't") + " displayed!");
+                Log("[AdsManager]: Interstitial " + (isDisplayed ? "is" : "isn't") + " displayed!");
             }, true);
         }
 
