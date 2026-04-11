@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5a0258cb7d17964493174ceaf8d2867, type: 3}
-  m_Name: Main System Settings
+  m_Name: MainSystemSettings
   m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.MainModule.MainSystemSettings
   coreModule: {fileID: 11400000, guid: 81138fdcef32d81468efcaee4e3e5a5e, type: 2}
   modules:
