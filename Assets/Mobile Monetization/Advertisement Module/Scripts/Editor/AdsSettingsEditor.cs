@@ -18,6 +18,7 @@ namespace MobileCore.Advertisements.Editor
             public string FieldName;
             public string SdkDownloadUrl;
             public bool IsPackageManager;
+            public string DashboardUrl;
         }
 
         private List<ProviderInfo> providerInfos = new List<ProviderInfo>();
@@ -103,7 +104,8 @@ namespace MobileCore.Advertisements.Editor
                             Order = attribute.Order,
                             FieldName = field.Name,
                             SdkDownloadUrl = attribute.SdkDownloadUrl,
-                            IsPackageManager = attribute.IsPackageManager
+                            IsPackageManager = attribute.IsPackageManager,
+                            DashboardUrl = attribute.DashboardUrl
                         });
                     }
                 }
@@ -278,6 +280,7 @@ namespace MobileCore.Advertisements.Editor
             var providerName = providerInfo.DisplayName;
             var sdkUrl = providerInfo.SdkDownloadUrl;
             var isPackageManager = providerInfo.IsPackageManager;
+            var dashboardUrl = providerInfo.DashboardUrl;
 
             EditorGUILayout.BeginVertical(EditorStyles.textArea);
             EditorGUILayout.LabelField($"{providerName} Settings", EditorStyles.boldLabel);
@@ -326,15 +329,16 @@ namespace MobileCore.Advertisements.Editor
                 }
             }
 
-            // Download SDK button - SEKARANG OTOMATIS DARI ATTRIBUTE
+            // Download SDK button + Dashboard shortcut
             if (!string.IsNullOrEmpty(sdkUrl) || isPackageManager)
             {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
+
                 string buttonText = isPackageManager ? $"Open {providerName} in Package Manager" : $"Download {providerName} SDK";
                 var downloadButtonStyle = EditorStyleTemplate.GrayButtonStyle;
-                if (GUILayout.Button(buttonText, downloadButtonStyle, GUILayout.Height(25), GUILayout.Width(250)))
+                if (GUILayout.Button(buttonText, downloadButtonStyle, GUILayout.Height(25), GUILayout.Width(string.IsNullOrEmpty(dashboardUrl) ? 250 : 210)))
                 {
                     if (isPackageManager)
                     {
@@ -349,6 +353,17 @@ namespace MobileCore.Advertisements.Editor
                         Application.OpenURL(sdkUrl);
                     }
                 }
+
+                if (!string.IsNullOrEmpty(dashboardUrl))
+                {
+                    GUILayout.Space(6);
+                    var dashboardButtonStyle = EditorStyleTemplate.GrayButtonStyle;
+                    if (GUILayout.Button(new GUIContent("Dashboard", $"Open {providerName} dashboard in browser"), dashboardButtonStyle, GUILayout.Height(25), GUILayout.Width(100)))
+                    {
+                        Application.OpenURL(dashboardUrl);
+                    }
+                }
+
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.EndHorizontal();
 

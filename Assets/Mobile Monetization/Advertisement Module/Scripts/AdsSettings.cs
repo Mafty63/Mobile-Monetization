@@ -16,19 +16,19 @@ namespace MobileCore.Advertisements
         [SerializeField] private AdProvider rewardedVideoType = AdProvider.Dummy;
         public AdProvider RewardedVideoType => rewardedVideoType;
 
-        [AdsProviderContainer("AdMob", 1, "https://developers.google.com/admob/unity/quick-start")]
+        [AdsProviderContainer("AdMob", 1, "https://developers.google.com/admob/unity/quick-start", dashboardUrl: "https://apps.admob.com")]
         [SerializeField] private AdMobContainer adMobContainer;
         public AdMobContainer AdMobContainer => adMobContainer;
 
-        [AdsProviderContainer("Unity Ads", 2, "com.unity.ads", true)]
+        [AdsProviderContainer("Unity Ads", 2, "com.unity.ads", true, dashboardUrl: "https://dashboard.unity3d.com/monetization")]
         [SerializeField] private UnityAdsLegacyContainer unityAdsContainer;
         public UnityAdsLegacyContainer UnityAdsContainer => unityAdsContainer;
 
-        [AdsProviderContainer("LevelPlay", 3, "com.unity.services.levelplay", true)]
+        [AdsProviderContainer("LevelPlay", 3, "com.unity.services.levelplay", true, dashboardUrl: "https://dashboard.unity3d.com/monetization")]
         [SerializeField] private LevelPlayContainer levelPlayContainer;
         public LevelPlayContainer LevelPlayContainer => levelPlayContainer;
 
-        [AdsProviderContainer("AppLovin", 4, "https://dash.applovin.com/documentation/mediation/unity/getting-started")]
+        [AdsProviderContainer("AppLovin", 4, "https://dash.applovin.com/documentation/mediation/unity/getting-started", dashboardUrl: "https://dash.applovin.com")]
         [SerializeField] private AppLovinContainer appLovinContainer;
         public AppLovinContainer AppLovinContainer => appLovinContainer;
 
