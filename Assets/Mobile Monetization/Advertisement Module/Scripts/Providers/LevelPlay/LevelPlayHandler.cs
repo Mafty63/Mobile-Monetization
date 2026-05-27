@@ -458,17 +458,23 @@ namespace MobileCore.Advertisements.Providers
             AdsManager.CallEventInMainThread(() =>
             {
                 OnAdClosed(AdType.RewardedVideo);
+                RequestRewardedVideo();
+                DebugLog("[LevelPlay]: Rewarded video closed");
+            });
 
+            // LevelPlay fires OnAdRewarded slightly after OnAdClosed (at least in the editor).
+            // Defer the "no reward" callback so HandleRewardedEarned has time to run first.
+            // If HandleRewardedEarned already invoked the callback (with true), it will have
+            // set currentRewardedCallback = null, so this deferred check safely does nothing.
+            MonoBehaviourExecution.DelayedCall(0.15f, () =>
+            {
                 if (currentRewardedCallback != null)
                 {
+                    DebugLog("[LevelPlay]: No reward earned — ad closed early.");
                     currentRewardedCallback.Invoke(false);
                     currentRewardedCallback = null;
                 }
-
-                RequestRewardedVideo();
-
-                DebugLog("[LevelPlay]: Rewarded video closed");
-            });
+            }, true);
         }
 
         private void HandleRewardedShowFailed(LevelPlayAdInfo adInfo, LevelPlayAdError error)
@@ -489,6 +495,9 @@ namespace MobileCore.Advertisements.Providers
         {
             AdsManager.CallEventInMainThread(() =>
             {
+                // Signal reward earned before invoking callback so AdsManager's
+                // _rewardEarned flag is set before ExecuteRewardVideoCallback runs.
+                AdsManager.NotifyRewardEarned();
                 currentRewardedCallback?.Invoke(true);
                 currentRewardedCallback = null;
                 DebugLog($"[LevelPlay]: Reward earned: {reward.Amount} {reward.Name}");

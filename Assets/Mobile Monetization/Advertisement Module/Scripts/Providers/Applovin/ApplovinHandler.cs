@@ -359,6 +359,8 @@ namespace MobileCore.Advertisements.Providers
 
         private void OnRewardedAdReceivedReward(string adUnitId, MaxSdkBase.Reward reward, MaxSdkBase.AdInfo adInfo)
         {
+            // SDK confirmed user earned reward — set flag first, then invoke callback.
+            AdsManager.NotifyRewardEarned();
             currentRewardedCallback?.Invoke(true);
             currentRewardedCallback = null;
             DebugLog("[AppLovin]: Rewarded video reward earned");

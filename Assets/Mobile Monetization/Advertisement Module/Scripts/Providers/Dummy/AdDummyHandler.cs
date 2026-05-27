@@ -185,15 +185,11 @@ namespace MobileCore.Advertisements.Providers
 
             if (isInterstitialLoaded && dummyController != null)
             {
-                dummyController.ShowInterstitial();
                 AdsManager.OnProviderAdDisplayed(providerType, AdType.Interstitial);
 
-                // Simulate interstitial close after fixed delay
-                MonoBehaviourExecution.DelayedCall(INTERSTITIAL_CLOSE_DELAY, () =>
+                dummyController.ShowInterstitial((completed) =>
                 {
-                    AdsManager.OnProviderAdClosed(providerType, AdType.Interstitial);
-                    AdsManager.ExecuteInterstitialCallback(true);
-                    callback?.Invoke(true);
+                    callback?.Invoke(completed);
 
                     // Auto-reload interstitial
                     isInterstitialLoaded = false;
@@ -242,16 +238,15 @@ namespace MobileCore.Advertisements.Providers
 
             if (isRewardVideoLoaded && dummyController != null)
             {
-                dummyController.ShowRewardedVideo();
                 AdsManager.OnProviderAdDisplayed(providerType, AdType.RewardedVideo);
 
-                // Simulate rewarded video with fixed success rate
-                bool rewardGranted = Random.value <= REWARDED_SUCCESS_RATE;
-
-                MonoBehaviourExecution.DelayedCall(INTERSTITIAL_CLOSE_DELAY, () =>
+                dummyController.ShowRewardedVideo((rewardGranted) =>
                 {
-                    AdsManager.OnProviderAdClosed(providerType, AdType.RewardedVideo);
-                    AdsManager.ExecuteRewardVideoCallback(rewardGranted);
+                    // Signal reward earned before invoking callback so AdsManager's
+                    // _rewardEarned flag is set before ExecuteRewardVideoCallback runs.
+                    if (rewardGranted)
+                        AdsManager.NotifyRewardEarned();
+
                     callback?.Invoke(rewardGranted);
 
                     // Auto-reload rewarded video

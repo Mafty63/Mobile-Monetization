@@ -306,7 +306,8 @@ namespace MobileCore.Advertisements.Providers
 
             rewardedAd.Show(reward =>
             {
-                // User earned reward
+                // SDK confirmed user earned reward — set flag first, then invoke callback.
+                AdsManager.NotifyRewardEarned();
                 currentRewardedCallback?.Invoke(true);
                 currentRewardedCallback = null;
                 DebugLog("[AdMob]: Reward earned");

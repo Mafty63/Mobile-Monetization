@@ -59,6 +59,7 @@ namespace MobileCore.Advertisements
         private static int mainThreadEventsCount;
         private static bool isFirstAdLoaded = false;
         private static bool waitingForRewardVideoCallback;
+        private static bool rewardEarned = false;
         private static bool isBannerActive = true;
         private static Coroutine loadingCoroutine;
         private static bool isForcedAdEnabled;
@@ -491,7 +492,10 @@ namespace MobileCore.Advertisements
                 return;
             }
 
-            advertisingActiveHandlers[advertisingModules].ShowInterstitial(callback);
+            advertisingActiveHandlers[advertisingModules].ShowInterstitial((isDisplayed) =>
+            {
+                ExecuteInterstitialCallback(isDisplayed);
+            });
         }
 
         /// <summary>
@@ -503,6 +507,7 @@ namespace MobileCore.Advertisements
             if (interstitialCallback != null)
             {
                 CallEventInMainThread(() => interstitialCallback.Invoke(result));
+                interstitialCallback = null;
             }
         }
 
@@ -623,11 +628,13 @@ namespace MobileCore.Advertisements
 
             rewardedVideoCallback = callback;
             waitingForRewardVideoCallback = true;
+            rewardEarned = false; // Reset — must be set by provider via NotifyRewardEarned()
 
             // If NoAds is purchased and the setting allows it, skip the ad and grant reward directly.
             if (!isForcedAdEnabled && settings.GrantRewardIfNoAds)
             {
                 Log("[AdsManager]: NoAds is active — granting reward without showing ad.");
+                NotifyRewardEarned();
                 ExecuteRewardVideoCallback(true);
                 return;
             }
@@ -646,22 +653,50 @@ namespace MobileCore.Advertisements
                 return;
             }
 
-            advertisingActiveHandlers[advertisingModule].ShowRewardedVideo(callback);
+            advertisingActiveHandlers[advertisingModule].ShowRewardedVideo((hasReward) =>
+            {
+                if (hasReward)
+                {
+                    NotifyRewardEarned();
+                }
+                ExecuteRewardVideoCallback(hasReward);
+            });
         }
 
         /// <summary>
-        /// Executes the rewarded video callback with the result.
+        /// Executes the rewarded video callback.
+        /// The reward is only granted (<c>true</c>) if <see cref="NotifyRewardEarned"/> was
+        /// called beforehand by the provider — i.e. the SDK confirmed the user watched the ad
+        /// to completion. Passing <c>false</c> always fires the callback with <c>false</c>
+        /// (e.g. user skipped / ad failed).
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="result">Whether the ad session ended normally.</param>
         public static void ExecuteRewardVideoCallback(bool result)
         {
             if (rewardedVideoCallback != null && waitingForRewardVideoCallback)
             {
-                CallEventInMainThread(() => rewardedVideoCallback.Invoke(result));
-                waitingForRewardVideoCallback = false;
+                // Grant reward only when the provider confirmed it via NotifyRewardEarned().
+                // This prevents awarding players who close the ad early.
+                bool grantReward = result && rewardEarned;
 
-                Log("[AdsManager]: Reward received: " + result);
+                CallEventInMainThread(() => rewardedVideoCallback.Invoke(grantReward));
+                waitingForRewardVideoCallback = false;
+                rewardEarned = false; // Reset for next session
+
+                Log("[AdsManager]: Reward callback executed — granted: " + grantReward);
             }
+        }
+
+        /// <summary>
+        /// Called by an ad provider when the underlying SDK fires its "reward earned" event,
+        /// meaning the player has watched the rewarded video to completion.
+        /// This MUST be called before <see cref="ExecuteRewardVideoCallback"/> for the reward
+        /// to actually be granted.
+        /// </summary>
+        public static void NotifyRewardEarned()
+        {
+            rewardEarned = true;
+            Log("[AdsManager]: Provider confirmed reward earned — player watched ad to completion.");
         }
 
         #endregion

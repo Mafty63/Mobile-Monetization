@@ -336,6 +336,12 @@ namespace MobileCore.Advertisements.Providers
             {
                 OnAdClosed(AdType.RewardedVideo);
                 isRewardedLoaded = false;
+
+                // Signal reward before invoking callback so AdsManager's _rewardEarned flag
+                // is set before ExecuteRewardVideoCallback runs.
+                if (completed)
+                    AdsManager.NotifyRewardEarned();
+
                 currentRewardedCallback?.Invoke(completed);
                 currentRewardedCallback = null;
 

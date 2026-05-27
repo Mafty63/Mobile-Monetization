@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MobileCore.Advertisements
 {
-    public class AdsSettings : ScriptableObject
+    public class AdsSettings : ScriptableObject, ISerializationCallbackReceiver
     {
         [SerializeField] private AdProvider bannerType = AdProvider.Dummy;
         public AdProvider BannerType => bannerType;
@@ -15,6 +15,36 @@ namespace MobileCore.Advertisements
 
         [SerializeField] private AdProvider rewardedVideoType = AdProvider.Dummy;
         public AdProvider RewardedVideoType => rewardedVideoType;
+
+        public void OnBeforeSerialize() { }
+
+        public void OnAfterDeserialize()
+        {
+            ValidateProviderSettings();
+        }
+
+        private void OnValidate()
+        {
+            ValidateProviderSettings();
+        }
+
+        private void ValidateProviderSettings()
+        {
+            if (!System.Enum.IsDefined(typeof(AdProvider), bannerType))
+            {
+                bannerType = AdProvider.Disable;
+            }
+
+            if (!System.Enum.IsDefined(typeof(AdProvider), interstitialType))
+            {
+                interstitialType = AdProvider.Disable;
+            }
+
+            if (!System.Enum.IsDefined(typeof(AdProvider), rewardedVideoType))
+            {
+                rewardedVideoType = AdProvider.Disable;
+            }
+        }
 
         [AdsProviderContainer("AdMob", 1, "https://developers.google.com/admob/unity/quick-start", dashboardUrl: "https://apps.admob.com")]
         [SerializeField] private AdMobContainer adMobContainer;

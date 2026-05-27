@@ -1,4 +1,4 @@
-﻿#pragma warning disable 0649
+#pragma warning disable 0649
 
 using UnityEngine;
 
@@ -58,50 +58,53 @@ namespace MobileCore.Advertisements.Providers
             AdsManager.OnProviderAdClosed(AdProvider.Dummy, AdType.Banner);
         }
 
-        public void ShowInterstitial()
+        private System.Action<bool> onInterstitialCompleted;
+        private System.Action<bool> onRewardedCompleted;
+
+        public void ShowInterstitial(System.Action<bool> onComplete)
         {
+            onInterstitialCompleted = onComplete;
             interstitialObject.SetActive(true);
         }
 
-        public void CloseInterstitial()
+        public void CloseInterstitial(bool completed)
         {
             interstitialObject.SetActive(false);
 
             AdsManager.OnProviderAdClosed(AdProvider.Dummy, AdType.Interstitial);
+            onInterstitialCompleted?.Invoke(completed);
+            onInterstitialCompleted = null;
         }
 
-        public void ShowRewardedVideo()
+        public void ShowRewardedVideo(System.Action<bool> onComplete)
         {
+            onRewardedCompleted = onComplete;
             rewardedVideoObject.SetActive(true);
         }
 
-        public void CloseRewardedVideo()
+        public void CloseRewardedVideo(bool rewardGranted)
         {
             rewardedVideoObject.SetActive(false);
 
             AdsManager.OnProviderAdClosed(AdProvider.Dummy, AdType.RewardedVideo);
+            onRewardedCompleted?.Invoke(rewardGranted);
+            onRewardedCompleted = null;
         }
 
         #region Buttons
         public void CloseInterstitialButton()
         {
-            AdsManager.ExecuteInterstitialCallback(true);
-
-            CloseInterstitial();
+            CloseInterstitial(true);
         }
 
         public void CloseRewardedVideoButton()
         {
-            AdsManager.ExecuteRewardVideoCallback(false);
-
-            CloseRewardedVideo();
+            CloseRewardedVideo(false);
         }
 
         public void GetRewardButton()
         {
-            AdsManager.ExecuteRewardVideoCallback(true);
-
-            CloseRewardedVideo();
+            CloseRewardedVideo(true);
         }
         #endregion
     }
