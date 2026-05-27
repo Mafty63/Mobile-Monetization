@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace MobileCore.Advertisements
 {
+    [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/ads-inspector/")]
     public class AdsSettings : ScriptableObject, ISerializationCallbackReceiver
     {
         [SerializeField] private AdProvider bannerType = AdProvider.Dummy;

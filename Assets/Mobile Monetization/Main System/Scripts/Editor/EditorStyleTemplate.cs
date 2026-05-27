@@ -35,12 +35,23 @@ namespace MobileCore.MainModule.Editor
         private static Texture2D _texSelectedButtonActive;
         private static Texture2D _texOverlay;
 
+        // Input field textures
+        private static Texture2D _texField;
+        private static Texture2D _texFieldHover;
+        private static Texture2D _texFieldFocused;
+
+        // Toggle checkbox textures
+        private static Texture2D _texToggleNormal;
+        private static Texture2D _texToggleNormalHover;
+        private static Texture2D _texToggleOn;
+        private static Texture2D _texToggleOnHover;
+
         /// <summary>
         /// Initialize semua styles. Dipanggil otomatis saat pertama kali digunakan.
         /// </summary>
         public static void InitializeStyles()
         {
-            if (_stylesInitialized && _texGray != null) return;
+            if (_stylesInitialized && _texGray != null && _texField != null && _texToggleNormal != null) return;
 
             try
             {
@@ -55,7 +66,17 @@ namespace MobileCore.MainModule.Editor
                 Color overlayColor = isDark ? new Color(1f, 1f, 1f, overlayAlpha) : new Color(0f, 0f, 0f, overlayAlpha);
                 Color grayTextColor = isDark ? new Color(0.85f, 0.85f, 0.85f) : new Color(0.25f, 0.25f, 0.25f);
 
-                // Create textures
+                // Premium Input Field & Popup Colors
+                Color fieldBgColor        = isDark ? new Color(0.20f, 0.20f, 0.22f, 1f) : new Color(0.98f, 0.98f, 0.98f, 1f);
+                Color fieldBorderColor    = isDark ? new Color(0.35f, 0.35f, 0.40f, 1f) : new Color(0.70f, 0.70f, 0.73f, 1f);
+
+                Color fieldHoverBgColor   = isDark ? new Color(0.22f, 0.22f, 0.25f, 1f) : new Color(0.95f, 0.95f, 0.97f, 1f);
+                Color fieldHoverBorderColor = isDark ? new Color(0.45f, 0.45f, 0.52f, 1f) : new Color(0.55f, 0.55f, 0.60f, 1f);
+
+                Color fieldFocusBgColor   = isDark ? new Color(0.20f, 0.21f, 0.25f, 1f) : new Color(0.98f, 0.98f, 1.0f, 1f);
+                Color fieldFocusBorderColor = isDark ? new Color(0.23f, 0.45f, 0.85f, 1f) : new Color(0.30f, 0.55f, 0.95f, 1f);
+
+                // Create main textures
                 _texGray = MakeTex(2, 2, grayBackgroundColor);
                 _texToggle = MakeTex(2, 2, grayToggleColor);
                 _texButton = MakeTex(2, 2, grayButtonColor);
@@ -63,6 +84,17 @@ namespace MobileCore.MainModule.Editor
                 _texSelectedButton = MakeTex(2, 2, selectedButtonColor);
                 _texSelectedButtonActive = MakeTex(2, 2, selectedButtonColor * 0.85f);
                 _texOverlay = MakeTex(2, 2, overlayColor);
+
+                // Create input field textures with border (16x16 for nice 9-slicing)
+                _texField = MakeTexWithBorder(16, 16, fieldBgColor, fieldBorderColor, 1);
+                _texFieldHover = MakeTexWithBorder(16, 16, fieldHoverBgColor, fieldHoverBorderColor, 1);
+                _texFieldFocused = MakeTexWithBorder(16, 16, fieldFocusBgColor, fieldFocusBorderColor, 1);
+
+                // Create custom high-contrast toggle checkbox textures
+                _texToggleNormal = MakeToggleTex(false, false, isDark);
+                _texToggleNormalHover = MakeToggleTex(false, true, isDark);
+                _texToggleOn = MakeToggleTex(true, false, isDark);
+                _texToggleOnHover = MakeToggleTex(true, true, isDark);
 
                 // Gray text styles
                 _grayTextStyle = new GUIStyle(EditorStyles.label);
@@ -86,14 +118,38 @@ namespace MobileCore.MainModule.Editor
                 _grayFoldoutHeaderStyle.onFocused.textColor = grayTextColor;
                 _grayFoldoutHeaderStyle.onHover.textColor = grayTextColor;
 
-                // Text field background style
+                // Text field — apply distinct field background and border with 9-slicing (border of 1 pixel)
                 _grayTextFieldBackgroundStyle = new GUIStyle(EditorStyles.textField ?? new GUIStyle());
+                _grayTextFieldBackgroundStyle.normal.background   = _texField;
+                _grayTextFieldBackgroundStyle.hover.background    = _texFieldHover;
+                _grayTextFieldBackgroundStyle.focused.background  = _texFieldFocused;
+                _grayTextFieldBackgroundStyle.active.background   = _texFieldFocused;
+                _grayTextFieldBackgroundStyle.normal.textColor    = grayTextColor;
+                _grayTextFieldBackgroundStyle.focused.textColor   = isDark ? Color.white : Color.black;
+                _grayTextFieldBackgroundStyle.border              = new RectOffset(1, 1, 1, 1);
+                _grayTextFieldBackgroundStyle.padding             = new RectOffset(4, 4, 3, 3);
 
-                // Popup background style
+                // Popup — restore native Unity popup styling to preserve the dropdown arrow and native border
                 _grayPopupBackgroundStyle = new GUIStyle(EditorStyles.popup ?? new GUIStyle());
+                _grayPopupBackgroundStyle.normal.textColor   = grayTextColor;
 
-                // Toggle background style
+                // Toggle — Apply custom high-contrast checkbox graphics and size limits for maximum visibility
                 _grayToggleBackgroundStyle = new GUIStyle(EditorStyles.toggle ?? new GUIStyle());
+                _grayToggleBackgroundStyle.normal.background = _texToggleNormal;
+                _grayToggleBackgroundStyle.onNormal.background = _texToggleOn;
+                _grayToggleBackgroundStyle.hover.background = _texToggleNormalHover;
+                _grayToggleBackgroundStyle.onHover.background = _texToggleOnHover;
+                _grayToggleBackgroundStyle.active.background = _texToggleNormalHover;
+                _grayToggleBackgroundStyle.onActive.background = _texToggleOnHover;
+                _grayToggleBackgroundStyle.focused.background = _texToggleNormal;
+                _grayToggleBackgroundStyle.onFocused.background = _texToggleOn;
+                _grayToggleBackgroundStyle.fixedWidth = 16f;
+                _grayToggleBackgroundStyle.fixedHeight = 16f;
+                _grayToggleBackgroundStyle.border = new RectOffset(0, 0, 0, 0);
+                _grayToggleBackgroundStyle.margin = new RectOffset(4, 4, 4, 4);
+                _grayToggleBackgroundStyle.padding = new RectOffset(0, 0, 0, 0);
+                _grayToggleBackgroundStyle.normal.textColor = grayTextColor;
+                _grayToggleBackgroundStyle.onNormal.textColor = grayTextColor;
 
                 // Button style
                 _grayButtonStyle = new GUIStyle();
@@ -155,6 +211,106 @@ namespace MobileCore.MainModule.Editor
             result.Apply();
             return result;
         }
+
+        private static Texture2D MakeTexWithBorder(int width, int height, Color bodyColor, Color borderColor, int borderWidth = 1)
+        {
+            Color[] pix = new Color[width * height];
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (x < borderWidth || x >= width - borderWidth || y < borderWidth || y >= height - borderWidth)
+                    {
+                        pix[y * width + x] = borderColor;
+                    }
+                    else
+                    {
+                        pix[y * width + x] = bodyColor;
+                    }
+                }
+            }
+            Texture2D result = new Texture2D(width, height, TextureFormat.ARGB32, false);
+            result.hideFlags = HideFlags.HideAndDontSave;
+            result.SetPixels(pix);
+            result.Apply();
+            return result;
+        }
+
+        private static Texture2D MakeToggleTex(bool checkedState, bool hoverState, bool isDark)
+        {
+            int size = 16;
+            Color[] pix = new Color[size * size];
+
+            Color bg = isDark ? new Color(0.20f, 0.20f, 0.22f, 1f) : new Color(0.98f, 0.98f, 0.98f, 1f);
+            Color border = isDark ? new Color(0.35f, 0.35f, 0.40f, 1f) : new Color(0.70f, 0.70f, 0.73f, 1f);
+            Color checkColor = isDark ? new Color(0.23f, 0.45f, 0.85f, 1f) : new Color(0.30f, 0.55f, 0.95f, 1f);
+
+            if (hoverState)
+            {
+                bg = isDark ? new Color(0.22f, 0.22f, 0.25f, 1f) : new Color(0.95f, 0.95f, 0.97f, 1f);
+                border = isDark ? new Color(0.45f, 0.45f, 0.52f, 1f) : new Color(0.55f, 0.55f, 0.60f, 1f);
+            }
+
+            if (checkedState)
+            {
+                bg = checkColor;
+                border = hoverState
+                    ? (isDark ? new Color(0.40f, 0.60f, 1.0f, 1f) : new Color(0.40f, 0.65f, 0.98f, 1f))
+                    : (isDark ? new Color(0.30f, 0.50f, 0.90f, 1f) : new Color(0.30f, 0.55f, 0.95f, 1f));
+            }
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    if (x == 0 || x == size - 1 || y == 0 || y == size - 1)
+                    {
+                        pix[y * size + x] = border;
+                    }
+                    else
+                    {
+                        if (checkedState)
+                        {
+                            // Beautiful programmatically drawn checkmark pattern
+                            bool isCheck = false;
+
+                            // Formula for checkmark coordinates inside 16x16 box
+                            int relativeX = x;
+                            int relativeY = y;
+
+                            // Left leg: y - x == -1, from x = 4 to 6
+                            // Right leg: y + x == 15, from x = 6 to 12
+                            if ((relativeX >= 4 && relativeX <= 6 && relativeY - relativeX == -1) || 
+                                (relativeX >= 6 && relativeX <= 12 && relativeX + relativeY == 11))
+                            {
+                                isCheck = true;
+                            }
+                            // Thicken by 1 pixel for visual impact
+                            else if ((relativeX >= 4 && relativeX <= 6 && relativeY - relativeX == -2) || 
+                                     (relativeX >= 6 && relativeX <= 12 && relativeX + relativeY == 10))
+                            {
+                                isCheck = true;
+                            }
+
+                            pix[y * size + x] = isCheck ? Color.white : bg;
+                        }
+                        else
+                        {
+                            pix[y * size + x] = bg;
+                        }
+                    }
+                }
+            }
+
+            Texture2D result = new Texture2D(size, size, TextureFormat.ARGB32, false);
+            result.hideFlags = HideFlags.HideAndDontSave;
+            result.SetPixels(pix);
+            result.Apply();
+            return result;
+        }
+
+
+
 
         // Public getters untuk styles
         public static GUIStyle GrayTextStyle

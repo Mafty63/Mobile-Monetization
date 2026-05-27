@@ -8,6 +8,7 @@ using MobileCore.Advertisement.IosSupport;
 namespace MobileCore.Advertisements
 {
     [Module("Advertisement Module", "Module to show Ads", 1)]
+    [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/ads-api/")]
     public class AdsManagerInitializer : BaseManagerInitializer
     {
         public AdsSettings Settings;

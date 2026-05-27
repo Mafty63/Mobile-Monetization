@@ -4,6 +4,7 @@ using UnityEngine;
 namespace MobileCore.IAPModule
 {
     [Module("In-App Purchase Module", "Module to show IAP", 2)]
+    [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/iap-api/")]
     public class IAPManagerInitializer : BaseManagerInitializer
     {
         public IAPSettings Settings;

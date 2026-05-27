@@ -434,10 +434,42 @@ namespace MobileCore.MainModule.Editor
                     if (data.SettingsProp != null && iterator.name == data.SettingsProp.name) continue;
 
                     // Draw Property
-                     EditorGUILayout.BeginHorizontal();
-                     EditorGUILayout.LabelField(new GUIContent(ObjectNames.NicifyVariableName(iterator.name)), EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
-                     EditorGUILayout.PropertyField(iterator, GUIContent.none);
-                     EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(new GUIContent(ObjectNames.NicifyVariableName(iterator.name)), EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
+                    
+                    var textFieldStyle = EditorStyleTemplate.GrayTextFieldBackgroundStyle;
+                    var toggleStyle = EditorStyleTemplate.GrayToggleBackgroundStyle;
+                    var popupStyle = EditorStyleTemplate.GrayPopupBackgroundStyle;
+
+                    switch (iterator.propertyType)
+                    {
+                        case SerializedPropertyType.String:
+                            iterator.stringValue = EditorGUILayout.TextField(iterator.stringValue, textFieldStyle);
+                            break;
+                        case SerializedPropertyType.Integer:
+                            iterator.intValue = EditorGUILayout.IntField(iterator.intValue, textFieldStyle);
+                            break;
+                        case SerializedPropertyType.Float:
+                            iterator.floatValue = EditorGUILayout.FloatField(iterator.floatValue, textFieldStyle);
+                            break;
+                        case SerializedPropertyType.Boolean:
+                            iterator.boolValue = EditorGUILayout.Toggle(iterator.boolValue, toggleStyle);
+                            break;
+                        case SerializedPropertyType.Enum:
+                            string[] enumNames = iterator.enumDisplayNames;
+                            int currentIndex = iterator.enumValueIndex;
+                            EditorGUI.BeginChangeCheck();
+                            int newIndex = EditorGUILayout.Popup(currentIndex, enumNames, popupStyle);
+                            if (EditorGUI.EndChangeCheck() && newIndex != currentIndex)
+                            {
+                                iterator.enumValueIndex = newIndex;
+                            }
+                            break;
+                        default:
+                            EditorGUILayout.PropertyField(iterator, GUIContent.none);
+                            break;
+                    }
+                    EditorGUILayout.EndHorizontal();
                 }
 
                 EditorGUILayout.EndVertical();

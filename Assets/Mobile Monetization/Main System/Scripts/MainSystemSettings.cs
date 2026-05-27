@@ -2,6 +2,7 @@
 
 namespace MobileCore.MainModule
 {
+    [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/getting-started/")]
     [CreateAssetMenu(fileName = "Main System Settings", menuName = "Mobile Core/Main System Settings")]
     public class MainSystemSettings : ScriptableObject
     {

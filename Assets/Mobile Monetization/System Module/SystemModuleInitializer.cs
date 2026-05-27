@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace MobileCore.SystemModule
 {
+    [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/system-module/")]
     public class SystemModuleInitializer : BaseManagerInitializer
     {
         public GameObject SystemCanvas;
