@@ -51,6 +51,9 @@ namespace MobileCore.MainModule.Editor
         /// </summary>
         public static void InitializeStyles()
         {
+            float scale = EditorGUIUtility.pixelsPerPoint;
+            if (scale < 1f) scale = 1f;
+
             if (_stylesInitialized && _texGray != null && _texField != null && _texToggleNormal != null) return;
 
             try
@@ -85,10 +88,14 @@ namespace MobileCore.MainModule.Editor
                 _texSelectedButtonActive = MakeTex(2, 2, selectedButtonColor * 0.85f);
                 _texOverlay = MakeTex(2, 2, overlayColor);
 
-                // Create input field textures with border (16x16 for nice 9-slicing)
-                _texField = MakeTexWithBorder(16, 16, fieldBgColor, fieldBorderColor, 1);
-                _texFieldHover = MakeTexWithBorder(16, 16, fieldHoverBgColor, fieldHoverBorderColor, 1);
-                _texFieldFocused = MakeTexWithBorder(16, 16, fieldFocusBgColor, fieldFocusBorderColor, 1);
+                // Create input field textures with border (16x16 scaled for nice 9-slicing)
+                int scaledSize = Mathf.RoundToInt(16 * scale);
+                int scaledBorder = Mathf.RoundToInt(1 * scale);
+                if (scaledBorder < 1) scaledBorder = 1;
+
+                _texField = MakeTexWithBorder(scaledSize, scaledSize, fieldBgColor, fieldBorderColor, scaledBorder);
+                _texFieldHover = MakeTexWithBorder(scaledSize, scaledSize, fieldHoverBgColor, fieldHoverBorderColor, scaledBorder);
+                _texFieldFocused = MakeTexWithBorder(scaledSize, scaledSize, fieldFocusBgColor, fieldFocusBorderColor, scaledBorder);
 
                 // Create custom high-contrast toggle checkbox textures
                 _texToggleNormal = MakeToggleTex(false, false, isDark);
@@ -118,7 +125,7 @@ namespace MobileCore.MainModule.Editor
                 _grayFoldoutHeaderStyle.onFocused.textColor = grayTextColor;
                 _grayFoldoutHeaderStyle.onHover.textColor = grayTextColor;
 
-                // Text field — apply distinct field background and border with 9-slicing (border of 1 pixel)
+                // Text field — apply distinct field background and border with 9-slicing (border of scaledBorder pixel)
                 _grayTextFieldBackgroundStyle = new GUIStyle(EditorStyles.textField ?? new GUIStyle());
                 _grayTextFieldBackgroundStyle.normal.background   = _texField;
                 _grayTextFieldBackgroundStyle.hover.background    = _texFieldHover;
@@ -126,7 +133,7 @@ namespace MobileCore.MainModule.Editor
                 _grayTextFieldBackgroundStyle.active.background   = _texFieldFocused;
                 _grayTextFieldBackgroundStyle.normal.textColor    = grayTextColor;
                 _grayTextFieldBackgroundStyle.focused.textColor   = isDark ? Color.white : Color.black;
-                _grayTextFieldBackgroundStyle.border              = new RectOffset(1, 1, 1, 1);
+                _grayTextFieldBackgroundStyle.border              = new RectOffset(scaledBorder, scaledBorder, scaledBorder, scaledBorder);
                 _grayTextFieldBackgroundStyle.padding             = new RectOffset(4, 4, 3, 3);
 
                 // Popup — restore native Unity popup styling to preserve the dropdown arrow and native border
@@ -238,7 +245,10 @@ namespace MobileCore.MainModule.Editor
 
         private static Texture2D MakeToggleTex(bool checkedState, bool hoverState, bool isDark)
         {
-            int size = 16;
+            float scale = EditorGUIUtility.pixelsPerPoint;
+            if (scale < 1f) scale = 1f;
+
+            int size = Mathf.RoundToInt(16 * scale);
             Color[] pix = new Color[size * size];
 
             Color bg = isDark ? new Color(0.20f, 0.20f, 0.22f, 1f) : new Color(0.98f, 0.98f, 0.98f, 1f);
@@ -259,11 +269,13 @@ namespace MobileCore.MainModule.Editor
                     : (isDark ? new Color(0.30f, 0.50f, 0.90f, 1f) : new Color(0.30f, 0.55f, 0.95f, 1f));
             }
 
+            int borderWidth = Mathf.Max(1, Mathf.RoundToInt(1 * scale));
+
             for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
                 {
-                    if (x == 0 || x == size - 1 || y == 0 || y == size - 1)
+                    if (x < borderWidth || x >= size - borderWidth || y < borderWidth || y >= size - borderWidth)
                     {
                         pix[y * size + x] = border;
                     }
@@ -271,23 +283,22 @@ namespace MobileCore.MainModule.Editor
                     {
                         if (checkedState)
                         {
-                            // Beautiful programmatically drawn checkmark pattern
+                            // Beautiful programmatically drawn checkmark pattern, scaled dynamically
                             bool isCheck = false;
 
-                            // Formula for checkmark coordinates inside 16x16 box
-                            int relativeX = x;
-                            int relativeY = y;
+                            float checkX = x / scale;
+                            float checkY = y / scale;
 
                             // Left leg: y - x == -1, from x = 4 to 6
-                            // Right leg: y + x == 15, from x = 6 to 12
-                            if ((relativeX >= 4 && relativeX <= 6 && relativeY - relativeX == -1) || 
-                                (relativeX >= 6 && relativeX <= 12 && relativeX + relativeY == 11))
+                            // Right leg: x + y == 11, from x = 6 to 12
+                            if ((checkX >= 4f && checkX <= 6f && Mathf.Abs(checkY - checkX - (-1f)) < 0.8f) || 
+                                (checkX >= 6f && checkX <= 12f && Mathf.Abs(checkX + checkY - 11f) < 0.8f))
                             {
                                 isCheck = true;
                             }
                             // Thicken by 1 pixel for visual impact
-                            else if ((relativeX >= 4 && relativeX <= 6 && relativeY - relativeX == -2) || 
-                                     (relativeX >= 6 && relativeX <= 12 && relativeX + relativeY == 10))
+                            else if ((checkX >= 4f && checkX <= 6f && Mathf.Abs(checkY - checkX - (-2f)) < 0.8f) || 
+                                     (checkX >= 6f && checkX <= 12f && Mathf.Abs(checkX + checkY - 10f) < 0.8f))
                             {
                                 isCheck = true;
                             }
@@ -312,12 +323,12 @@ namespace MobileCore.MainModule.Editor
 
 
 
-        // Public getters untuk styles
+        // Public getters untuk styles - dengan validasi instan terhadap destruksi native object
         public static GUIStyle GrayTextStyle
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayTextStyle == null || _texGray == null) InitializeStyles();
                 return _grayTextStyle;
             }
         }
@@ -326,7 +337,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayMiniLabelStyle == null || _texGray == null) InitializeStyles();
                 return _grayMiniLabelStyle;
             }
         }
@@ -335,7 +346,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayBoldLabelStyle == null || _texGray == null) InitializeStyles();
                 return _grayBoldLabelStyle;
             }
         }
@@ -344,7 +355,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayFoldoutHeaderStyle == null || _texGray == null) InitializeStyles();
                 return _grayFoldoutHeaderStyle;
             }
         }
@@ -353,7 +364,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayTextFieldBackgroundStyle == null || _texField == null) InitializeStyles();
                 return _grayTextFieldBackgroundStyle;
             }
         }
@@ -362,7 +373,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayPopupBackgroundStyle == null || _texGray == null) InitializeStyles();
                 return _grayPopupBackgroundStyle;
             }
         }
@@ -371,7 +382,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayToggleBackgroundStyle == null || _texToggleNormal == null) InitializeStyles();
                 return _grayToggleBackgroundStyle;
             }
         }
@@ -380,7 +391,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayButtonStyle == null || _texButton == null) InitializeStyles();
                 return _grayButtonStyle;
             }
         }
@@ -389,7 +400,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayToggleButtonStyle == null || _texButton == null) InitializeStyles();
                 return _grayToggleButtonStyle;
             }
         }
@@ -398,7 +409,7 @@ namespace MobileCore.MainModule.Editor
         {
             get
             {
-                if (!_stylesInitialized) InitializeStyles();
+                if (!_stylesInitialized || _grayFieldBackgroundStyle == null || _texGray == null) InitializeStyles();
                 return _grayFieldBackgroundStyle;
             }
         }
