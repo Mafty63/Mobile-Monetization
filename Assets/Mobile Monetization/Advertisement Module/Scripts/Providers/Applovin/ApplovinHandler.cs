@@ -77,6 +77,9 @@ namespace MobileCore.Advertisements.Providers
             SetupRewardedCallbacks();
             SetupBannerCallbacks();
 
+            // Automatically request ads once initialized
+            RequestRewardedVideo();
+            RequestInterstitial();
         }
 
         public void ManualRequestAds()

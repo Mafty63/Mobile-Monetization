@@ -506,7 +506,8 @@ namespace MobileCore.Advertisements
         {
             if (interstitialCallback != null)
             {
-                CallEventInMainThread(() => interstitialCallback.Invoke(result));
+                var callback = interstitialCallback;
+                CallEventInMainThread(() => callback.Invoke(result));
                 interstitialCallback = null;
             }
         }

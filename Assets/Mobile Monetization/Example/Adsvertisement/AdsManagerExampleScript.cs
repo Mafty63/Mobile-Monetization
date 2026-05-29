@@ -124,14 +124,24 @@ namespace MobileCore.Advertisements.Example
 
         private void Log(string condition, string stackTrace, LogType type)
         {
-            if (settings == null || !settings.SystemLogs) return;
-            logText.text = logText.text.Insert(0, condition + "\n");
+            if (settings == null || !settings.SystemLogs || logText == null) return;
+            string newText = logText.text.Insert(0, condition + "\n");
+            if (newText.Length > 5000)
+            {
+                newText = newText.Substring(0, 5000);
+            }
+            logText.text = newText;
         }
 
         private void Log(string condition)
         {
-            if (settings == null || !settings.SystemLogs) return;
-            logText.text = logText.text.Insert(0, condition + "\n");
+            if (settings == null || !settings.SystemLogs || logText == null) return;
+            string newText = logText.text.Insert(0, condition + "\n");
+            if (newText.Length > 5000)
+            {
+                newText = newText.Substring(0, 5000);
+            }
+            logText.text = newText;
         }
 
         #region Buttons
