@@ -306,7 +306,7 @@ namespace MobileCore.IAPModule.Editor
 
             // Key Type
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField("Key Type", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(new GUIContent(productKeyTypeProperty.displayName, productKeyTypeProperty.tooltip), EditorStyles.miniLabel);
             productKeyTypeProperty.enumValueIndex = EditorGUILayout.Popup(productKeyTypeProperty.enumValueIndex, productKeyTypeProperty.enumDisplayNames, popupStyle);
             EditorGUILayout.EndVertical();
 
@@ -314,7 +314,7 @@ namespace MobileCore.IAPModule.Editor
 
             // Product Type
             EditorGUILayout.BeginVertical();
-            EditorGUILayout.LabelField("Product Type", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(new GUIContent(productTypeProperty.displayName, productTypeProperty.tooltip), EditorStyles.miniLabel);
             productTypeProperty.enumValueIndex = EditorGUILayout.Popup(productTypeProperty.enumValueIndex, productTypeProperty.enumDisplayNames, popupStyle);
             EditorGUILayout.EndVertical();
 
@@ -325,7 +325,7 @@ namespace MobileCore.IAPModule.Editor
 
             // Android ID
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Android ID", EditorStyles.miniLabel, GUILayout.Width(80));
+            EditorGUILayout.LabelField(new GUIContent(androidIDProperty.displayName, androidIDProperty.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
             androidIDProperty.stringValue = EditorGUILayout.TextField(androidIDProperty.stringValue, textFieldStyle);
             EditorGUILayout.EndHorizontal();
 
@@ -333,7 +333,7 @@ namespace MobileCore.IAPModule.Editor
 
             // iOS ID
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("iOS ID", EditorStyles.miniLabel, GUILayout.Width(80));
+            EditorGUILayout.LabelField(new GUIContent(iOSIDProperty.displayName, iOSIDProperty.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
             iOSIDProperty.stringValue = EditorGUILayout.TextField(iOSIDProperty.stringValue, textFieldStyle);
             EditorGUILayout.EndHorizontal();
 

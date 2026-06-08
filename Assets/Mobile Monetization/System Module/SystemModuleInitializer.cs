@@ -1,4 +1,4 @@
-﻿using MobileCore.MainModule;
+using MobileCore.MainModule;
 using UnityEngine;
 
 namespace MobileCore.SystemModule
@@ -6,6 +6,8 @@ namespace MobileCore.SystemModule
     [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/system-module/")]
     public class SystemModuleInitializer : BaseManagerInitializer
     {
+        [InspectorName("Canvas Prefab")]
+        [Tooltip("Canvas prefab containing core UI elements like message system and loading panels.")]
         public GameObject SystemCanvas;
         public ScreenSettings ScreenSettings;
 

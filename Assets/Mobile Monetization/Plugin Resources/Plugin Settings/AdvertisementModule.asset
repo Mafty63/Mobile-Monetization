@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AdsSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsSettings
   bannerType: 2
-  interstitialType: 0
-  rewardedVideoType: 2
+  interstitialType: 4
+  rewardedVideoType: 3
   adMobContainer:
     androidAppID: ca-app-pub-3940256099942544~3347511713
     iOSAppID: ca-app-pub-3940256099942544~1458002511
@@ -65,13 +65,13 @@ MonoBehaviour:
   dummyContainer:
     bannerPosition: 0
   systemLogs: 1
-  interstitialFirstStartDelay: 40
+  interstitialFirstStartDelay: 3
   interstitialStartDelay: 40
   interstitialShowingDelay: 30
   adOnStart: 1
   grantRewardIfNoAds: 1
-  autoShowInterstitial: 0
-  isGDPREnabled: 0
+  autoShowInterstitial: 1
+  isGDPREnabled: 1
   isIDFAEnabled: 0
   trackingDescription: Your data will be used to deliver personalized ads to you.
   privacyLink: https://mywebsite.com/privacy

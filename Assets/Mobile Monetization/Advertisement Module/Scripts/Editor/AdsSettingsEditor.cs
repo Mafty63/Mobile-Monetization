@@ -178,19 +178,19 @@ namespace MobileCore.Advertisements.Editor
 
             // Banner
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-            EditorGUILayout.LabelField(new GUIContent("Banner", "Select the ad provider for banner ads"), EditorStyles.miniLabel, GUILayout.Width(60));
+            EditorGUILayout.LabelField(new GUIContent(p_bannerType.displayName, p_bannerType.tooltip), EditorStyles.miniLabel, GUILayout.Width(60));
             DrawStyledPopup(p_bannerType, GUILayout.ExpandWidth(true));
             EditorGUILayout.EndVertical();
 
             // Interstitial
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-            EditorGUILayout.LabelField(new GUIContent("Interstitial", "Select the ad provider for interstitial ads"), EditorStyles.miniLabel, GUILayout.Width(70));
+            EditorGUILayout.LabelField(new GUIContent(p_interstitialType.displayName, p_interstitialType.tooltip), EditorStyles.miniLabel, GUILayout.Width(70));
             DrawStyledPopup(p_interstitialType, GUILayout.ExpandWidth(true));
             EditorGUILayout.EndVertical();
 
             // Rewarded
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-            EditorGUILayout.LabelField(new GUIContent("Rewarded", "Select the ad provider for rewarded video ads"), EditorStyles.miniLabel, GUILayout.Width(70));
+            EditorGUILayout.LabelField(new GUIContent(p_rewardedVideoType.displayName, p_rewardedVideoType.tooltip), EditorStyles.miniLabel, GUILayout.Width(70));
             DrawStyledPopup(p_rewardedVideoType, GUILayout.ExpandWidth(true));
             EditorGUILayout.EndVertical();
 
@@ -449,26 +449,26 @@ namespace MobileCore.Advertisements.Editor
 
                 // System Logs
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("System Logs", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
+                EditorGUILayout.LabelField(p_systemLogs.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
                 p_systemLogs.boolValue = EditorGUILayout.Toggle(p_systemLogs.boolValue, toggleStyle);
-                EditorGUILayout.LabelField(new GUIContent("", "Enables logging. Use it to debug advertisement logic"), EditorStyles.miniLabel, GUILayout.Width(20));
+                EditorGUILayout.LabelField(new GUIContent("", p_systemLogs.tooltip), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
 
                 // Ads On Start
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Ads On Start", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
+                EditorGUILayout.LabelField(p_adOnStart.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
                 p_adOnStart.boolValue = EditorGUILayout.Toggle(p_adOnStart.boolValue, toggleStyle);
-                EditorGUILayout.LabelField(new GUIContent("", "Enable ads when the application starts"), EditorStyles.miniLabel, GUILayout.Width(20));
+                EditorGUILayout.LabelField(new GUIContent("", p_adOnStart.tooltip), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
 
                 // Grant Reward If No Ads
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Reward If NoAds", "Automatically grant rewards for rewared ad placements if user has purchased NoAds"), EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
+                EditorGUILayout.LabelField(new GUIContent(p_grantRewardIfNoAds.displayName, p_grantRewardIfNoAds.tooltip), EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
                 if (p_grantRewardIfNoAds != null)
                 {
                     p_grantRewardIfNoAds.boolValue = EditorGUILayout.Toggle(p_grantRewardIfNoAds.boolValue, toggleStyle);
                 }
-                EditorGUILayout.LabelField(new GUIContent("", "Automatically grant rewards for rewared ad placements if user has purchased NoAds"), EditorStyles.miniLabel, GUILayout.Width(20));
+                EditorGUILayout.LabelField(new GUIContent("", p_grantRewardIfNoAds.tooltip), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.EndVertical();
@@ -495,14 +495,14 @@ namespace MobileCore.Advertisements.Editor
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("GDPR Enabled", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 10));
+                EditorGUILayout.LabelField(p_isGDPREnabled.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 10));
                 p_isGDPREnabled.boolValue = EditorGUILayout.Toggle(p_isGDPREnabled.boolValue, toggleStyle);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("IDFA Enabled", EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 10));
+                EditorGUILayout.LabelField(p_isIDFAEnabled.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 10));
                 p_isIDFAEnabled.boolValue = EditorGUILayout.Toggle(p_isIDFAEnabled.boolValue, toggleStyle);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
@@ -514,21 +514,21 @@ namespace MobileCore.Advertisements.Editor
                 EditorGUILayout.BeginVertical();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Description", "The description that will be shown to users when asking for tracking permission"), EditorStyles.miniLabel, GUILayout.Width(80));
+                EditorGUILayout.LabelField(new GUIContent(p_trackingDescription.displayName, p_trackingDescription.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
                 p_trackingDescription.stringValue = EditorGUILayout.TextField(p_trackingDescription.stringValue, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(2);
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Privacy Link", "Link to your privacy policy"), EditorStyles.miniLabel, GUILayout.Width(80));
+                EditorGUILayout.LabelField(new GUIContent(p_privacyLink.displayName, p_privacyLink.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
                 p_privacyLink.stringValue = EditorGUILayout.TextField(p_privacyLink.stringValue, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(2);
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Terms Link", "Link to your terms of use"), EditorStyles.miniLabel, GUILayout.Width(80));
+                EditorGUILayout.LabelField(new GUIContent(p_termsOfUseLink.displayName, p_termsOfUseLink.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
                 p_termsOfUseLink.stringValue = EditorGUILayout.TextField(p_termsOfUseLink.stringValue, textFieldStyle);
                 EditorGUILayout.EndHorizontal();
 
@@ -563,7 +563,7 @@ namespace MobileCore.Advertisements.Editor
                 var textFieldStyle = EditorStyleTemplate.GrayTextFieldBackgroundStyle;
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Auto Show Interstitial", "If enabled, interstitials will be shown automatically based on the delays below"), EditorStyles.label, GUILayout.Width(150));
+                EditorGUILayout.LabelField(new GUIContent(p_autoShowInterstitial.displayName, p_autoShowInterstitial.tooltip), EditorStyles.label, GUILayout.Width(150));
                 p_autoShowInterstitial.boolValue = EditorGUILayout.Toggle(p_autoShowInterstitial.boolValue, toggleStyle);
                 EditorGUILayout.EndHorizontal();
 
@@ -574,21 +574,21 @@ namespace MobileCore.Advertisements.Editor
                     EditorGUILayout.BeginVertical();
 
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(new GUIContent("First Delay (s)", "Delay in seconds before interstitial appearings on first game launch. (first time playing)"), EditorStyles.miniLabel, GUILayout.Width(120));
+                    EditorGUILayout.LabelField(new GUIContent(p_interstitialFirstStartDelay.displayName, p_interstitialFirstStartDelay.tooltip), EditorStyles.miniLabel, GUILayout.Width(120));
                     p_interstitialFirstStartDelay.floatValue = EditorGUILayout.FloatField(p_interstitialFirstStartDelay.floatValue, textFieldStyle);
                     EditorGUILayout.EndHorizontal();
 
                     EditorGUILayout.Space(2);
 
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(new GUIContent("Subsequent Delay (s)", "Delay in seconds before interstitial appearings"), EditorStyles.miniLabel, GUILayout.Width(120));
+                    EditorGUILayout.LabelField(new GUIContent(p_interstitialStartDelay.displayName, p_interstitialStartDelay.tooltip), EditorStyles.miniLabel, GUILayout.Width(120));
                     p_interstitialStartDelay.floatValue = EditorGUILayout.FloatField(p_interstitialStartDelay.floatValue, textFieldStyle);
                     EditorGUILayout.EndHorizontal();
 
                     EditorGUILayout.Space(2);
 
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(new GUIContent("Min Show Delay (s)", "Delay in seconds between interstitial appearings"), EditorStyles.miniLabel, GUILayout.Width(120));
+                    EditorGUILayout.LabelField(new GUIContent(p_interstitialShowingDelay.displayName, p_interstitialShowingDelay.tooltip), EditorStyles.miniLabel, GUILayout.Width(120));
                     p_interstitialShowingDelay.floatValue = EditorGUILayout.FloatField(p_interstitialShowingDelay.floatValue, textFieldStyle);
                     EditorGUILayout.EndHorizontal();
 

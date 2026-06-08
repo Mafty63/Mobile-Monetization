@@ -1,13 +1,24 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace MobileCore.IAPModule
 {
     [System.Serializable]
     public class IAPItem
     {
+        [InspectorName("Android ID")]
+        [Tooltip("Product ID registered on Google Play Store.")]
         [SerializeField] private string androidID;
+
+        [InspectorName("iOS ID")]
+        [Tooltip("Product ID registered on Apple App Store.")]
         [SerializeField] private string iOSID;
+
+        [InspectorName("Key Type")]
+        [Tooltip("The key used to reference this product in code. Must match an entry in ProductKeyType enum.")]
         [SerializeField] private ProductKeyType productKeyType;
+
+        [InspectorName("Product Type")]
+        [Tooltip("Consumable (purchased multiple times), Non-Consumable (one-time purchase), or Subscription.")]
         [SerializeField] private ProductType productType;
 
         public string ID

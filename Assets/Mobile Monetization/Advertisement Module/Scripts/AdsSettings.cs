@@ -8,12 +8,18 @@ namespace MobileCore.Advertisements
     [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/ads-inspector/")]
     public class AdsSettings : ScriptableObject, ISerializationCallbackReceiver
     {
+        [InspectorName("Banner")]
+        [Tooltip("Ad provider used for banner ads.")]
         [SerializeField] private AdProvider bannerType = AdProvider.Dummy;
         public AdProvider BannerType => bannerType;
 
+        [InspectorName("Interstitial")]
+        [Tooltip("Ad provider used for interstitial ads.")]
         [SerializeField] private AdProvider interstitialType = AdProvider.Dummy;
         public AdProvider InterstitialType => interstitialType;
 
+        [InspectorName("Rewarded")]
+        [Tooltip("Ad provider used for rewarded video ads.")]
         [SerializeField] private AdProvider rewardedVideoType = AdProvider.Dummy;
         public AdProvider RewardedVideoType => rewardedVideoType;
 
@@ -73,42 +79,60 @@ namespace MobileCore.Advertisements
         public bool SystemLogs => systemLogs;
 
         [Space]
-        [Tooltip("Delay in seconds before interstitial appearings on first game launch. (first time playing)")]
+        [InspectorName("First Delay (s)")]
+        [Tooltip("Delay in seconds before the first interstitial can appear on the very first game launch (first-time install only).")]
         [SerializeField] private float interstitialFirstStartDelay = 40f;
         public float InterstitialFirstStartDelay => interstitialFirstStartDelay;
 
-        [Tooltip("Delay in seconds before interstitial appearings.")]
+        [InspectorName("Subsequent Delay (s)")]
+        [Tooltip("Delay in seconds before the first interstitial can appear on subsequent game launches (second launch and beyond).")]
         [SerializeField] private float interstitialStartDelay = 40f;
         public float InterstitialStartDelay => interstitialStartDelay;
 
-        [Tooltip("Delay in seconds between interstitial appearings.")]
+        [InspectorName("Min Show Delay (s)")]
+        [Tooltip("Minimum delay in seconds between consecutive interstitial ads. Resets every time an interstitial is successfully shown.")]
         [SerializeField] private float interstitialShowingDelay = 30f;
         public float InterstitialShowingDelay => interstitialShowingDelay;
 
         [Space]
+        [InspectorName("Ads On Start")]
+        [Tooltip("Load and display ads automatically when the application starts.")]
         [SerializeField] private bool adOnStart = true;
         public bool AdOnStart => adOnStart;
 
+        [InspectorName("Reward If NoAds")]
         [Tooltip("If NoAds is purchased, skip the rewarded video ad and grant the reward directly. " +
                  "Common UX pattern: players who paid should not be forced to watch ads to earn rewards.")]
         [SerializeField] private bool grantRewardIfNoAds = true;
         public bool GrantRewardIfNoAds => grantRewardIfNoAds;
 
+        [InspectorName("Auto Show Interstitial")]
+        [Tooltip("If enabled, interstitials will be shown automatically based on the delays configured below.")]
         [SerializeField] private bool autoShowInterstitial;
         public bool AutoShowInterstitial => autoShowInterstitial;
 
+        [InspectorName("GDPR Enabled")]
+        [Tooltip("Show a GDPR consent panel on first launch before initializing any ad provider.")]
         [SerializeField] private bool isGDPREnabled = false;
         public bool IsGDPREnabled => isGDPREnabled;
 
+        [InspectorName("IDFA Enabled")]
+        [Tooltip("Request App Tracking Transparency (ATT) permission on iOS before initializing ads.")]
         [SerializeField] private bool isIDFAEnabled = false;
         public bool IsIDFAEnabled => isIDFAEnabled;
 
+        [InspectorName("Description")]
+        [Tooltip("The description shown to users when requesting tracking permission (ATT dialog on iOS).")]
         [SerializeField] private string trackingDescription = "Your data will be used to deliver personalized ads to you.";
         public string TrackingDescription => trackingDescription;
 
+        [InspectorName("Privacy Link")]
+        [Tooltip("URL to your app's privacy policy page.")]
         [SerializeField] private string privacyLink = "https://mywebsite.com/privacy";
         public string PrivacyLink => privacyLink;
 
+        [InspectorName("Terms Link")]
+        [Tooltip("URL to your app's terms of use page.")]
         [SerializeField] private string termsOfUseLink = "https://mywebsite.com/terms";
         public string TermsOfUseLink => termsOfUseLink;
 

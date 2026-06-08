@@ -112,7 +112,7 @@ namespace MobileCore.SystemModule.Editor
 
                 // Canvas reference - FIXED: Added proper error handling and layout
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Canvas Prefab", "Canvas prefab containing core UI elements like message system and loading panels"),
+                EditorGUILayout.LabelField(new GUIContent(canvasProperty.displayName, canvasProperty.tooltip),
                     EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
 
                 // Use a safer approach for ObjectField
@@ -185,7 +185,7 @@ namespace MobileCore.SystemModule.Editor
 
                 // Auto Detect toggle - FIXED: Safer approach
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent("Auto Detect Frame Rate", "Automatically set frame rate based on device refresh rate"),
+                EditorGUILayout.LabelField(new GUIContent(setFrameRateAutomatically.displayName, setFrameRateAutomatically.tooltip),
                     EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
 
                 if (setFrameRateAutomatically != null)
@@ -209,7 +209,7 @@ namespace MobileCore.SystemModule.Editor
                     if (defaultFrameRate != null)
                     {
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField(new GUIContent("Default FPS", "Target frame rate for normal operation"),
+                        EditorGUILayout.LabelField(new GUIContent(defaultFrameRate.displayName, defaultFrameRate.tooltip),
                             EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
 
                         int currentDefaultValue = defaultFrameRate.intValue;
@@ -230,7 +230,7 @@ namespace MobileCore.SystemModule.Editor
                     if (batterySaveFrameRate != null)
                     {
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField(new GUIContent("Battery Save FPS", "Frame rate when device is in low power mode (iOS only)"),
+                        EditorGUILayout.LabelField(new GUIContent(batterySaveFrameRate.displayName, batterySaveFrameRate.tooltip),
                             EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
 
                         int currentBatteryValue = batterySaveFrameRate.intValue;
@@ -271,7 +271,7 @@ namespace MobileCore.SystemModule.Editor
                 if (sleepTimeout != null)
                 {
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(new GUIContent("Sleep Timeout", "Screen sleep timeout setting"),
+                    EditorGUILayout.LabelField(new GUIContent(sleepTimeout.displayName, sleepTimeout.tooltip),
                         EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
 
                     // Convert current sleep timeout value to enum
@@ -291,7 +291,7 @@ namespace MobileCore.SystemModule.Editor
                     if (sleepTimeout.intValue == 0 && hasCustomSleepTimeout && customSleepTimeout != null)
                     {
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField(new GUIContent("Custom Timeout", "Custom sleep timeout in seconds (used with System Default)"),
+                        EditorGUILayout.LabelField(new GUIContent(customSleepTimeout.displayName, customSleepTimeout.tooltip),
                             EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
                         customSleepTimeout.intValue = EditorGUILayout.IntField(customSleepTimeout.intValue, textFieldStyle);
                         EditorGUILayout.EndHorizontal();
@@ -306,7 +306,9 @@ namespace MobileCore.SystemModule.Editor
                     if (sleepTimeout.intValue > 0 && !System.Enum.IsDefined(typeof(SleepTimeoutOption), sleepTimeout.intValue))
                     {
                         EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField(new GUIContent("Custom Timeout", "Custom sleep timeout in seconds"),
+                        EditorGUILayout.LabelField(hasCustomSleepTimeout && customSleepTimeout != null
+                            ? new GUIContent(customSleepTimeout.displayName, customSleepTimeout.tooltip)
+                            : new GUIContent("Custom Timeout", "Custom sleep timeout in seconds"),
                             EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(120));
                         sleepTimeout.intValue = EditorGUILayout.IntField(sleepTimeout.intValue, textFieldStyle);
                         EditorGUILayout.EndHorizontal();

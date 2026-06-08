@@ -54,7 +54,3 @@ MonoBehaviour:
     iOSID: com.company.product.new6
     productKeyType: 5
     productType: 0
-  - androidID: com.company.product.new7
-    iOSID: com.company.product.new7
-    productKeyType: 6
-    productType: 2

@@ -9,5 +9,6 @@ namespace MobileCore.IAPModule
         Product4 = 4,
         Product5 = 5,
         Product6 = 6,
+        product = 7,
     }
 }

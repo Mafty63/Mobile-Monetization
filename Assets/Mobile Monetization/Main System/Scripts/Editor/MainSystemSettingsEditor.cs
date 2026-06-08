@@ -84,6 +84,8 @@ namespace MobileCore.MainModule.Editor
             DrawHeaderInfo();
             EditorGUILayout.Space();
 
+            DrawBuildTargetWarning();
+
             DrawCoreModuleSection();
             EditorGUILayout.Space();
 
@@ -206,6 +208,60 @@ namespace MobileCore.MainModule.Editor
 
 
         #region Drawing Methods
+
+        private void DrawBuildTargetWarning()
+        {
+            BuildTarget activeTarget = EditorUserBuildSettings.activeBuildTarget;
+            if (activeTarget != BuildTarget.Android && activeTarget != BuildTarget.iOS)
+            {
+                Color originalBg = GUI.backgroundColor;
+                // Soft red warning background color
+                GUI.backgroundColor = new Color(0.9f, 0.25f, 0.25f);
+                
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                GUI.backgroundColor = originalBg; // Restore background color for elements inside
+                
+                EditorGUILayout.BeginHorizontal();
+                
+                // Show standard warning icon
+                var warningIcon = EditorGUIUtility.IconContent("console.warnicon.sml");
+                if (warningIcon != null)
+                {
+                    GUILayout.Label(warningIcon, GUILayout.Width(32), GUILayout.Height(32));
+                }
+
+                EditorGUILayout.BeginVertical();
+                // Bold alert title
+                var titleStyle = new GUIStyle(EditorStyles.boldLabel);
+                titleStyle.normal.textColor = EditorGUIUtility.isProSkin ? new Color(1f, 0.35f, 0.35f) : new Color(0.75f, 0.1f, 0.1f);
+                titleStyle.fontSize = 12;
+                EditorGUILayout.LabelField("INCOMPATIBLE BUILD TARGET DETECTED!", titleStyle);
+                
+                // Detailed description text
+                var labelStyle = new GUIStyle(EditorStyles.wordWrappedLabel);
+                labelStyle.fontSize = 11;
+                EditorGUILayout.LabelField(
+                    $"The current active build target is set to '{activeTarget}'. This plugin is designed and optimized specifically for Android and iOS. The custom defines and integration settings will not be loaded or function properly on this platform.",
+                    labelStyle);
+                
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.Space(5);
+                
+                // Action button to open build settings
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Open Build Settings", GUILayout.Width(150), GUILayout.Height(22)))
+                {
+                    EditorApplication.ExecuteMenuItem("File/Build Settings...");
+                }
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.EndVertical();
+                EditorGUILayout.Space();
+            }
+        }
 
         private void DrawHeaderInfo()
         {
