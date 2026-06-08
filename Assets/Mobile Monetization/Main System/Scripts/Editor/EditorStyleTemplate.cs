@@ -88,14 +88,9 @@ namespace MobileCore.MainModule.Editor
                 _texSelectedButtonActive = MakeTex(2, 2, selectedButtonColor * 0.85f);
                 _texOverlay = MakeTex(2, 2, overlayColor);
 
-                // Create input field textures with border (16x16 scaled for nice 9-slicing)
-                int scaledSize = Mathf.RoundToInt(16 * scale);
-                int scaledBorder = Mathf.RoundToInt(1 * scale);
-                if (scaledBorder < 1) scaledBorder = 1;
-
-                _texField = MakeTexWithBorder(scaledSize, scaledSize, fieldBgColor, fieldBorderColor, scaledBorder);
-                _texFieldHover = MakeTexWithBorder(scaledSize, scaledSize, fieldHoverBgColor, fieldHoverBorderColor, scaledBorder);
-                _texFieldFocused = MakeTexWithBorder(scaledSize, scaledSize, fieldFocusBgColor, fieldFocusBorderColor, scaledBorder);
+                _texField = MakeTex(2, 2, fieldBgColor);
+                _texFieldHover = MakeTex(2, 2, fieldHoverBgColor);
+                _texFieldFocused = MakeTex(2, 2, fieldFocusBgColor);
 
                 // Create custom high-contrast toggle checkbox textures
                 _texToggleNormal = MakeToggleTex(false, false, isDark);
@@ -125,7 +120,7 @@ namespace MobileCore.MainModule.Editor
                 _grayFoldoutHeaderStyle.onFocused.textColor = grayTextColor;
                 _grayFoldoutHeaderStyle.onHover.textColor = grayTextColor;
 
-                // Text field — apply distinct field background and border with 9-slicing (border of scaledBorder pixel)
+                // Text field — apply distinct flat solid field background for crisp responsive scaling
                 _grayTextFieldBackgroundStyle = new GUIStyle(EditorStyles.textField ?? new GUIStyle());
                 _grayTextFieldBackgroundStyle.normal.background   = _texField;
                 _grayTextFieldBackgroundStyle.hover.background    = _texFieldHover;
@@ -133,7 +128,7 @@ namespace MobileCore.MainModule.Editor
                 _grayTextFieldBackgroundStyle.active.background   = _texFieldFocused;
                 _grayTextFieldBackgroundStyle.normal.textColor    = grayTextColor;
                 _grayTextFieldBackgroundStyle.focused.textColor   = isDark ? Color.white : Color.black;
-                _grayTextFieldBackgroundStyle.border              = new RectOffset(scaledBorder, scaledBorder, scaledBorder, scaledBorder);
+                _grayTextFieldBackgroundStyle.border              = new RectOffset(0, 0, 0, 0);
                 _grayTextFieldBackgroundStyle.padding             = new RectOffset(4, 4, 3, 3);
 
                 // Popup — restore native Unity popup styling to preserve the dropdown arrow and native border
@@ -219,29 +214,6 @@ namespace MobileCore.MainModule.Editor
             return result;
         }
 
-        private static Texture2D MakeTexWithBorder(int width, int height, Color bodyColor, Color borderColor, int borderWidth = 1)
-        {
-            Color[] pix = new Color[width * height];
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if (x < borderWidth || x >= width - borderWidth || y < borderWidth || y >= height - borderWidth)
-                    {
-                        pix[y * width + x] = borderColor;
-                    }
-                    else
-                    {
-                        pix[y * width + x] = bodyColor;
-                    }
-                }
-            }
-            Texture2D result = new Texture2D(width, height, TextureFormat.ARGB32, false);
-            result.hideFlags = HideFlags.HideAndDontSave;
-            result.SetPixels(pix);
-            result.Apply();
-            return result;
-        }
 
         private static Texture2D MakeToggleTex(bool checkedState, bool hoverState, bool isDark)
         {
@@ -289,16 +261,18 @@ namespace MobileCore.MainModule.Editor
                             float checkX = x / scale;
                             float checkY = y / scale;
 
-                            // Left leg: y - x == -1, from x = 4 to 6
-                            // Right leg: x + y == 11, from x = 6 to 12
-                            if ((checkX >= 4f && checkX <= 6f && Mathf.Abs(checkY - checkX - (-1f)) < 0.8f) || 
-                                (checkX >= 6f && checkX <= 12f && Mathf.Abs(checkX + checkY - 11f) < 0.8f))
+                            // Left leg: steep line going down-right (from y=10 down to y=5)
+                            if (checkX >= 4f && checkX <= 6f && Mathf.Abs(2f * checkX + checkY - 17f) < 1.2f)
                             {
                                 isCheck = true;
                             }
-                            // Thicken by 1 pixel for visual impact
-                            else if ((checkX >= 4f && checkX <= 6f && Mathf.Abs(checkY - checkX - (-2f)) < 0.8f) || 
-                                     (checkX >= 6f && checkX <= 12f && Mathf.Abs(checkX + checkY - 10f) < 0.8f))
+                            // Right leg: 45 degree line going up-right (from y=5 up to y=11)
+                            else if (checkX >= 6f && checkX <= 12f && Mathf.Abs(checkY - checkX - (-1.5f)) < 0.8f)
+                            {
+                                isCheck = true;
+                            }
+                            // Thicken right leg by 1 pixel for visual balance
+                            else if (checkX >= 6f && checkX <= 12f && Mathf.Abs(checkY - checkX - (-0.5f)) < 0.8f)
                             {
                                 isCheck = true;
                             }
