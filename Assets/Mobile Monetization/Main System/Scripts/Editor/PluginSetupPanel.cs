@@ -14,7 +14,7 @@ namespace MobileCore.MainModule.Editor
     {
         // ── Asset Paths ────────────────────────────────────────────────────────────
         private const string PrefabPath   = "Assets/Mobile Monetization/Plugin Resources/Plugin Resources/Prefabs/Main System Manager.prefab";
-        private const string SettingsPath = "Assets/Mobile Monetization/Plugin Resources/Plugin Settings/MainSystemSettings.asset";
+        private const string SettingsPath = "Assets/Mobile Monetization/Plugin Resources/Resources/Plugin Settings/MainSystemSettings.asset";
         private const string SceneAdsPath = "Assets/Mobile Monetization/Example/Adsvertisement/Ads Manager Example.unity";
         private const string SceneIAPPath = "Assets/Mobile Monetization/Example/IAP/IAPModuleExample.unity";
 
@@ -71,56 +71,27 @@ namespace MobileCore.MainModule.Editor
         // ── Section: Setup Scene ───────────────────────────────────────────────────
         private void DrawSectionSetupScene()
         {
-            DrawSection("SETUP SCENE", () =>
+            DrawSection("AUTOMATION STATUS", () =>
             {
-                EditorGUILayout.LabelField(
-                    "Add Main System Manager to the active scene. " +
-                    "If it already exists, no duplicate will be created.",
-                    EditorStyles.wordWrappedMiniLabel);
+                EditorGUILayout.HelpBox(
+                    "Scene setup is fully automated! The plugin will initialize itself automatically at runtime startup.\n" +
+                    "No Main System Manager prefab is needed in the hierarchy anymore.",
+                    MessageType.Info);
 
                 GUILayout.Space(6f);
 
-                // Prefab reference row
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Prefab", EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(52f));
-                using (new EditorGUI.DisabledScope(true))
+                bool legacyExists = FindMainSystemInScene();
+                if (legacyExists)
                 {
-                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-                    EditorGUILayout.ObjectField(prefab, typeof(GameObject), false);
-                }
-                EditorGUILayout.EndHorizontal();
-
-                GUILayout.Space(8f);
-
-                // Action button
-                bool prefabExists   = !string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(PrefabPath));
-                bool alreadySpawned = FindMainSystemInScene();
-
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-
-                if (alreadySpawned)
-                {
-                    using (new EditorGUI.DisabledScope(true))
-                        GUILayout.Button("Already in Scene", EditorStyleTemplate.GrayButtonStyle, GUILayout.Height(26f), GUILayout.Width(190f));
-                }
-                else if (!prefabExists)
-                {
-                    using (new EditorGUI.DisabledScope(true))
-                        GUILayout.Button("Prefab Not Found", EditorStyleTemplate.GrayButtonStyle, GUILayout.Height(26f), GUILayout.Width(190f));
-                }
-                else
-                {
-                    if (GUILayout.Button("Setup Scene",
-                        EditorStyleTemplate.CreateButtonStyle(new Color(0.18f, 0.60f, 0.35f), null, 26),
-                        GUILayout.Height(26f), GUILayout.Width(190f)))
+                    EditorGUILayout.HelpBox("A legacy Main System Manager was found in the active scene. You can remove it safely.", MessageType.Warning);
+                    
+                    if (GUILayout.Button("Clean Scene (Remove Legacy Manager)",
+                        EditorStyleTemplate.CreateButtonStyle(new Color(0.7f, 0.2f, 0.2f), null, 26),
+                        GUILayout.Height(26f)))
                     {
-                        SpawnMainSystemPrefab();
+                        RemoveLegacyManagerFromScene();
                     }
                 }
-
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
             });
         }
 
@@ -239,22 +210,29 @@ namespace MobileCore.MainModule.Editor
             return false;
         }
 
-        private static void SpawnMainSystemPrefab()
+        private static void RemoveLegacyManagerFromScene()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
-            if (prefab == null)
+            var objects = SceneManager.GetActiveScene().GetRootGameObjects();
+            foreach (var go in objects)
             {
-                EditorUtility.DisplayDialog("Error", "Prefab not found:\n" + PrefabPath, "OK");
-                return;
+                if (go.name.Contains("Main System Manager"))
+                {
+                    Undo.DestroyObjectImmediate(go);
+                    Debug.Log("[Plugin Setup] Removed legacy Main System Manager from scene.");
+                    EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                    return;
+                }
+                foreach (Transform child in go.transform)
+                {
+                    if (child.name.Contains("Main System Manager"))
+                    {
+                        Undo.DestroyObjectImmediate(child.gameObject);
+                        Debug.Log("[Plugin Setup] Removed legacy Main System Manager from scene.");
+                        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                        return;
+                    }
+                }
             }
-
-            var go = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-            if (go == null) return;
-
-            Undo.RegisterCreatedObjectUndo(go, "Spawn Main System Manager");
-            Selection.activeGameObject = go;
-            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-            Debug.Log("[Plugin Setup] Main System Manager successfully spawned.");
         }
 
         private static void OpenScene(string path)
