@@ -57,7 +57,7 @@ namespace MobileCore.Advertisements.Providers
 
             if (adsSettings.IsDummyEnabled())
             {
-                GameObject dummyCanvasPrefab = AdsManager.InitModule.DummyCanvasPrefab;
+                GameObject dummyCanvasPrefab = AdsManager.DummyCanvasPrefab;
                 if (dummyCanvasPrefab != null)
                 {
                     GameObject dummyCanvas = GameObject.Instantiate(dummyCanvasPrefab);

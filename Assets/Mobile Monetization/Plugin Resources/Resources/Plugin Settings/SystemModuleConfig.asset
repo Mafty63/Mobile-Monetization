@@ -9,14 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34f27d59b0f7fd64bbdece140f4e0eae, type: 3}
-  m_Name: SystemModuleInitializer
-  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.SystemModule.SystemModuleInitializer
-  ModuleName: System Module
-  ModuleDescription: 
-  isEnabled: 1
-  SystemCanvas: {fileID: 6951761026347705287, guid: 15892f63869a33e41aa27c6098e3caf3, type: 3}
-  ScreenSettings:
+  m_Script: {fileID: 11500000, guid: b0def7a991b9dfa47a61f1ea9a6175f5, type: 3}
+  m_Name: SystemModuleConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MobileCore.SystemModule.SystemModuleConfig
+  moduleEnabled: 1
+  systemCanvas: {fileID: 0}
+  screenSettings:
     setFrameRateAutomatically: 0
     defaultFrameRate: 60
     batterySaveFrameRate: 30

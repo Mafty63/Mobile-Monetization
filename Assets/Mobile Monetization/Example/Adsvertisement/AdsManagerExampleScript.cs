@@ -8,74 +8,47 @@ namespace MobileCore.Advertisements.Example
 {
     public class AdsManagerExampleScript : MonoBehaviour
     {
-        [SerializeField] private Text logText;
-
         [Space]
-        [SerializeField] private Text bannerTitleText;
         [SerializeField] private Button showBannerButton;
         [SerializeField] private Button hideBannerButton;
-        [SerializeField] private Button destroyBannerButton;
-        [SerializeField] private Button[] bannerButtons;
 
         [Space]
-        [SerializeField] private Text interstitialTitleText;
-        [SerializeField] private Button interstitialStatusButton;
         [SerializeField] private Button requestInterstitialButton;
         [SerializeField] private Button showInterstitialButton;
-        [SerializeField] private Button[] interstitialButtons;
 
         [Space]
-        [SerializeField] private Text rewardVideoTitleText;
-        [SerializeField] private Button rewardedVideoStatusButton;
         [SerializeField] private Button requestRewardedVideoButton;
         [SerializeField] private Button showRewardedVideoButton;
         [SerializeField] private Text showRewardedVideoButtonText;
-        [SerializeField] private Button[] rewardVideoButtons;
 
         private AdsSettings settings;
-
-        private void Awake()
-        {
-            Application.logMessageReceived += Log;
-        }
 
         private void OnEnable()
         {
             showBannerButton.onClick.AddListener(ShowBannerButton);
             hideBannerButton.onClick.AddListener(HideBannerButton);
-            destroyBannerButton.onClick.AddListener(DestroyBannerButton);
 
-            interstitialStatusButton.onClick.AddListener(InterstitialStatusButton);
             requestInterstitialButton.onClick.AddListener(RequestInterstitialButton);
             showInterstitialButton.onClick.AddListener(ShowInterstitialButton);
 
-            rewardedVideoStatusButton.onClick.AddListener(RewardedVideoStatusButton);
             requestRewardedVideoButton.onClick.AddListener(RequestRewardedVideoButton);
             showRewardedVideoButton.onClick.AddListener(ShowRewardedVideoButton);
 
-            AdsManager.ForcedAdDisabled += RefreshRewardedVideoButtonLabel;
+            AdsManager.ForcedAdDisabled += RefreshButtonStates;
         }
 
         private void OnDisable()
         {
             showBannerButton.onClick.RemoveListener(ShowBannerButton);
             hideBannerButton.onClick.RemoveListener(HideBannerButton);
-            destroyBannerButton.onClick.RemoveListener(DestroyBannerButton);
 
-            interstitialStatusButton.onClick.RemoveListener(InterstitialStatusButton);
             requestInterstitialButton.onClick.RemoveListener(RequestInterstitialButton);
             showInterstitialButton.onClick.RemoveListener(ShowInterstitialButton);
 
-            rewardedVideoStatusButton.onClick.RemoveListener(RewardedVideoStatusButton);
             requestRewardedVideoButton.onClick.RemoveListener(RequestRewardedVideoButton);
             showRewardedVideoButton.onClick.RemoveListener(ShowRewardedVideoButton);
 
-            AdsManager.ForcedAdDisabled -= RefreshRewardedVideoButtonLabel;
-        }
-
-        private void OnDestroy()
-        {
-            Application.logMessageReceived -= Log;
+            AdsManager.ForcedAdDisabled -= RefreshButtonStates;
         }
 
         private void Start()
@@ -83,65 +56,24 @@ namespace MobileCore.Advertisements.Example
             settings = AdsManager.Settings;
             if (settings == null) return;
 
-            logText.text = string.Empty;
-
-            bannerTitleText.text = string.Format("Banner ({0})", settings.BannerType.ToString());
-            if (settings.BannerType == AdProvider.Disable)
-            {
-                for (int i = 0; i < bannerButtons.Length; i++)
-                {
-                    bannerButtons[i].interactable = false;
-                }
-            }
-
-            interstitialTitleText.text = string.Format("Interstitial ({0})", settings.InterstitialType.ToString());
-            if (settings.InterstitialType == AdProvider.Disable)
-            {
-                for (int i = 0; i < interstitialButtons.Length; i++)
-                {
-                    interstitialButtons[i].interactable = false;
-                }
-            }
-
-            rewardVideoTitleText.text = string.Format("Rewarded Video ({0})", settings.RewardedVideoType.ToString());
-            if (settings.RewardedVideoType == AdProvider.Disable)
-            {
-                for (int i = 0; i < rewardVideoButtons.Length; i++)
-                {
-                    rewardVideoButtons[i].interactable = false;
-                }
-            }
-
-            RefreshRewardedVideoButtonLabel();
+            RefreshButtonStates();
         }
 
-        private void RefreshRewardedVideoButtonLabel()
+        private void RefreshButtonStates()
         {
-            if (showRewardedVideoButtonText == null) return;
+            bool noAdsActive = AdsManager.IsNoAdsActive;
 
-            showRewardedVideoButtonText.text = AdsManager.IsNoAdsActive ? "Claim Reward" : "Watch Ad";
-        }
+            if (showBannerButton != null)
+                showBannerButton.interactable = !noAdsActive;
 
-        private void Log(string condition, string stackTrace, LogType type)
-        {
-            if (settings == null || !settings.SystemLogs || logText == null) return;
-            string newText = logText.text.Insert(0, condition + "\n");
-            if (newText.Length > 5000)
-            {
-                newText = newText.Substring(0, 5000);
-            }
-            logText.text = newText;
-        }
+            if (hideBannerButton != null)
+                hideBannerButton.interactable = !noAdsActive;
 
-        private void Log(string condition)
-        {
-            if (settings == null || !settings.SystemLogs || logText == null) return;
-            string newText = logText.text.Insert(0, condition + "\n");
-            if (newText.Length > 5000)
-            {
-                newText = newText.Substring(0, 5000);
-            }
-            logText.text = newText;
+            if (showInterstitialButton != null)
+                showInterstitialButton.interactable = !noAdsActive;
+
+            if (showRewardedVideoButtonText != null)
+                showRewardedVideoButtonText.text = noAdsActive ? "Claim Reward" : "Watch Ad";
         }
 
         #region Buttons
@@ -155,16 +87,6 @@ namespace MobileCore.Advertisements.Example
             AdsManager.HideBanner();
         }
 
-        private void DestroyBannerButton()
-        {
-            AdsManager.DestroyBanner();
-        }
-
-        private void InterstitialStatusButton()
-        {
-            Log("[AdsManager]: Interstitial " + (AdsManager.IsInterstitialLoaded() ? "is loaded" : "isn't loaded"));
-        }
-
         private void RequestInterstitialButton()
         {
             AdsManager.RequestInterstitial();
@@ -174,13 +96,7 @@ namespace MobileCore.Advertisements.Example
         {
             AdsManager.ShowInterstitial((isDisplayed) =>
             {
-                Log("[AdsManager]: Interstitial " + (isDisplayed ? "is" : "isn't") + " displayed!");
             }, true);
-        }
-
-        private void RewardedVideoStatusButton()
-        {
-            Log("[AdsManager]: Rewarded video " + (AdsManager.IsRewardBasedVideoLoaded() ? "is loaded" : "isn't loaded"));
         }
 
         private void RequestRewardedVideoButton()
@@ -194,11 +110,11 @@ namespace MobileCore.Advertisements.Example
             {
                 if (hasReward)
                 {
-                    Log("[AdsManager]: Reward is received");
+                    Debug.Log("[AdsManager]: Reward is received");
                 }
                 else
                 {
-                    Log("[AdsManager]: Reward isn't received");
+                    Debug.Log("[AdsManager]: Reward isn't received");
                 }
             });
         }

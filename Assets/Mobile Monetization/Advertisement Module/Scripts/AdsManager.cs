@@ -72,8 +72,12 @@ namespace MobileCore.Advertisements
 
         // Active modules
         private static Dictionary<AdProvider, BaseAdProviderHandler> advertisingActiveHandlers = new Dictionary<AdProvider, BaseAdProviderHandler>();
-        private static AdsManagerInitializer initModule;
-        public static AdsManagerInitializer InitModule => initModule;
+        
+        private static GameObject dummyCanvasPrefab;
+        public static GameObject DummyCanvasPrefab => dummyCanvasPrefab;
+
+        private static GameObject gdprPrefab;
+        public static GameObject GDPRPrefab => gdprPrefab;
 
         // Events
         public static event PrimitiveCallback ForcedAdDisabled;
@@ -101,11 +105,9 @@ namespace MobileCore.Advertisements
         #region Initialize
 
         /// <summary>
-        /// Initialize Ads Module from initializer.
+        /// Initialize Ads Module.
         /// </summary>
-        /// <param name="adsManagerInitModule"></param>
-        /// <param name="loadOnStart"></param>
-        public static void Initialize(AdsManagerInitializer managerInitializer)
+        public static void Initialize(AdsSettings adsSettings, GameObject dummyCanvas, GameObject gdprPanel)
         {
             if (isModuleInitialized)
             {
@@ -115,8 +117,9 @@ namespace MobileCore.Advertisements
 
             isModuleInitialized = true;
             isFirstAdLoaded = false;
-            initModule = managerInitializer;
-            settings = managerInitializer.Settings;
+            settings = adsSettings;
+            dummyCanvasPrefab = dummyCanvas;
+            gdprPrefab = gdprPanel;
 
             isForcedAdEnabled = IsForcedAdEnabled(false);
 
@@ -142,7 +145,6 @@ namespace MobileCore.Advertisements
                 }
             }
 
-            // Log warnings for misconfigured ad types
             // Log warnings for misconfigured ad types
             if (settings.BannerType != AdProvider.Disable && !advertisingActiveHandlers.ContainsKey(settings.BannerType))
                 LogWarning("[AdsManager]: Banner type (" + settings.BannerType + ") is selected, but isn't active!");
@@ -175,7 +177,7 @@ namespace MobileCore.Advertisements
 
         private static void ShowGDPRPanel(System.Action onCompleted)
         {
-            GameObject gdprPanelObject = GameObject.Instantiate(InitModule.GDPRPrefab);
+            GameObject gdprPanelObject = GameObject.Instantiate(gdprPrefab);
             gdprPanelObject.transform.ResetGlobal();
 
             GDPRPanel gdprPanel = gdprPanelObject.GetComponent<GDPRPanel>();

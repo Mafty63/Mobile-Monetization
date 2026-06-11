@@ -3,6 +3,7 @@ using UnityEngine;
 namespace MobileCore.IAPModule
 {
     [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/iap-inspector/")]
+    [CreateAssetMenu(fileName = "IAPSettings", menuName = "Mobile Core/Settings/IAP Settings")]
     public class IAPSettings : ScriptableObject
     {
         [Header("Module Settings")]

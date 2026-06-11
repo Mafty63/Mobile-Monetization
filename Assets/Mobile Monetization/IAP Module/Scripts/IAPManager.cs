@@ -46,7 +46,7 @@ namespace MobileCore.IAPModule
         }
         #endregion
 
-        public static void Initialize(GameObject initObject, IAPManagerInitializer managerInitializer)
+        public static void Initialize(IAPSettings iapSettings)
         {
             if (isInitialized)
             {
@@ -54,9 +54,9 @@ namespace MobileCore.IAPModule
                 return;
             }
 
-            Settings = managerInitializer.Settings;
+            Settings = iapSettings;
 
-            IAPItem[] items = managerInitializer.Settings.StoreItems;
+            IAPItem[] items = iapSettings.StoreItems;
             for (int i = 0; i < items.Length; i++)
             {
                 if (!productsTypeToProductLink.ContainsKey(items[i].ProductKeyType))
@@ -72,7 +72,7 @@ namespace MobileCore.IAPModule
             wrapper = new DummyIAPWrapper();
 #endif
 
-            wrapper.Initialize(managerInitializer.Settings);
+            wrapper.Initialize(iapSettings);
         }
 
         public static IAPItem GetIAPItem(ProductKeyType productKeyType)

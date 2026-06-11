@@ -51,6 +51,9 @@ namespace MobileCore.MainModule.Editor
         /// </summary>
         public static void InitializeStyles()
         {
+            // Guard: EditorStyles is null during domain reload / early editor startup
+            if (EditorStyles.label == null) return;
+
             float scale = EditorGUIUtility.pixelsPerPoint;
             if (scale < 1f) scale = 1f;
 
@@ -185,20 +188,20 @@ namespace MobileCore.MainModule.Editor
             {
                 Debug.LogWarning($"Failed to initialize EditorStyleTemplate: {e.Message}");
                 // Fallback to default styles
-                _grayTextStyle = EditorStyles.label;
-                _grayMiniLabelStyle = EditorStyles.miniLabel;
-                _grayBoldLabelStyle = EditorStyles.boldLabel;
+                _grayTextStyle              = EditorStyles.label       ?? new GUIStyle();
+                _grayMiniLabelStyle         = EditorStyles.miniLabel   ?? new GUIStyle();
+                _grayBoldLabelStyle         = EditorStyles.boldLabel   ?? new GUIStyle();
 #if UNITY_2019_3_OR_NEWER
-                _grayFoldoutHeaderStyle = EditorStyles.foldoutHeader;
+                _grayFoldoutHeaderStyle     = EditorStyles.foldoutHeader ?? new GUIStyle();
 #else
-                _grayFoldoutHeaderStyle = EditorStyles.foldout;
+                _grayFoldoutHeaderStyle     = EditorStyles.foldout     ?? new GUIStyle();
 #endif
-                _grayTextFieldBackgroundStyle = EditorStyles.textField ?? new GUIStyle();
-                _grayPopupBackgroundStyle = EditorStyles.popup ?? new GUIStyle();
-                _grayToggleBackgroundStyle = EditorStyles.toggle ?? new GUIStyle();
-                _grayButtonStyle = EditorStyles.miniButton ?? new GUIStyle();
-                _grayToggleButtonStyle = EditorStyles.miniButton ?? new GUIStyle();
-                _grayFieldBackgroundStyle = EditorStyles.label ?? new GUIStyle();
+                _grayTextFieldBackgroundStyle = EditorStyles.textField  ?? new GUIStyle();
+                _grayPopupBackgroundStyle   = EditorStyles.popup       ?? new GUIStyle();
+                _grayToggleBackgroundStyle  = EditorStyles.toggle      ?? new GUIStyle();
+                _grayButtonStyle            = EditorStyles.miniButton  ?? new GUIStyle();
+                _grayToggleButtonStyle      = EditorStyles.miniButton  ?? new GUIStyle();
+                _grayFieldBackgroundStyle   = EditorStyles.label       ?? new GUIStyle();
                 _stylesInitialized = true;
             }
         }

@@ -1,7 +1,5 @@
 #pragma warning disable 0649
 
-using System;
-
 using MobileCore.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,10 +9,10 @@ namespace MobileCore.MainModule
     [DefaultExecutionOrder(-999)]
     public class MainSystemManager : SingletonMonoBehaviour<MainSystemManager>
     {
-        private MainSystemSettings mainSystemSettings;
+        private MobileCoreConfig config;
 
         public static bool IsInitialized { get; private set; }
-        public static MainSystemSettings InitSettings { get; private set; }
+        public static MobileCoreConfig InitSettings { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Bootstrap()
@@ -22,35 +20,36 @@ namespace MobileCore.MainModule
             if (IsInitialized) return;
 
             // Load the settings from Resources
-            MainSystemSettings settings = Resources.Load<MainSystemSettings>("Plugin Settings/MainSystemSettings");
+            MobileCoreConfig settings = Resources.Load<MobileCoreConfig>("Plugin Settings/MobileCoreConfig");
             if (settings == null)
             {
-                Debug.LogError("[MainSystemManager] Failed to load MainSystemSettings from Resources! Make sure it is in a Resources folder at path: Resources/Plugin Settings/MainSystemSettings");
+                Debug.LogError("[MainSystemManager] Failed to load MobileCoreConfig from Resources! " +
+                               "Make sure it exists at: Resources/Plugin Settings/MobileCoreConfig");
                 return;
             }
 
             InitSettings = settings;
 
-            // Create persistent GameObject
-            GameObject container = new GameObject("[MainSystemManager]");
+            // Create persistent GameObject — no need to place it in the scene manually
+            GameObject container = new GameObject("[MobileCore]");
             DontDestroyOnLoad(container);
 
-            // Add MonoBehaviourExecution first so it initializes its singleton
+            // MonoBehaviourExecution must be added first
             container.AddComponent<MonoBehaviourExecution>();
 
             // Add MainSystemManager and assign settings
             var manager = container.AddComponent<MainSystemManager>();
-            manager.mainSystemSettings = settings;
+            manager.config = settings;
 
             IsInitialized = true;
 
-            // Register EventSystem helper
+            // Ensure an EventSystem exists in every scene
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
-            
             EnsureEventSystem();
         }
 
-        private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        private static void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene,
+                                           UnityEngine.SceneManagement.LoadSceneMode mode)
         {
             EnsureEventSystem();
         }
@@ -75,14 +74,11 @@ namespace MobileCore.MainModule
                 {
                     var standalone = eventSystem.gameObject.GetComponent<StandaloneInputModule>();
                     if (standalone != null) Destroy(standalone);
-                    
                     eventSystem.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
                 }
 #else
                 if (eventSystem.gameObject.GetComponent<StandaloneInputModule>() == null)
-                {
                     eventSystem.gameObject.AddComponent<StandaloneInputModule>();
-                }
 #endif
             }
         }
@@ -91,14 +87,21 @@ namespace MobileCore.MainModule
         {
             base.Awake();
 
-            if (mainSystemSettings == null)
-            {
-                mainSystemSettings = InitSettings;
-            }
+            if (config == null)
+                config = InitSettings;
 
-            if (mainSystemSettings != null)
+            if (config != null)
+                InitializeModules(config);
+        }
+
+        private void InitializeModules(MobileCoreConfig cfg)
+        {
+            foreach (MobileModule module in cfg.Modules)
             {
-                mainSystemSettings.Initialize(this);
+                if (module == null) continue;
+                if (!module.ModuleEnabled) continue;
+
+                module.Initialize(gameObject);
             }
         }
 
@@ -109,39 +112,6 @@ namespace MobileCore.MainModule
                 IsInitialized = false;
                 UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
             }
-        }
-
-        public static bool IsModuleInitialized(Type moduleType)
-        {
-            MainSystemSettings projectInitSettings = InitSettings;
-
-            BaseManagerInitializer coreModule = null;
-            BaseManagerInitializer[] initModules = null;
-
-
-            if (projectInitSettings != null)
-            {
-                coreModule = projectInitSettings.CoreModule;
-                initModules = projectInitSettings.Modules;
-            }
-
-            if (coreModule != null && coreModule.GetType() == moduleType)
-            {
-                return true;
-            }
-
-            if (initModules != null)
-            {
-                for (int i = 0; i < initModules.Length; i++)
-                {
-                    if (initModules[i] != null && initModules[i].GetType() == moduleType)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

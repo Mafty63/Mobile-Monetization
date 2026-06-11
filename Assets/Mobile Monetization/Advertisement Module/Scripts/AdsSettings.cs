@@ -6,6 +6,7 @@ using UnityEngine;
 namespace MobileCore.Advertisements
 {
     [HelpURL("https://quick-setup-website.pages.dev/documentation/mobile-monetization/ads-inspector/")]
+    [CreateAssetMenu(fileName = "AdsSettings", menuName = "Mobile Core/Settings/Ads Settings")]
     public class AdsSettings : ScriptableObject, ISerializationCallbackReceiver
     {
         [InspectorName("Banner")]

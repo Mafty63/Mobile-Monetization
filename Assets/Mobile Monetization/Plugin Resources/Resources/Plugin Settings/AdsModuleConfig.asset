@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5490155245559230837
+--- !u!114 &-7875529506414061821
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
   m_Name: AdsSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsSettings
-  bannerType: 2
-  interstitialType: 4
-  rewardedVideoType: 3
+  bannerType: 1
+  interstitialType: 1
+  rewardedVideoType: 1
   adMobContainer:
     androidAppID: ca-app-pub-3940256099942544~3347511713
     iOSAppID: ca-app-pub-3940256099942544~1458002511
@@ -64,14 +64,14 @@ MonoBehaviour:
     enableVerboseLogging: 0
   dummyContainer:
     bannerPosition: 0
-  systemLogs: 1
-  interstitialFirstStartDelay: 3
+  systemLogs: 0
+  interstitialFirstStartDelay: 40
   interstitialStartDelay: 40
   interstitialShowingDelay: 30
   adOnStart: 1
   grantRewardIfNoAds: 1
-  autoShowInterstitial: 1
-  isGDPREnabled: 1
+  autoShowInterstitial: 0
+  isGDPREnabled: 0
   isIDFAEnabled: 0
   trackingDescription: Your data will be used to deliver personalized ads to you.
   privacyLink: https://mywebsite.com/privacy
@@ -85,12 +85,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92fc42d5fd1f8b545b7bd8a121a23de1, type: 3}
-  m_Name: AdvertisementModule
-  m_EditorClassIdentifier: MobileCore.Monetization::MobileCore.Advertisements.AdsManagerInitializer
-  ModuleName: Ads Module
-  ModuleDescription: Module to show Ads
-  isEnabled: 1
-  Settings: {fileID: -5490155245559230837}
-  DummyCanvasPrefab: {fileID: 985655532585203946, guid: a7af08efc5cd16c4db955b7f65f00dfc, type: 3}
-  GDPRPrefab: {fileID: 2665059414450368139, guid: 25b05165b3e164d41a5e0f7d29a77b0a, type: 3}
+  m_Script: {fileID: 11500000, guid: 93abcd1dadb858f4f8c1319fd40eb9bf, type: 3}
+  m_Name: AdsModuleConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsModuleConfig
+  moduleEnabled: 1
+  settings: {fileID: -7875529506414061821}
+  dummyCanvasPrefab: {fileID: 0}
+  gdprPrefab: {fileID: 0}
