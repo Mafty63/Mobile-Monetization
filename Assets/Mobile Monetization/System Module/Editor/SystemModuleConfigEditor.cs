@@ -3,19 +3,19 @@ using UnityEditor;
 using UnityEngine;
 using MobileCore.MainModule.Editor;
 
-namespace MobileCore.IAPModule.Editor
+namespace MobileCore.SystemModule.Editor
 {
-    [CustomEditor(typeof(IapModuleConfig))]
-    public class IapModuleConfigEditor : UnityEditor.Editor
+    [CustomEditor(typeof(SystemModuleConfig))]
+    public class SystemModuleConfigEditor : UnityEditor.Editor
     {
-        private IapModuleConfig _config;
+        private SystemModuleConfig _config;
 
-        // Inline editor for the embedded IAPSettings sub-asset
+        // Inline editor for the embedded SystemSettings sub-asset
         private UnityEditor.Editor _settingsEditor;
 
         private void OnEnable()
         {
-            _config = (IapModuleConfig)target;
+            _config = (SystemModuleConfig)target;
             EnsureSubAsset();
             RebuildSettingsEditor();
         }
@@ -31,40 +31,30 @@ namespace MobileCore.IAPModule.Editor
 
             // Header
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("IN-APP PURCHASE MODULE CONFIG", EditorStyleTemplate.GrayBoldLabelStyle);
+            EditorGUILayout.LabelField("SYSTEM MODULE CONFIG", EditorStyleTemplate.GrayBoldLabelStyle);
             EditorGUILayout.HelpBox(
-                "IAPSettings is embedded inside this asset as a sub-asset.\n" +
-                "Configure all IAP products and settings directly below.",
+                "SystemSettings is embedded inside this asset as a sub-asset.\n" +
+                "Configure system canvas and screen settings directly below.",
                 MessageType.Info);
             EditorGUILayout.EndVertical();
 
             GUILayout.Space(8f);
 
-            // Module Enabled toggle
-            SerializedProperty enabledProp = serializedObject.FindProperty("moduleEnabled");
-            bool isEnabled = true;
-            if (enabledProp != null)
+            // Module Enabled toggle (Always Enabled since System Module is a core module)
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+            EditorGUILayout.LabelField("Module Enabled", EditorStyleTemplate.GrayTextStyle);
+            using (new EditorGUI.DisabledScope(true))
             {
-                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                EditorGUILayout.LabelField("Module Enabled", EditorStyleTemplate.GrayTextStyle);
-                enabledProp.boolValue = EditorGUILayout.Toggle(enabledProp.boolValue, GUILayout.Width(20f));
-                EditorGUILayout.EndHorizontal();
-                isEnabled = enabledProp.boolValue;
-                GUILayout.Space(6f);
+                EditorGUILayout.Toggle(true, GUILayout.Width(20f));
             }
+            EditorGUILayout.EndHorizontal();
+            GUILayout.Space(6f);
 
-            if (!isEnabled)
-            {
-                EditorGUILayout.HelpBox("This module is disabled and will not be initialized at runtime.", MessageType.Warning);
-                serializedObject.ApplyModifiedProperties();
-                return;
-            }
-
-            // Inline IAPSettings editor
+            // Inline SystemSettings editor
             if (_config.Settings != null)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                EditorGUILayout.LabelField("IAP SETTINGS", EditorStyleTemplate.GrayBoldLabelStyle);
+                EditorGUILayout.LabelField("SYSTEM SETTINGS", EditorStyleTemplate.GrayBoldLabelStyle);
 
                 var divRect = GUILayoutUtility.GetRect(1f, 1f, GUILayout.ExpandWidth(true));
                 EditorGUI.DrawRect(divRect, EditorGUIUtility.isProSkin
@@ -82,7 +72,7 @@ namespace MobileCore.IAPModule.Editor
             else
             {
                 EditorGUILayout.HelpBox(
-                    "IAPSettings sub-asset not found inside this asset.\nClick below to repair.",
+                    "SystemSettings sub-asset not found inside this asset.\nClick below to repair.",
                     MessageType.Error);
 
                 if (EditorStyleTemplate.DrawButton("Repair Sub-Asset",

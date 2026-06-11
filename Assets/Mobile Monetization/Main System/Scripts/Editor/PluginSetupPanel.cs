@@ -93,9 +93,9 @@ namespace MobileCore.MainModule.Editor
                         "A legacy Main System Manager was found in the active scene. You can safely remove it.",
                         MessageType.Warning);
 
-                    if (GUILayout.Button("Clean Scene (Remove Legacy Manager)",
-                        EditorStyleTemplate.CreateButtonStyle(new Color(0.7f, 0.2f, 0.2f), null, 26),
-                        GUILayout.Height(26f)))
+                    if (EditorStyleTemplate.DrawButton("Clean Scene (Remove Legacy Manager)",
+                        new Color(0.7f, 0.2f, 0.2f),
+                        new GUILayoutOption[] { GUILayout.Height(26f) }))
                     {
                         RemoveLegacyManagerFromScene();
                     }
@@ -121,9 +121,9 @@ namespace MobileCore.MainModule.Editor
 
                     EditorGUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("✦  Create All Settings",
-                        EditorStyleTemplate.CreateButtonStyle(new Color(0.18f, 0.52f, 0.28f), null, 26),
-                        GUILayout.Height(30f), GUILayout.Width(200f)))
+                    if (EditorStyleTemplate.DrawButton("✦  Create All Settings",
+                        new Color(0.18f, 0.52f, 0.28f),
+                        new GUILayoutOption[] { GUILayout.Height(30f), GUILayout.Width(200f) }))
                     {
                         CreateAllSettings();
                         ReloadConfig();
@@ -150,9 +150,9 @@ namespace MobileCore.MainModule.Editor
                     EditorGUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
 
-                    if (GUILayout.Button("Open Config",
-                        EditorStyleTemplate.CreateButtonStyle(new Color(0.20f, 0.47f, 0.82f), null, 26),
-                        GUILayout.Height(26f), GUILayout.Width(140f)))
+                    if (EditorStyleTemplate.DrawButton("Open Config",
+                        new Color(0.20f, 0.47f, 0.82f),
+                        new GUILayoutOption[] { GUILayout.Height(26f), GUILayout.Width(140f) }))
                     {
                         Selection.activeObject = _config;
                         EditorUtility.FocusProjectWindow();
@@ -160,8 +160,8 @@ namespace MobileCore.MainModule.Editor
 
                     GUILayout.Space(6f);
 
-                    if (GUILayout.Button("Reload", EditorStyleTemplate.GrayButtonStyle,
-                        GUILayout.Height(26f), GUILayout.Width(70f)))
+                    if (EditorStyleTemplate.DrawGrayButton("Reload",
+                        new GUILayoutOption[] { GUILayout.Height(26f), GUILayout.Width(70f) }))
                     {
                         ReloadConfig();
                     }
@@ -202,18 +202,14 @@ namespace MobileCore.MainModule.Editor
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-            Color statusColor = enabled ? new Color(0.2f, 0.7f, 0.3f) : new Color(0.6f, 0.6f, 0.6f);
-            string statusLabel = enabled ? "ON" : "OFF";
-
-            GUIStyle statusStyle = EditorStyleTemplate.CreateToggleButtonStyle(enabled, 11);
-            GUILayout.Label(statusLabel, statusStyle, GUILayout.Width(34f), GUILayout.Height(18f));
+            EditorStyleTemplate.DrawStatusLabel(enabled ? "ON" : "OFF", enabled, new GUILayoutOption[] { GUILayout.Width(34f), GUILayout.Height(18f) });
             GUILayout.Space(4f);
             EditorGUILayout.LabelField(name, EditorStyleTemplate.GrayTextStyle, GUILayout.ExpandWidth(true));
 
             if (module != null)
             {
-                if (GUILayout.Button("Open", EditorStyleTemplate.GrayButtonStyle,
-                    GUILayout.Width(46f), GUILayout.Height(18f)))
+                if (EditorStyleTemplate.DrawGrayButton("Open",
+                    new GUILayoutOption[] { GUILayout.Width(46f), GUILayout.Height(18f) }))
                 {
                     Selection.activeObject = module;
                     EditorUtility.FocusProjectWindow();
@@ -406,9 +402,9 @@ namespace MobileCore.MainModule.Editor
 
             using (new EditorGUI.DisabledScope(!exists))
             {
-                if (GUILayout.Button("Open",
-                    EditorStyleTemplate.CreateButtonStyle(new Color(0.20f, 0.47f, 0.82f), null, 22),
-                    GUILayout.Height(22f), GUILayout.Width(58f)))
+                if (EditorStyleTemplate.DrawButton("Open",
+                    new Color(0.20f, 0.47f, 0.82f),
+                    new GUILayoutOption[] { GUILayout.Height(22f), GUILayout.Width(58f) }))
                 {
                     OpenScene(scenePath);
                 }

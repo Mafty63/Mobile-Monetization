@@ -392,58 +392,104 @@ namespace MobileCore.MainModule.Editor
         }
 
         /// <summary>
-        /// Buat button style dengan warna custom
+        /// Buat button style bawaan yang aman (Fallback kompatibilitas API)
         /// </summary>
         public static GUIStyle CreateButtonStyle(Color normalColor, Color? activeColor = null, int height = 20)
         {
-            if (!_stylesInitialized) InitializeStyles();
-
-            var style = new GUIStyle()
+            var style = new GUIStyle(GUI.skin.button)
             {
                 fixedHeight = height,
                 alignment = TextAnchor.MiddleCenter,
-                fontStyle = FontStyle.Bold,
-                normal = {
-                    textColor = Color.white,
-                    background = MakeTex(2, 2, normalColor)
-                }
+                fontStyle = FontStyle.Bold
             };
-
-            if (activeColor.HasValue)
-            {
-                style.active.background = MakeTex(2, 2, activeColor.Value);
-            }
-
+            style.normal.textColor = Color.white;
             return style;
         }
 
         /// <summary>
-        /// Buat toggle button style dengan warna enabled/disabled
+        /// Buat toggle button style bawaan yang aman (Fallback kompatibilitas API)
         /// </summary>
         public static GUIStyle CreateToggleButtonStyle(bool isEnabled, int height = 20)
         {
-            if (!_stylesInitialized) InitializeStyles();
-
-            var style = new GUIStyle()
+            var style = new GUIStyle(GUI.skin.box)
             {
                 fixedHeight = height,
                 alignment = TextAnchor.MiddleCenter,
-                fontStyle = FontStyle.Bold,
-                normal = {
-                    textColor = Color.white
-                }
+                fontStyle = FontStyle.Bold
             };
-
-            if (isEnabled)
-            {
-                style.normal.background = MakeTex(2, 2, new Color(0.2f, 0.8f, 0.3f));
-            }
-            else
-            {
-                style.normal.background = MakeTex(2, 2, new Color(0.8f, 0.2f, 0.2f));
-            }
-
+            style.normal.textColor = Color.white;
             return style;
+        }
+
+        /// <summary>
+        /// Gambar tombol dengan warna latar belakang solid menggunakan GUI.backgroundColor.
+        /// Bebas dari lag rendering texture bitmap di DPI tinggi dan mencegah memory leaks.
+        /// </summary>
+        public static bool DrawButton(string label, Color color, GUILayoutOption[] options = null)
+        {
+            Color prev = GUI.backgroundColor;
+            GUI.backgroundColor = color;
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            buttonStyle.normal.textColor = Color.white;
+            buttonStyle.hover.textColor = Color.white;
+            buttonStyle.active.textColor = Color.white;
+
+            bool clicked = GUILayout.Button(label, buttonStyle, options ?? new GUILayoutOption[0]);
+            GUI.backgroundColor = prev;
+            return clicked;
+        }
+
+        /// <summary>
+        /// Gambar tombol toggle (DISABLE/ENABLE) berbasis warna solid tanpa texture.
+        /// </summary>
+        public static bool DrawToggleButton(bool isEnabled, GUILayoutOption[] options = null)
+        {
+            Color btnColor = isEnabled ? new Color(0.75f, 0.22f, 0.22f) : new Color(0.20f, 0.55f, 0.28f); // Merah untuk DISABLE, Hijau untuk ENABLE
+            string label = isEnabled ? "DISABLE" : "ENABLE";
+            return DrawButton(label, btnColor, options);
+        }
+
+        /// <summary>
+        /// Gambar tombol abu-abu netral untuk opsi 'Open', '✕', dsb.
+        /// </summary>
+        public static bool DrawGrayButton(string label, GUILayoutOption[] options = null)
+        {
+            Color grayColor = EditorGUIUtility.isProSkin ? new Color(0.28f, 0.28f, 0.30f) : new Color(0.82f, 0.82f, 0.84f);
+            Color prev = GUI.backgroundColor;
+            GUI.backgroundColor = grayColor;
+            
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button)
+            {
+                alignment = TextAnchor.MiddleCenter
+            };
+            buttonStyle.normal.textColor = EditorGUIUtility.isProSkin ? new Color(0.85f, 0.85f, 0.85f) : new Color(0.25f, 0.25f, 0.25f);
+            
+            bool clicked = GUILayout.Button(label, buttonStyle, options ?? new GUILayoutOption[0]);
+            GUI.backgroundColor = prev;
+            return clicked;
+        }
+
+        /// <summary>
+        /// Gambar label box status (misal: ON/OFF) menggunakan GUI.backgroundColor.
+        /// </summary>
+        public static void DrawStatusLabel(string label, bool enabled, GUILayoutOption[] options = null)
+        {
+            Color prev = GUI.backgroundColor;
+            GUI.backgroundColor = enabled ? new Color(0.20f, 0.55f, 0.28f) : new Color(0.45f, 0.45f, 0.45f);
+            
+            GUIStyle labelStyle = new GUIStyle(GUI.skin.box)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontStyle = FontStyle.Bold
+            };
+            labelStyle.normal.textColor = Color.white;
+            
+            GUILayout.Label(label, labelStyle, options ?? new GUILayoutOption[0]);
+            GUI.backgroundColor = prev;
         }
     }
 }

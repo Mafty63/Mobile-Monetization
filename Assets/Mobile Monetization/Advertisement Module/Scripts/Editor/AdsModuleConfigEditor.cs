@@ -9,18 +9,13 @@ namespace MobileCore.Advertisements.Editor
     public class AdsModuleConfigEditor : UnityEditor.Editor
     {
         private AdsModuleConfig _config;
-        private SerializedProperty _dummyCanvasProp;
-        private SerializedProperty _gdprPrefabProp;
 
         // Inline editor for the embedded AdsSettings sub-asset
         private UnityEditor.Editor _settingsEditor;
-        private bool _showPrefabs = true;
 
         private void OnEnable()
         {
             _config = (AdsModuleConfig)target;
-            _dummyCanvasProp = serializedObject.FindProperty("dummyCanvasPrefab");
-            _gdprPrefabProp  = serializedObject.FindProperty("gdprPrefab");
 
             // Auto-create the embedded sub-asset if missing
             EnsureSubAsset();
@@ -67,21 +62,6 @@ namespace MobileCore.Advertisements.Editor
                 return;
             }
 
-            // Prefabs section
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            _showPrefabs = EditorGUILayout.Foldout(_showPrefabs, "PREFABS", true, EditorStyleTemplate.GrayFoldoutHeaderStyle);
-            if (_showPrefabs)
-            {
-                GUILayout.Space(4f);
-                EditorGUILayout.PropertyField(_dummyCanvasProp, new GUIContent("Dummy Canvas Prefab",
-                    "Canvas prefab used for Dummy ad provider (editor/testing)."));
-                EditorGUILayout.PropertyField(_gdprPrefabProp, new GUIContent("GDPR Prefab",
-                    "Consent dialog shown on first launch when GDPR is enabled."));
-            }
-            EditorGUILayout.EndVertical();
-
-            GUILayout.Space(8f);
-
             // Inline AdsSettings editor
             if (_config.Settings != null)
             {
@@ -107,9 +87,9 @@ namespace MobileCore.Advertisements.Editor
                     "AdsSettings sub-asset not found inside this asset.\nClick below to repair.",
                     MessageType.Error);
 
-                if (GUILayout.Button("Repair Sub-Asset",
-                    EditorStyleTemplate.CreateButtonStyle(new Color(0.7f, 0.2f, 0.2f), null, 24),
-                    GUILayout.Height(24f)))
+                if (EditorStyleTemplate.DrawButton("Repair Sub-Asset",
+                    new Color(0.7f, 0.2f, 0.2f),
+                    new GUILayoutOption[] { GUILayout.Height(24f) }))
                 {
                     _config.CreateEmbeddedSettings();
                     RebuildSettingsEditor();

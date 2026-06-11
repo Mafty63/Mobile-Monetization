@@ -35,12 +35,7 @@ namespace MobileCore.Advertisements.IDFA.Editor
                 PlistElementDict rootDict = plist.root;
                 
                 // Add NSUserTrackingUsageDescription
-                string trackingDescription = adsSettings.TrackingDescription;
-                if (string.IsNullOrEmpty(trackingDescription))
-                {
-                    trackingDescription = "Your data will be used to deliver personalized ads to you.";
-                }
-                
+                string trackingDescription = "Your data will be used to deliver personalized ads to you.";
                 rootDict.SetString("NSUserTrackingUsageDescription", trackingDescription);
 
                 File.WriteAllText(plistPath, plist.WriteToString());

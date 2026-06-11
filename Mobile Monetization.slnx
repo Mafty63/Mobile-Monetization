@@ -29,8 +29,8 @@
   <Project Path="Unity.Purchasing.Stores.csproj" />
   <Project Path="Unity.VisualScripting.Flow.csproj" />
   <Project Path="Unity.PerformanceTesting.csproj" />
-  <Project Path="UnityEditor.Purchasing.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="UnityEditor.Purchasing.csproj" />
   <Project Path="Unity.Burst.Editor.csproj" />
   <Project Path="Unity.Rider.Editor.csproj" />
   <Project Path="Unity.VisualScripting.State.csproj" />

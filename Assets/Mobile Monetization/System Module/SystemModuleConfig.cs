@@ -8,25 +8,51 @@ namespace MobileCore.SystemModule
     {
         public override string ModuleName => "System Module";
 
-        [Header("Canvas")]
-        [Tooltip("Canvas prefab containing core UI elements like message system and loading panels.")]
-        [SerializeField] private GameObject systemCanvas;
-
-        [Header("Screen Settings")]
-        [SerializeField] private ScreenSettings screenSettings = new ScreenSettings();
+        [SerializeField] private SystemSettings settings;
+        public SystemSettings Settings => settings;
 
         public override void Initialize(GameObject parent)
         {
-            if (systemCanvas != null)
+            if (settings == null)
             {
-                GameObject canvasGameObject = Object.Instantiate(systemCanvas);
+                Debug.LogError("[SystemModuleConfig] SystemSettings sub-asset is missing! " +
+                               "Select this asset and click 'Repair Sub-Asset' in the Inspector.");
+                return;
+            }
+
+            if (settings.SystemCanvas != null)
+            {
+                GameObject canvasGameObject = Object.Instantiate(settings.SystemCanvas);
                 canvasGameObject.transform.SetParent(parent.transform);
                 canvasGameObject.transform.localScale = Vector3.one;
                 canvasGameObject.transform.localPosition = Vector3.zero;
                 canvasGameObject.transform.localRotation = Quaternion.identity;
             }
 
-            screenSettings?.Initialize();
+            settings.ScreenSettings?.Initialize();
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Called by the editor to embed a fresh SystemSettings as a child of this asset.
+        /// </summary>
+        public void CreateEmbeddedSettings()
+        {
+            if (settings != null) return;
+
+            settings = CreateInstance<SystemSettings>();
+            settings.name = "SystemSettings";
+            UnityEditor.AssetDatabase.AddObjectToAsset(settings, this);
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+
+        private void OnValidate()
+        {
+            // If the sub-asset was deleted externally, clear the reference
+            if (settings != null && !UnityEditor.AssetDatabase.IsSubAsset(settings))
+                settings = null;
+        }
+#endif
     }
 }

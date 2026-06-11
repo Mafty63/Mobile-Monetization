@@ -11,17 +11,17 @@ namespace MobileCore.Advertisements
     {
         [InspectorName("Banner")]
         [Tooltip("Ad provider used for banner ads.")]
-        [SerializeField] private AdProvider bannerType = AdProvider.Dummy;
+        [SerializeField] private AdProvider bannerType = AdProvider.Disable;
         public AdProvider BannerType => bannerType;
 
         [InspectorName("Interstitial")]
         [Tooltip("Ad provider used for interstitial ads.")]
-        [SerializeField] private AdProvider interstitialType = AdProvider.Dummy;
+        [SerializeField] private AdProvider interstitialType = AdProvider.Disable;
         public AdProvider InterstitialType => interstitialType;
 
         [InspectorName("Rewarded")]
         [Tooltip("Ad provider used for rewarded video ads.")]
-        [SerializeField] private AdProvider rewardedVideoType = AdProvider.Dummy;
+        [SerializeField] private AdProvider rewardedVideoType = AdProvider.Disable;
         public AdProvider RewardedVideoType => rewardedVideoType;
 
         public void OnBeforeSerialize() { }
@@ -70,10 +70,6 @@ namespace MobileCore.Advertisements
         [SerializeField] private AppLovinContainer appLovinContainer;
         public AppLovinContainer AppLovinContainer => appLovinContainer;
 
-        [AdsProviderContainer("Dummy", 1000)]
-        [SerializeField] private AdDummyContainer dummyContainer;
-        public AdDummyContainer DummyContainer => dummyContainer;
-
 
         [Tooltip("Enables logging. Use it to debug advertisement logic.")]
         [SerializeField] private bool systemLogs = false;
@@ -117,15 +113,26 @@ namespace MobileCore.Advertisements
         [SerializeField] private bool isGDPREnabled = false;
         public bool IsGDPREnabled => isGDPREnabled;
 
+        [InspectorName("GDPR Prefab")]
+        [Tooltip("The GDPR consent panel prefab. Automatically assigned by default.")]
+        [SerializeField] private GameObject gdprPrefab;
+        public GameObject GDPRPrefab => gdprPrefab;
+
+#if UNITY_EDITOR
+        public void SetDefaultGDPRPrefab(GameObject prefab)
+        {
+            if (gdprPrefab == null)
+            {
+                gdprPrefab = prefab;
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+#endif
+
         [InspectorName("IDFA Enabled")]
         [Tooltip("Request App Tracking Transparency (ATT) permission on iOS before initializing ads.")]
         [SerializeField] private bool isIDFAEnabled = false;
         public bool IsIDFAEnabled => isIDFAEnabled;
-
-        [InspectorName("Description")]
-        [Tooltip("The description shown to users when requesting tracking permission (ATT dialog on iOS).")]
-        [SerializeField] private string trackingDescription = "Your data will be used to deliver personalized ads to you.";
-        public string TrackingDescription => trackingDescription;
 
         [InspectorName("Privacy Link")]
         [Tooltip("URL to your app's privacy policy page.")]
@@ -136,26 +143,11 @@ namespace MobileCore.Advertisements
         [Tooltip("URL to your app's terms of use page.")]
         [SerializeField] private string termsOfUseLink = "https://mywebsite.com/terms";
         public string TermsOfUseLink => termsOfUseLink;
-
-        public bool IsDummyEnabled()
-        {
-            if (bannerType == AdProvider.Dummy)
-                return true;
-
-            if (interstitialType == AdProvider.Dummy)
-                return true;
-
-            if (rewardedVideoType == AdProvider.Dummy)
-                return true;
-
-            return false;
-        }
     }
 
     public enum AdProvider
     {
         Disable = 0,
-        Dummy = 1,
 #if ADMOB_PROVIDER
         AdMob = 2,
 #endif

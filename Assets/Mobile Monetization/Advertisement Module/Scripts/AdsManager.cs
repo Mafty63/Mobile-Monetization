@@ -32,7 +32,6 @@ namespace MobileCore.Advertisements
         // Ad Providers
         private static readonly BaseAdProviderHandler[] AD_PROVIDERS = new BaseAdProviderHandler[]
         {
-            new AdDummyHandler(AdProvider.Dummy), 
         #if ADMOB_PROVIDER
             new AdMobHandler(AdProvider.AdMob), 
         #endif
@@ -72,12 +71,8 @@ namespace MobileCore.Advertisements
 
         // Active modules
         private static Dictionary<AdProvider, BaseAdProviderHandler> advertisingActiveHandlers = new Dictionary<AdProvider, BaseAdProviderHandler>();
-        
-        private static GameObject dummyCanvasPrefab;
-        public static GameObject DummyCanvasPrefab => dummyCanvasPrefab;
 
-        private static GameObject gdprPrefab;
-        public static GameObject GDPRPrefab => gdprPrefab;
+
 
         // Events
         public static event PrimitiveCallback ForcedAdDisabled;
@@ -107,7 +102,7 @@ namespace MobileCore.Advertisements
         /// <summary>
         /// Initialize Ads Module.
         /// </summary>
-        public static void Initialize(AdsSettings adsSettings, GameObject dummyCanvas, GameObject gdprPanel)
+        public static void Initialize(AdsSettings adsSettings)
         {
             if (isModuleInitialized)
             {
@@ -118,8 +113,6 @@ namespace MobileCore.Advertisements
             isModuleInitialized = true;
             isFirstAdLoaded = false;
             settings = adsSettings;
-            dummyCanvasPrefab = dummyCanvas;
-            gdprPrefab = gdprPanel;
 
             isForcedAdEnabled = IsForcedAdEnabled(false);
 
@@ -177,10 +170,25 @@ namespace MobileCore.Advertisements
 
         private static void ShowGDPRPanel(System.Action onCompleted)
         {
-            GameObject gdprPanelObject = GameObject.Instantiate(gdprPrefab);
+            if (settings == null || settings.GDPRPrefab == null)
+            {
+                LogWarning("[AdsManager]: GDPR Panel prefab is not set — GDPR step skipped.");
+                onCompleted?.Invoke();
+                return;
+            }
+
+            GameObject gdprPanelObject = Object.Instantiate(settings.GDPRPrefab);
             gdprPanelObject.transform.ResetGlobal();
 
             GDPRPanel gdprPanel = gdprPanelObject.GetComponent<GDPRPanel>();
+            if (gdprPanel == null)
+            {
+                LogWarning("[AdsManager]: GDPR panel object has no GDPRPanel component — GDPR step skipped.");
+                Object.Destroy(gdprPanelObject);
+                onCompleted?.Invoke();
+                return;
+            }
+
             gdprPanel.Initialize(onCompleted);
         }
 

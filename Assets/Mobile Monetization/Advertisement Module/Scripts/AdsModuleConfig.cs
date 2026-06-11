@@ -11,12 +11,6 @@ namespace MobileCore.Advertisements
         [SerializeField] private AdsSettings settings;
         public AdsSettings Settings => settings;
 
-        [Header("Prefabs")]
-        [SerializeField] private GameObject dummyCanvasPrefab;
-        public GameObject DummyCanvasPrefab => dummyCanvasPrefab;
-
-        [SerializeField] private GameObject gdprPrefab;
-        public GameObject GDPRPrefab => gdprPrefab;
 
         public override void Initialize(GameObject parent)
         {
@@ -27,7 +21,7 @@ namespace MobileCore.Advertisements
                 return;
             }
 
-            AdsManager.Initialize(settings, dummyCanvasPrefab, gdprPrefab);
+            AdsManager.Initialize(settings);
         }
 
 #if UNITY_EDITOR
@@ -40,6 +34,7 @@ namespace MobileCore.Advertisements
 
             settings = CreateInstance<AdsSettings>();
             settings.name = "AdsSettings";
+            TryAssignDefaultGDPR();
             UnityEditor.AssetDatabase.AddObjectToAsset(settings, this);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.EditorUtility.SetDirty(this);
@@ -50,6 +45,30 @@ namespace MobileCore.Advertisements
             // If the sub-asset was deleted externally, clear the reference
             if (settings != null && !UnityEditor.AssetDatabase.IsSubAsset(settings))
                 settings = null;
+
+            TryAssignDefaultGDPR();
+        }
+
+        private void TryAssignDefaultGDPR()
+        {
+            if (settings != null && settings.GDPRPrefab == null)
+            {
+                GameObject defaultGdpr = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Mobile Monetization/Plugin Resources/Plugin Resources/Prefabs/GDPR.prefab");
+                if (defaultGdpr == null)
+                {
+                    string[] guids = UnityEditor.AssetDatabase.FindAssets("GDPR t:Prefab");
+                    if (guids != null && guids.Length > 0)
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
+                        defaultGdpr = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    }
+                }
+
+                if (defaultGdpr != null)
+                {
+                    settings.SetDefaultGDPRPrefab(defaultGdpr);
+                }
+            }
         }
 #endif
     }

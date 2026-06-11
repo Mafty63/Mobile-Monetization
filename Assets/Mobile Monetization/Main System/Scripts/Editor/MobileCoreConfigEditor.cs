@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MobileCore.MainModule;
+using MobileCore.SystemModule;
 
 namespace MobileCore.MainModule.Editor
 {
@@ -13,191 +14,275 @@ namespace MobileCore.MainModule.Editor
     {
         private SerializedProperty modulesProp;
 
+        private class ModuleEditorData
+        {
+            public MobileModule ModuleAsset;
+            public SerializedObject SerializedObject;
+            public SerializedProperty EnabledProp;
+            public bool IsExpanded = true;
+            public bool IsCoreModule;
+            public int ListIndex;
+        }
+
+        private readonly Dictionary<string, ModuleEditorData> moduleEditorCache = new Dictionary<string, ModuleEditorData>();
+        private readonly List<ModuleEditorData> allModulesList = new List<ModuleEditorData>();
+
         private void OnEnable()
         {
             modulesProp = serializedObject.FindProperty("modules");
+            RefreshModuleCache();
+        }
+
+        private void OnDisable()
+        {
+            moduleEditorCache.Clear();
+            allModulesList.Clear();
         }
 
         public override void OnInspectorGUI()
         {
-            // Auto clean any destroyed/null module assets from the list before drawing
             CleanNullModules();
-
             serializedObject.Update();
+            RefreshModuleCache();
 
             DrawHeader();
-            GUILayout.Space(8);
-
-            DrawModuleList();
-
-            GUILayout.Space(8);
-            DrawAddModuleHint();
+            EditorGUILayout.Space(4);
+            DrawModulesSection();
 
             serializedObject.ApplyModifiedProperties();
+
+            foreach (var data in allModulesList)
+                data.SerializedObject?.ApplyModifiedProperties();
         }
 
-        // ── Header ──────────────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────────────────────────
         private void DrawHeader()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("MOBILE CORE CONFIGURATION", EditorStyleTemplate.GrayBoldLabelStyle);
-            EditorGUILayout.HelpBox(
-                "Register all active MobileModule configuration assets below.\n" +
-                "At startup, the system initializes these modules sequentially in the order listed.",
-                MessageType.Info);
+            EditorGUILayout.LabelField("MOBILE CORE CONFIG", EditorStyleTemplate.GrayBoldLabelStyle);
+            EditorGUILayout.LabelField("Manage initialization modules. Modules are loaded top to bottom at runtime.", EditorStyles.wordWrappedMiniLabel);
             EditorGUILayout.EndVertical();
         }
 
-        // ── Module List ──────────────────────────────────────────────────────────────
-        private void DrawModuleList()
+        // ─────────────────────────────────────────────────────────────────────────────
+        private void DrawModulesSection()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            
-            // Header Row with Title + Clean-up option if there are empty slots
+
+            // Section header row
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("MODULE REGISTRY", EditorStyleTemplate.GrayBoldLabelStyle);
-            
-            if (HasEmptySlots())
-            {
-                if (GUILayout.Button("Clean Empty Slots", EditorStyles.miniButton, GUILayout.Width(120f)))
-                {
-                    RemoveEmptySlots();
-                }
-            }
+            EditorGUILayout.LabelField("MODULES", EditorStyleTemplate.GrayBoldLabelStyle, GUILayout.ExpandWidth(true));
+            GUILayout.FlexibleSpace();
+            if (EditorStyleTemplate.DrawButton("+ Add Module", new Color(0.18f, 0.50f, 0.20f),
+                    new GUILayoutOption[] { GUILayout.Height(22f), GUILayout.Width(110f) }))
+                ShowAddModuleMenu();
             EditorGUILayout.EndHorizontal();
 
-            var divRect = GUILayoutUtility.GetRect(1f, 1f, GUILayout.ExpandWidth(true));
-            bool dark = EditorGUIUtility.isProSkin;
-            EditorGUI.DrawRect(divRect, dark ? new Color(0.32f, 0.32f, 0.35f) : new Color(0.68f, 0.68f, 0.70f));
-            GUILayout.Space(8f);
+            EditorGUILayout.Space(4);
 
-            if (modulesProp.arraySize == 0)
+            if (allModulesList.Count == 0)
             {
-                EditorGUILayout.HelpBox("No modules registered. Click '+ Add Module' below to choose a module type. The system will auto-generate the configuration and settings for you.", MessageType.Warning);
+                EditorGUILayout.HelpBox("No modules registered. Click '+ Add Module' to add one.", MessageType.Info);
             }
             else
             {
-                for (int i = 0; i < modulesProp.arraySize; i++)
+                for (int i = 0; i < allModulesList.Count; i++)
                 {
-                    DrawModuleEntry(i);
-                    if (i < modulesProp.arraySize - 1)
-                        GUILayout.Space(6f);
+                    DrawModuleRow(allModulesList[i]);
+                    if (i < allModulesList.Count - 1)
+                        GUILayout.Space(3f);
                 }
             }
 
-            GUILayout.Space(10f);
-
-            // Add Module Button
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("+ Add Module",
-                EditorStyleTemplate.CreateButtonStyle(new Color(0.20f, 0.55f, 0.28f), null, 24),
-                GUILayout.Height(24f), GUILayout.Width(160f)))
-            {
-                ShowAddModuleMenu();
-            }
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-
-            GUILayout.Space(4f);
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawModuleEntry(int index)
+        private void DrawModuleRow(ModuleEditorData data)
         {
-            SerializedProperty element = modulesProp.GetArrayElementAtIndex(index);
-            MobileModule module = element.objectReferenceValue as MobileModule;
+            EditorGUILayout.BeginVertical(EditorStyles.textArea);
 
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-            // Top row: index label + module name + remove button
+            // ── Row header ──
             EditorGUILayout.BeginHorizontal();
 
-            string labelText = module != null ? $"[{index}]  {module.ModuleName}" : $"[{index}]  (Empty Slot)";
-            EditorGUILayout.LabelField(labelText, EditorStyleTemplate.GrayTextStyle, GUILayout.ExpandWidth(true));
+            data.IsExpanded = EditorGUILayout.Foldout(data.IsExpanded,
+                data.ModuleAsset.ModuleName.ToUpper(),
+                true, EditorStyleTemplate.GrayFoldoutHeaderStyle);
 
-            if (GUILayout.Button("✕", EditorStyleTemplate.GrayButtonStyle, GUILayout.Width(22f), GUILayout.Height(18f)))
+            GUILayout.FlexibleSpace();
+
+            if (data.IsCoreModule)
             {
-                element.objectReferenceValue = null;
-                modulesProp.DeleteArrayElementAtIndex(index);
-                // For safety on Unity's array serialization behavior
-                if (index < modulesProp.arraySize && modulesProp.GetArrayElementAtIndex(index).objectReferenceValue == null)
+                // "ALWAYS ON" label — no toggle, no remove
+                GUIStyle alwaysOnStyle = new GUIStyle(EditorStyles.miniLabel)
                 {
-                    modulesProp.DeleteArrayElementAtIndex(index);
-                }
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.EndVertical();
-                return;
-            }
-            EditorGUILayout.EndHorizontal();
-
-            GUILayout.Space(2f);
-
-            // Object field is made READ-ONLY (non-editable) to prevent incorrect manual drag/drop and bypasses
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUILayout.ObjectField(element.objectReferenceValue, typeof(MobileModule), false);
-            EditorGUI.EndDisabledGroup();
-
-            // Quick-select and navigation button
-            if (module != null)
-            {
-                GUILayout.Space(4f);
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Open Module Config",
-                    EditorStyleTemplate.CreateButtonStyle(new Color(0.20f, 0.47f, 0.82f), null, 20),
-                    GUILayout.Height(20f), GUILayout.Width(150f)))
+                    fontStyle = FontStyle.Bold,
+                    normal    = { textColor = new Color(0.30f, 0.65f, 1.0f) }
+                };
+                GUILayout.Label("ALWAYS ON", alwaysOnStyle, GUILayout.Height(20f));
+                GUILayout.Space(4);
+                if (EditorStyleTemplate.DrawGrayButton("Open", new GUILayoutOption[] { GUILayout.Height(20f), GUILayout.Width(50f) }))
                 {
-                    Selection.activeObject = module;
+                    Selection.activeObject = data.ModuleAsset;
                     EditorUtility.FocusProjectWindow();
                 }
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
+            }
+            else
+            {
+                // DISABLE / ENABLE toggle
+                if (data.EnabledProp != null)
+                {
+                    bool isEnabled = data.EnabledProp.boolValue;
+                    if (EditorStyleTemplate.DrawToggleButton(isEnabled,
+                            new GUILayoutOption[] { GUILayout.Height(20f), GUILayout.Width(76f) }))
+                    {
+                        data.EnabledProp.boolValue = !isEnabled;
+                        data.SerializedObject.ApplyModifiedProperties();
+                    }
+                }
+
+                GUILayout.Space(4);
+
+                if (EditorStyleTemplate.DrawGrayButton("Open",
+                        new GUILayoutOption[] { GUILayout.Height(20f), GUILayout.Width(50f) }))
+                {
+                    Selection.activeObject = data.ModuleAsset;
+                    EditorUtility.FocusProjectWindow();
+                }
+
+                GUILayout.Space(4);
+
+                if (EditorStyleTemplate.DrawGrayButton("✕",
+                        new GUILayoutOption[] { GUILayout.Height(20f), GUILayout.Width(22f) }))
+                {
+                    if (EditorUtility.DisplayDialog("Remove Module",
+                            $"Remove '{data.ModuleAsset.ModuleName}' from the registry?", "Yes", "No"))
+                    {
+                        RemoveModuleFromRegistry(data.ListIndex);
+                        EditorGUILayout.EndHorizontal();
+                        EditorGUILayout.EndVertical();
+                        return;
+                    }
+                }
             }
 
-            EditorGUILayout.EndVertical();
-        }
+            EditorGUILayout.EndHorizontal();
 
-        // ── Help Hint Box ───────────────────────────────────────────────────────────
-        private void DrawAddModuleHint()
-        {
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            EditorGUILayout.LabelField("HOW TO CREATE NEW MODULE TYPES", EditorStyleTemplate.GrayBoldLabelStyle);
-            GUILayout.Space(4f);
-            EditorGUILayout.LabelField(
-                "1. Create a C# script extending MobileModule.\n" +
-                "2. Override ModuleName and implement Initialize(GameObject parent).\n" +
-                "3. Decorate the class with [CreateAssetMenu].\n" +
-                "4. Clicking '+ Add Module' will automatically detect your class and let you generate it directly.",
-                EditorStyles.wordWrappedMiniLabel);
-            EditorGUILayout.EndVertical();
-        }
-
-        // ── Dynamic Module Creation Menu ────────────────────────────────────────────
-        private void ShowAddModuleMenu()
-        {
-            GenericMenu menu = new GenericMenu();
-            List<System.Type> moduleTypes = FindAllModuleTypes();
-
-            foreach (var type in moduleTypes)
+            // ── Row body (expanded) ──
+            if (data.IsExpanded)
             {
-                string displayName = GetModuleNameFromType(type);
-                bool alreadyRegistered = HasModuleOfType(type);
-
-                if (alreadyRegistered)
+                bool active = data.IsCoreModule || (data.EnabledProp != null && data.EnabledProp.boolValue);
+                if (active)
                 {
-                    menu.AddDisabledItem(new GUIContent($"{displayName} (Already Registered)"));
+                    EditorGUILayout.BeginVertical(EditorStyles.textArea);
+                    DrawModuleProperties(data);
+                    EditorGUILayout.EndVertical();
                 }
                 else
                 {
-                    menu.AddItem(new GUIContent(displayName), false, () => AddModuleToRegistry(type));
+                    GUILayout.Space(2);
+                    EditorGUILayout.HelpBox("Module is disabled — will not run at startup.", MessageType.Warning);
                 }
             }
 
-            if (moduleTypes.Count == 0)
+            EditorGUILayout.EndVertical();
+        }
+
+        // ── Property renderer ────────────────────────────────────────────────────────
+        private void DrawModuleProperties(ModuleEditorData data)
+        {
+            data.SerializedObject.Update();
+            SerializedProperty iterator = data.SerializedObject.GetIterator();
+            bool enterChildren = true;
+            bool hasProps = false;
+
+            using (new EditorGUI.DisabledScope(true))
             {
-                menu.AddDisabledItem(new GUIContent("No MobileModule classes found in compilation assemblies"));
+                while (iterator.NextVisible(enterChildren))
+                {
+                    enterChildren = false;
+                    if (iterator.name == "m_Script" || iterator.name == "moduleEnabled")
+                        continue;
+
+                    if (!hasProps) { GUILayout.Space(4); hasProps = true; }
+
+                    EditorGUILayout.BeginHorizontal();
+                    string niceName = ObjectNames.NicifyVariableName(iterator.name);
+                    EditorGUILayout.LabelField(new GUIContent(niceName, iterator.tooltip),
+                        EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(140f));
+                    EditorGUILayout.PropertyField(iterator, GUIContent.none, true);
+                    EditorGUILayout.EndHorizontal();
+                }
             }
+        }
+
+        // ── Cache ────────────────────────────────────────────────────────────────────
+        private void RefreshModuleCache()
+        {
+            var currentGuids = new HashSet<string>();
+            for (int i = 0; i < modulesProp.arraySize; i++)
+            {
+                var obj = modulesProp.GetArrayElementAtIndex(i).objectReferenceValue as MobileModule;
+                if (obj == null) continue;
+                string g = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(obj));
+                if (!string.IsNullOrEmpty(g)) currentGuids.Add(g);
+            }
+
+            // Evict stale
+            var stale = moduleEditorCache.Keys.Where(k => !currentGuids.Contains(k)).ToList();
+            foreach (var k in stale) moduleEditorCache.Remove(k);
+
+            allModulesList.Clear();
+
+            for (int i = 0; i < modulesProp.arraySize; i++)
+            {
+                var module = modulesProp.GetArrayElementAtIndex(i).objectReferenceValue as MobileModule;
+                if (module == null) continue;
+
+                string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(module));
+
+                if (!moduleEditorCache.TryGetValue(guid, out ModuleEditorData data))
+                {
+                    var so = new SerializedObject(module);
+                    data = new ModuleEditorData
+                    {
+                        ModuleAsset    = module,
+                        SerializedObject = so,
+                        EnabledProp    = so.FindProperty("moduleEnabled"),
+                        IsCoreModule   = module is SystemModuleConfig,
+                        ListIndex      = i
+                    };
+                    moduleEditorCache[guid] = data;
+                }
+                else
+                {
+                    data.ListIndex   = i;
+                    data.ModuleAsset = module;
+                    data.IsCoreModule = module is SystemModuleConfig;
+                }
+
+                allModulesList.Add(data);
+            }
+        }
+
+        // ── Add Module Menu ──────────────────────────────────────────────────────────
+        private void ShowAddModuleMenu()
+        {
+            GenericMenu menu = new GenericMenu();
+            var types = FindAllModuleTypes();
+
+            foreach (var type in types)
+            {
+                string displayName   = GetModuleNameFromType(type);
+                bool   alreadyAdded  = HasModuleOfType(type);
+
+                if (alreadyAdded)
+                    menu.AddDisabledItem(new GUIContent($"{displayName}  (Already Added)"));
+                else
+                    menu.AddItem(new GUIContent(displayName), false, () => AddModuleToRegistry(type));
+            }
+
+            if (types.Count == 0)
+                menu.AddDisabledItem(new GUIContent("No MobileModule types found"));
 
             menu.ShowAsContext();
         }
@@ -206,91 +291,57 @@ namespace MobileCore.MainModule.Editor
         {
             serializedObject.Update();
 
-            // 1. Search if an asset file of this type already exists in the project
             MobileModule moduleAsset = FindExistingAssetOfType(moduleType);
 
-            // 2. If it doesn't exist, create a fresh ScriptableObject asset in the same folder as MobileCoreConfig
             if (moduleAsset == null)
             {
-                string configAssetPath = AssetDatabase.GetAssetPath(target);
-                if (string.IsNullOrEmpty(configAssetPath))
+                string configPath = AssetDatabase.GetAssetPath(target);
+                if (string.IsNullOrEmpty(configPath))
                 {
-                    EditorUtility.DisplayDialog("Error", "Please save the MobileCoreConfig asset first before creating modules.", "OK");
+                    EditorUtility.DisplayDialog("Error", "Save the MobileCoreConfig asset first.", "OK");
                     return;
                 }
 
-                string targetDirectory = Path.GetDirectoryName(configAssetPath); // Simpan di folder yang sama (Plugin Settings)
-
-                if (!Directory.Exists(targetDirectory))
-                {
-                    Directory.CreateDirectory(targetDirectory);
-                }
-
-                string filename = $"{moduleType.Name}.asset";
-                string fullPath = Path.Combine(targetDirectory, filename).Replace("\\", "/");
-                string uniquePath = AssetDatabase.GenerateUniqueAssetPath(fullPath);
+                string dir      = Path.GetDirectoryName(configPath);
+                string filePath = AssetDatabase.GenerateUniqueAssetPath(
+                    Path.Combine(dir, $"{moduleType.Name}.asset").Replace("\\", "/"));
 
                 try
                 {
-                    moduleAsset = ScriptableObject.CreateInstance(moduleType) as MobileModule;
-                    AssetDatabase.CreateAsset(moduleAsset, uniquePath);
-                    
-                    // Auto-generate embedded settings immediately so the settings are populated instantly
-                    var method = moduleAsset.GetType().GetMethod("CreateEmbeddedSettings");
-                    if (method != null)
-                    {
-                        method.Invoke(moduleAsset, null);
-                    }
+                    moduleAsset = (MobileModule)ScriptableObject.CreateInstance(moduleType);
+                    AssetDatabase.CreateAsset(moduleAsset, filePath);
+
+                    var m = moduleAsset.GetType().GetMethod("CreateEmbeddedSettings");
+                    m?.Invoke(moduleAsset, null);
 
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"Failed to generate scriptable asset for module type '{moduleType.Name}': {e}");
+                    Debug.LogError($"[MobileCoreConfig] Failed to create module asset: {e}");
                     return;
                 }
             }
 
-            // 3. Register the asset in the config list
-            int targetIndex = -1;
-            for (int i = 0; i < modulesProp.arraySize; i++)
-            {
-                if (modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
-                {
-                    targetIndex = i;
-                    break;
-                }
-            }
-
-            if (targetIndex == -1)
-            {
-                modulesProp.arraySize++;
-                targetIndex = modulesProp.arraySize - 1;
-            }
-
-            modulesProp.GetArrayElementAtIndex(targetIndex).objectReferenceValue = moduleAsset;
+            modulesProp.arraySize++;
+            modulesProp.GetArrayElementAtIndex(modulesProp.arraySize - 1).objectReferenceValue = moduleAsset;
             serializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(target);
+            RefreshModuleCache();
         }
 
-        // ── Helper Logic ─────────────────────────────────────────────────────────────
+        // ── Helpers ──────────────────────────────────────────────────────────────────
         private List<System.Type> FindAllModuleTypes()
         {
-            var types = new List<System.Type>();
-            var assemblies = System.AppDomain.CurrentDomain.GetAssemblies();
-            foreach (var assembly in assemblies)
+            var result = new List<System.Type>();
+            foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
             {
-                try
-                {
-                    var assemblyTypes = assembly.GetTypes()
-                        .Where(t => t.IsSubclassOf(typeof(MobileModule)) && !t.IsAbstract);
-                    types.AddRange(assemblyTypes);
-                }
-                catch { /* Ignore dynamic assemblies */ }
+                try { result.AddRange(asm.GetTypes().Where(t => t.IsSubclassOf(typeof(MobileModule)) && !t.IsAbstract)); }
+                catch { /* skip */ }
             }
-            types.Sort((a, b) => string.Compare(a.Name, b.Name, System.StringComparison.Ordinal));
-            return types;
+            result.Sort((a, b) => string.Compare(a.Name, b.Name, System.StringComparison.Ordinal));
+            return result;
         }
 
         private bool HasModuleOfType(System.Type type)
@@ -298,8 +349,7 @@ namespace MobileCore.MainModule.Editor
             for (int i = 0; i < modulesProp.arraySize; i++)
             {
                 var obj = modulesProp.GetArrayElementAtIndex(i).objectReferenceValue;
-                if (obj != null && obj.GetType() == type)
-                    return true;
+                if (obj != null && obj.GetType() == type) return true;
             }
             return false;
         }
@@ -308,51 +358,36 @@ namespace MobileCore.MainModule.Editor
         {
             var temp = ScriptableObject.CreateInstance(type) as MobileModule;
             string name = temp != null ? temp.ModuleName : type.Name;
-            if (temp != null)
-            {
-                DestroyImmediate(temp);
-            }
+            if (temp != null) DestroyImmediate(temp);
             return name;
         }
 
         private MobileModule FindExistingAssetOfType(System.Type type)
         {
-            string[] guids = AssetDatabase.FindAssets($"t:{type.Name}");
-            foreach (var guid in guids)
+            foreach (var guid in AssetDatabase.FindAssets($"t:{type.Name}"))
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 var asset = AssetDatabase.LoadAssetAtPath(path, type) as MobileModule;
-                if (asset != null)
-                    return asset;
+                if (asset != null) return asset;
             }
             return null;
         }
 
-        private bool HasEmptySlots()
-        {
-            for (int i = 0; i < modulesProp.arraySize; i++)
-            {
-                if (modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
-                    return true;
-            }
-            return false;
-        }
-
-        private void RemoveEmptySlots()
+        private void RemoveModuleFromRegistry(int index)
         {
             serializedObject.Update();
-            for (int i = modulesProp.arraySize - 1; i >= 0; i--)
+            if (index >= 0 && index < modulesProp.arraySize)
             {
-                if (modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
-                {
-                    modulesProp.DeleteArrayElementAtIndex(i);
-                    if (i < modulesProp.arraySize && modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
-                    {
-                        modulesProp.DeleteArrayElementAtIndex(i);
-                    }
-                }
+                modulesProp.GetArrayElementAtIndex(index).objectReferenceValue = null;
+                modulesProp.DeleteArrayElementAtIndex(index);
+                // Unity needs a second delete if the slot becomes null after the first
+                if (index < modulesProp.arraySize &&
+                    modulesProp.GetArrayElementAtIndex(index).objectReferenceValue == null)
+                    modulesProp.DeleteArrayElementAtIndex(index);
             }
             serializedObject.ApplyModifiedProperties();
+            EditorUtility.SetDirty(target);
+            RefreshModuleCache();
         }
 
         private void CleanNullModules()
@@ -364,18 +399,13 @@ namespace MobileCore.MainModule.Editor
                 if (modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
                 {
                     modulesProp.DeleteArrayElementAtIndex(i);
-                    if (i < modulesProp.arraySize && modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
-                    {
+                    if (i < modulesProp.arraySize &&
+                        modulesProp.GetArrayElementAtIndex(i).objectReferenceValue == null)
                         modulesProp.DeleteArrayElementAtIndex(i);
-                    }
                     changed = true;
                 }
             }
-            if (changed)
-            {
-                serializedObject.ApplyModifiedProperties();
-                EditorUtility.SetDirty(target);
-            }
+            if (changed) { serializedObject.ApplyModifiedProperties(); EditorUtility.SetDirty(target); }
         }
     }
 }

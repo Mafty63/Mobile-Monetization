@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
   m_Name: AdsSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsSettings
-  bannerType: 1
-  interstitialType: 1
-  rewardedVideoType: 1
+  bannerType: 0
+  interstitialType: 0
+  rewardedVideoType: 0
   adMobContainer:
     androidAppID: ca-app-pub-3940256099942544~3347511713
     iOSAppID: ca-app-pub-3940256099942544~1458002511
@@ -62,8 +62,6 @@ MonoBehaviour:
     bannerPosition: 0
     bannerType: 0
     enableVerboseLogging: 0
-  dummyContainer:
-    bannerPosition: 0
   systemLogs: 0
   interstitialFirstStartDelay: 40
   interstitialStartDelay: 40
@@ -72,8 +70,8 @@ MonoBehaviour:
   grantRewardIfNoAds: 1
   autoShowInterstitial: 0
   isGDPREnabled: 0
+  gdprPrefab: {fileID: 2665059414450368139, guid: 25b05165b3e164d41a5e0f7d29a77b0a, type: 3}
   isIDFAEnabled: 0
-  trackingDescription: Your data will be used to deliver personalized ads to you.
   privacyLink: https://mywebsite.com/privacy
   termsOfUseLink: https://mywebsite.com/terms
 --- !u!114 &11400000
@@ -90,5 +88,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsModuleConfig
   moduleEnabled: 1
   settings: {fileID: -7875529506414061821}
-  dummyCanvasPrefab: {fileID: 0}
-  gdprPrefab: {fileID: 0}

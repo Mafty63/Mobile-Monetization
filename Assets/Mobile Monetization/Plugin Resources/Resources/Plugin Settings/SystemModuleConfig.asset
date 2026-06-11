@@ -13,6 +13,19 @@ MonoBehaviour:
   m_Name: SystemModuleConfig
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.SystemModule.SystemModuleConfig
   moduleEnabled: 1
+  settings: {fileID: 4919937566979678132}
+--- !u!114 &4919937566979678132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6727cf4101edd8241bcf58b8d06eaded, type: 3}
+  m_Name: SystemSettings
+  m_EditorClassIdentifier: Assembly-CSharp::MobileCore.SystemModule.SystemSettings
   systemCanvas: {fileID: 0}
   screenSettings:
     setFrameRateAutomatically: 0

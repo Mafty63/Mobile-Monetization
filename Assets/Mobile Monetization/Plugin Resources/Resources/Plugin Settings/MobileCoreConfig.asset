@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: MobileCoreConfig
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.MainModule.MobileCoreConfig
   modules:
-  - {fileID: 11400000, guid: 0d3e80f1e8855f948b58e3ca385b6efd, type: 2}
   - {fileID: 11400000, guid: 714b0e8b5d9db254083e6083d558f653, type: 2}
   - {fileID: 11400000, guid: 14fbae06c7cec4048a31d291c76287b0, type: 2}
+  - {fileID: 11400000, guid: 0d3e80f1e8855f948b58e3ca385b6efd, type: 2}

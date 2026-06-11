@@ -34,8 +34,8 @@ namespace MobileCore.Advertisements.Editor
 
         // Privacy / Tracking props
         private SerializedProperty p_isGDPREnabled;
+        private SerializedProperty p_gdprPrefab;
         private SerializedProperty p_isIDFAEnabled;
-        private SerializedProperty p_trackingDescription;
         private SerializedProperty p_privacyLink;
         private SerializedProperty p_termsOfUseLink;
 
@@ -63,8 +63,8 @@ namespace MobileCore.Advertisements.Editor
             p_grantRewardIfNoAds = serializedObject.FindProperty("grantRewardIfNoAds");
 
             p_isGDPREnabled = serializedObject.FindProperty("isGDPREnabled");
+            p_gdprPrefab = serializedObject.FindProperty("gdprPrefab");
             p_isIDFAEnabled = serializedObject.FindProperty("isIDFAEnabled");
-            p_trackingDescription = serializedObject.FindProperty("trackingDescription");
             p_privacyLink = serializedObject.FindProperty("privacyLink");
             p_termsOfUseLink = serializedObject.FindProperty("termsOfUseLink");
 
@@ -513,12 +513,15 @@ namespace MobileCore.Advertisements.Editor
 
                 EditorGUILayout.BeginVertical();
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(new GUIContent(p_trackingDescription.displayName, p_trackingDescription.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
-                p_trackingDescription.stringValue = EditorGUILayout.TextField(p_trackingDescription.stringValue, textFieldStyle);
-                EditorGUILayout.EndHorizontal();
+                if (p_isGDPREnabled.boolValue)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(new GUIContent(p_gdprPrefab.displayName, p_gdprPrefab.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
+                    EditorGUILayout.PropertyField(p_gdprPrefab, GUIContent.none);
+                    EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.Space(2);
+                    EditorGUILayout.Space(2);
+                }
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(new GUIContent(p_privacyLink.displayName, p_privacyLink.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
@@ -535,7 +538,7 @@ namespace MobileCore.Advertisements.Editor
                 EditorGUILayout.EndVertical();
 
                 List<string> missing = new List<string>();
-                if (string.IsNullOrEmpty(p_trackingDescription.stringValue)) missing.Add("Tracking Description");
+                if (p_isGDPREnabled.boolValue && p_gdprPrefab.objectReferenceValue == null) missing.Add("GDPR Prefab");
                 if (string.IsNullOrEmpty(p_privacyLink.stringValue)) missing.Add("Privacy Policy Link");
                 if (string.IsNullOrEmpty(p_termsOfUseLink.stringValue)) missing.Add("Terms of Use Link");
 
