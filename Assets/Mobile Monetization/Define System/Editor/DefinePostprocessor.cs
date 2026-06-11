@@ -3,7 +3,6 @@ using UnityEditor;
 namespace MobileCore.DefineSystem.Editor
 {
     /// <summary>
-    /// Mirrors Watermelon's DefinePostprocessor exactly.
     /// Triggers CheckAutoDefines after script reload or .cs/.dll file changes.
     /// </summary>
     public class DefinePostprocessor : AssetPostprocessor

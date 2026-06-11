@@ -55,8 +55,7 @@ namespace MobileCore.Advertisements
         private static double lastInterstitialTime;
         private static BaseAdProviderHandler.RewardedVideoCallback rewardedVideoCallback;
         private static BaseAdProviderHandler.InterstitialCallback interstitialCallback;
-        private static List<PrimitiveCallback> mainThreadEvents = new List<PrimitiveCallback>();
-        private static int mainThreadEventsCount;
+        private static readonly Queue<PrimitiveCallback> mainThreadEvents = new Queue<PrimitiveCallback>(8);
         private static bool isFirstAdLoaded = false;
         private static bool waitingForRewardVideoCallback;
         private static bool rewardEarned = false;
@@ -232,13 +231,13 @@ namespace MobileCore.Advertisements
         /// <param name="advertisingModule"></param>
         private static void InitializeProvider(AdProvider advertisingModule)
         {
-            if (advertisingActiveHandlers.ContainsKey(advertisingModule))
+            if (advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler))
             {
-                if (!advertisingActiveHandlers[advertisingModule].IsInitialized())
+                if (!handler.IsInitialized())
                 {
                     Log("[AdsManager]: Module " + advertisingModule.ToString() + " trying to initialize!");
 
-                    advertisingActiveHandlers[advertisingModule].Initialize(settings);
+                    handler.Initialize(settings);
                 }
                 else
                 {
@@ -259,15 +258,9 @@ namespace MobileCore.Advertisements
         private static void OnUpdate()
         {
             // Execute queued main thread events
-            if (mainThreadEventsCount > 0)
+            while (mainThreadEvents.Count > 0)
             {
-                for (int i = 0; i < mainThreadEventsCount; i++)
-                {
-                    mainThreadEvents[i]?.Invoke();
-                }
-
-                mainThreadEvents.Clear();
-                mainThreadEventsCount = 0;
+                mainThreadEvents.Dequeue()?.Invoke();
             }
 
             // Automatically show interstitial ads if enabled
@@ -363,8 +356,7 @@ namespace MobileCore.Advertisements
         {
             if (callback != null)
             {
-                mainThreadEvents.Add(callback);
-                mainThreadEventsCount++;
+                mainThreadEvents.Enqueue(callback);
             }
         }
 
@@ -409,12 +401,7 @@ namespace MobileCore.Advertisements
         /// <returns></returns>
         public static bool IsModuleInititalized(AdProvider advertisingModule)
         {
-            if (advertisingActiveHandlers.ContainsKey(advertisingModule))
-            {
-                return advertisingActiveHandlers[advertisingModule].IsInitialized();
-            }
-
-            return false;
+            return advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) && handler.IsInitialized();
         }
 
         #region Interstitial
@@ -440,10 +427,10 @@ namespace MobileCore.Advertisements
         /// <returns></returns>
         public static bool IsInterstitialLoaded(AdProvider advertisingModules)
         {
-            if (!isForcedAdEnabled || !IsModuleActive(advertisingModules))
+            if (!isForcedAdEnabled)
                 return false;
 
-            return advertisingActiveHandlers[advertisingModules].IsInterstitialLoaded();
+            return advertisingActiveHandlers.TryGetValue(advertisingModules, out var handler) && handler.IsInterstitialLoaded();
         }
 
         /// <summary>
@@ -459,12 +446,11 @@ namespace MobileCore.Advertisements
 
             AdProvider advertisingModules = settings.InterstitialType;
 
-            if (!isForcedAdEnabled || !IsModuleActive(advertisingModules) ||
-                !advertisingActiveHandlers[advertisingModules].IsInitialized() ||
-                advertisingActiveHandlers[advertisingModules].IsInterstitialLoaded())
+            if (!isForcedAdEnabled || !advertisingActiveHandlers.TryGetValue(advertisingModules, out var handler) ||
+                !handler.IsInitialized() || handler.IsInterstitialLoaded())
                 return;
 
-            advertisingActiveHandlers[advertisingModules].RequestInterstitial();
+            handler.RequestInterstitial();
         }
 
         /// <summary>
@@ -483,16 +469,15 @@ namespace MobileCore.Advertisements
             AdProvider advertisingModules = settings.InterstitialType;
             interstitialCallback = callback;
 
-            if (!isForcedAdEnabled || !IsModuleActive(advertisingModules) ||
+            if (!isForcedAdEnabled || !advertisingActiveHandlers.TryGetValue(advertisingModules, out var handler) ||
                 (!ignoreConditions && (!CheckInterstitialTime() || !CheckExtraInterstitialCondition())) ||
-                !advertisingActiveHandlers[advertisingModules].IsInitialized() ||
-                !advertisingActiveHandlers[advertisingModules].IsInterstitialLoaded())
+                !handler.IsInitialized() || !handler.IsInterstitialLoaded())
             {
                 ExecuteInterstitialCallback(false);
                 return;
             }
 
-            advertisingActiveHandlers[advertisingModules].ShowInterstitial((isDisplayed) =>
+            handler.ShowInterstitial((isDisplayed) =>
             {
                 ExecuteInterstitialCallback(isDisplayed);
             });
@@ -550,9 +535,9 @@ namespace MobileCore.Advertisements
                 bool state = true;
                 System.Delegate[] listDelegates = InterstitialConditions.GetInvocationList();
 
-                foreach (var del in listDelegates)
+                foreach (System.Delegate del in listDelegates)
                 {
-                    if (!(bool)del.DynamicInvoke())
+                    if (del is AdsBoolCallback typed && !typed())
                     {
                         state = false;
                         break;
@@ -585,10 +570,10 @@ namespace MobileCore.Advertisements
 
             AdProvider advertisingModule = settings.RewardedVideoType;
 
-            if (!IsModuleActive(advertisingModule) || !advertisingActiveHandlers[advertisingModule].IsInitialized())
+            if (!advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) || !handler.IsInitialized())
                 return false;
 
-            return advertisingActiveHandlers[advertisingModule].IsRewardedVideoLoaded();
+            return handler.IsRewardedVideoLoaded();
         }
 
         /// <summary>
@@ -604,12 +589,11 @@ namespace MobileCore.Advertisements
 
             AdProvider advertisingModule = settings.RewardedVideoType;
 
-            if (!IsModuleActive(advertisingModule) ||
-                !advertisingActiveHandlers[advertisingModule].IsInitialized() ||
-                advertisingActiveHandlers[advertisingModule].IsRewardedVideoLoaded())
+            if (!advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) ||
+                !handler.IsInitialized() || handler.IsRewardedVideoLoaded())
                 return;
 
-            advertisingActiveHandlers[advertisingModule].RequestRewardedVideo();
+            handler.RequestRewardedVideo();
         }
 
         /// <summary>
@@ -642,9 +626,8 @@ namespace MobileCore.Advertisements
 
             AdProvider advertisingModule = settings.RewardedVideoType;
 
-            if (!IsModuleActive(advertisingModule) ||
-                !advertisingActiveHandlers[advertisingModule].IsInitialized() ||
-                !advertisingActiveHandlers[advertisingModule].IsRewardedVideoLoaded())
+            if (!advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) ||
+                !handler.IsInitialized() || !handler.IsRewardedVideoLoaded())
             {
                 ExecuteRewardVideoCallback(false);
 
@@ -654,7 +637,7 @@ namespace MobileCore.Advertisements
                 return;
             }
 
-            advertisingActiveHandlers[advertisingModule].ShowRewardedVideo((hasReward) =>
+            handler.ShowRewardedVideo((hasReward) =>
             {
                 if (hasReward)
                 {
@@ -718,11 +701,11 @@ namespace MobileCore.Advertisements
             Log("[AdsManager]: Show Banner");
             AdProvider advertisingModule = settings.BannerType;
 
-            if (!isForcedAdEnabled || !IsModuleActive(advertisingModule) ||
-                !advertisingActiveHandlers[advertisingModule].IsInitialized())
+            if (!isForcedAdEnabled || !advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) ||
+                !handler.IsInitialized())
                 return;
 
-            advertisingActiveHandlers[advertisingModule].ShowBanner();
+            handler.ShowBanner();
             isBannerActuallyVisible = true; // Mark as visible
 
             // Notify UI adapters that banner is shown
@@ -742,11 +725,11 @@ namespace MobileCore.Advertisements
 
             AdProvider advertisingModule = settings.BannerType;
 
-            if (!IsModuleActive(advertisingModule) ||
-                !advertisingActiveHandlers[advertisingModule].IsInitialized())
+            if (!advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) ||
+                !handler.IsInitialized())
                 return;
 
-            advertisingActiveHandlers[advertisingModule].DestroyBanner();
+            handler.DestroyBanner();
         }
 
         /// <summary>
@@ -762,11 +745,11 @@ namespace MobileCore.Advertisements
 
             AdProvider advertisingModule = settings.BannerType;
 
-            if (!IsModuleActive(advertisingModule) ||
-                !advertisingActiveHandlers[advertisingModule].IsInitialized())
+            if (!advertisingActiveHandlers.TryGetValue(advertisingModule, out var handler) ||
+                !handler.IsInitialized())
                 return;
 
-            advertisingActiveHandlers[advertisingModule].HideBanner();
+            handler.HideBanner();
             isBannerActuallyVisible = false; // Mark as hidden
             nextBannerAutoShowTime = Time.time + BannerAutoShowDelay; // Reset timer
 
@@ -941,15 +924,15 @@ namespace MobileCore.Advertisements
 
             PlayerPrefs.SetInt(GDPR_PREF_NAME, state ? 1 : 0);
 
-            foreach (AdProvider activeModule in advertisingActiveHandlers.Keys)
+            foreach (var kvp in advertisingActiveHandlers)
             {
-                if (advertisingActiveHandlers[activeModule].IsInitialized())
+                if (kvp.Value.IsInitialized())
                 {
-                    advertisingActiveHandlers[activeModule].SetGDPR(state);
+                    kvp.Value.SetGDPR(state);
                 }
                 else
                 {
-                    InitializeProvider(activeModule);
+                    InitializeProvider(kvp.Key);
                 }
             }
         }
