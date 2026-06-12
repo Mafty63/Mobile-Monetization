@@ -8,12 +8,14 @@ namespace MobileCore.IAPModule
 {
     public class DummyIAPWrapper : BaseIAPWrapper
     {
+        private const string DummyIAPKeyPrefix = "DummyIAP_";
+
         public override void BuyProduct(ProductKeyType productKeyType)
         {
             if (!IAPManager.IsInitialized)
             {
                 SystemManager.ShowMessage("Network error. Please try again later");
-                IAPManager.OnPurchaseFailed(productKeyType, (PurchaseFailureReason)7);
+                IAPManager.NotifyPurchaseFailed(productKeyType, PurchaseFailureReason.Unknown);
                 return;
             }
 
@@ -22,9 +24,16 @@ namespace MobileCore.IAPModule
             // Mengganti Tween.NextFrame dengan Coroutine
             MonoBehaviourExecution.Instance.StartCoroutine(ExecuteAfterFrame(() =>
             {
+                IAPItem item = IAPManager.GetIAPItem(productKeyType);
+                if (item != null && (item.ProductType == ProductType.NonConsumable || item.ProductType == ProductType.Subscription))
+                {
+                    PlayerPrefs.SetInt(DummyIAPKeyPrefix + item.ID, 1);
+                    PlayerPrefs.Save();
+                }
+
                 IAPManager.Log(string.Format("[IAPManager]: Purchasing - {0} is completed!", productKeyType));
 
-                IAPManager.OnPurchaseCompled(productKeyType);
+                IAPManager.NotifyPurchaseComplete(productKeyType);
 
                 SystemManager.ChangeLoadingMessage("Payment complete!");
                 SystemManager.HideLoadingPanel();
@@ -43,7 +52,14 @@ namespace MobileCore.IAPModule
             IAPItem iapItem = IAPManager.GetIAPItem(productKeyType);
             if (iapItem != null)
             {
-                return new ProductData(iapItem.ProductType);
+                bool isPurchased = false;
+                bool isSubscribed = false;
+                if (iapItem.ProductType == ProductType.NonConsumable || iapItem.ProductType == ProductType.Subscription)
+                {
+                    isPurchased = PlayerPrefs.GetInt(DummyIAPKeyPrefix + iapItem.ID, 0) == 1;
+                    isSubscribed = isPurchased && (iapItem.ProductType == ProductType.Subscription);
+                }
+                return new ProductData(iapItem.ProductType, isPurchased, isSubscribed);
             }
 
             return null;
@@ -57,6 +73,11 @@ namespace MobileCore.IAPModule
 
         public override bool IsSubscribed(ProductKeyType productKeyType)
         {
+            IAPItem item = IAPManager.GetIAPItem(productKeyType);
+            if (item != null && item.ProductType == ProductType.Subscription)
+            {
+                return PlayerPrefs.GetInt(DummyIAPKeyPrefix + item.ID, 0) == 1;
+            }
             return false;
         }
 
@@ -89,10 +110,12 @@ namespace MobileCore.IAPModule
                     if (item.ProductType == ProductType.NonConsumable || item.ProductType == ProductType.Subscription)
                     {
                         restoredCount++;
+                        PlayerPrefs.SetInt(DummyIAPKeyPrefix + item.ID, 1);
                         IAPManager.Log($"[IAPManager]: Dummy Restore triggering for: {item.ProductKeyType}");
-                        IAPManager.OnPurchaseCompled(item.ProductKeyType);
+                        IAPManager.NotifyPurchaseComplete(item.ProductKeyType);
                     }
                 }
+                PlayerPrefs.Save();
             }
 
             if (restoredCount > 0)

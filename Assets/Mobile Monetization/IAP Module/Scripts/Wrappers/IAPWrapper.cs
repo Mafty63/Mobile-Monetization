@@ -23,19 +23,40 @@ namespace MobileCore.IAPModule
         private HashSet<string> purchasedProductIds = new HashSet<string>();
 #endif
 
-        public override async void Initialize(IAPSettings settings)
+        public override void Initialize(IAPSettings settings)
         {
 #if MODULE_IAP
+            InitializeAsync(settings);
+#else
+            IAPManager.Log("[IAP Manager]: Define MODULE_IAP is disabled!");
+#endif
+        }
+
+#if MODULE_IAP
+        private async void InitializeAsync(IAPSettings settings)
+        {
             try
             {
-                var options = new InitializationOptions().SetEnvironmentName("production");
-                await UnityServices.InitializeAsync(options);
+                if (UnityServices.State == ServicesInitializationState.Uninitialized)
+                {
+                    var options = new InitializationOptions().SetEnvironmentName("production");
+                    await UnityServices.InitializeAsync(options);
+                }
 
                 List<ProductDefinition> productDefinitions = new List<ProductDefinition>();
                 IAPItem[] items = settings.StoreItems;
                 for (int i = 0; i < items.Length; i++)
                 {
-                    var existingDef = productDefinitions.FirstOrDefault(p => p.id == items[i].ID);
+                    ProductDefinition existingDef = null;
+                    for (int j = 0; j < productDefinitions.Count; j++)
+                    {
+                        if (productDefinitions[j].id == items[i].ID)
+                        {
+                            existingDef = productDefinitions[j];
+                            break;
+                        }
+                    }
+
                     if (existingDef == null)
                     {
                         productDefinitions.Add(new ProductDefinition(items[i].ID, items[i].ID, (UnityEngine.Purchasing.ProductType)items[i].ProductType));
@@ -55,20 +76,29 @@ namespace MobileCore.IAPModule
                 var productService = UnityIAPServices.DefaultProduct();
 
                 // Store connection events
+                storeController.OnStoreDisconnected -= OnStoreDisconnectedHandler;
                 storeController.OnStoreDisconnected += OnStoreDisconnectedHandler;
 
                 // Product fetch events
+                productService.OnProductsFetched -= OnProductsFetchedHandler;
                 productService.OnProductsFetched += OnProductsFetchedHandler;
+                productService.OnProductsFetchFailed -= OnProductsFetchFailedHandler;
                 productService.OnProductsFetchFailed += OnProductsFetchFailedHandler;
 
                 // Purchase fetch events
+                purchaseService.OnPurchasesFetched -= OnPurchasesFetchedHandler;
                 purchaseService.OnPurchasesFetched += OnPurchasesFetchedHandler;
+                purchaseService.OnPurchasesFetchFailed -= OnPurchasesFetchFailedHandler;
                 purchaseService.OnPurchasesFetchFailed += OnPurchasesFetchFailedHandler;
 
                 // Purchase pending/failed events
+                purchaseService.OnPurchasePending -= OnPurchasePendingHandler;
                 purchaseService.OnPurchasePending += OnPurchasePendingHandler;
+                purchaseService.OnPurchaseFailed -= OnPurchaseFailedHandler;
                 purchaseService.OnPurchaseFailed += OnPurchaseFailedHandler;
+                purchaseService.OnPurchaseDeferred -= OnPurchaseDeferredHandler;
                 purchaseService.OnPurchaseDeferred += OnPurchaseDeferredHandler;
+                purchaseService.OnPurchaseConfirmed -= OnPurchaseConfirmedHandler;
                 purchaseService.OnPurchaseConfirmed += OnPurchaseConfirmedHandler;
 
                 // Now we can call the methods
@@ -83,12 +113,8 @@ namespace MobileCore.IAPModule
                 IAPManager.LogError("[IAPWrapper] Init Error: " + exception.Message);
                 OnInitializeFailed(exception.Message);
             }
-#else
-            await Task.Run(() => IAPManager.Log("[IAP Manager]: Define MODULE_IAP is disabled!"));
-#endif
         }
 
-#if MODULE_IAP
         private void OnPurchasePendingHandler(PendingOrder order)
         {
             // Get product ID from the order info
@@ -110,7 +136,7 @@ namespace MobileCore.IAPModule
             IAPItem item = IAPManager.GetIAPItem(id);
             ProductKeyType actualKey = item != null ? item.ProductKeyType : IAPManager.PendingProductKey;
 
-            IAPManager.OnPurchaseCompled(actualKey);
+            IAPManager.NotifyPurchaseComplete(actualKey);
             SystemManager.ShowMessage("Payment complete!");
 
             // Confirm the purchase
@@ -120,7 +146,28 @@ namespace MobileCore.IAPModule
         private void OnPurchaseFailedHandler(FailedOrder order)
         {
             IAPManager.IsPurchasing = false; // Release the lock immediately
-            SystemManager.ShowMessage("Payment failed or cancelled!");
+
+            string message = "Payment failed.";
+            switch (order.FailureReason)
+            {
+                case UnityEngine.Purchasing.PurchaseFailureReason.UserCancelled:
+                    message = "Purchase cancelled.";
+                    break;
+                case UnityEngine.Purchasing.PurchaseFailureReason.PurchasingUnavailable:
+                    message = "Purchasing is currently unavailable.";
+                    break;
+                case UnityEngine.Purchasing.PurchaseFailureReason.PaymentDeclined:
+                    message = "Payment was declined by the store.";
+                    break;
+                case UnityEngine.Purchasing.PurchaseFailureReason.ProductUnavailable:
+                    message = "This product is currently unavailable.";
+                    break;
+                default:
+                    message = $"Payment failed: {order.FailureReason}";
+                    break;
+            }
+
+            SystemManager.ShowMessage(message);
 
             // Get product ID from the order info
             string id = null;
@@ -141,7 +188,7 @@ namespace MobileCore.IAPModule
             IAPItem item = IAPManager.GetIAPItem(id);
             ProductKeyType actualKey = item != null ? item.ProductKeyType : IAPManager.PendingProductKey;
 
-            IAPManager.OnPurchaseFailed(actualKey, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
+            IAPManager.NotifyPurchaseFailed(actualKey, (MobileCore.IAPModule.PurchaseFailureReason)(int)order.FailureReason);
         }
 
         private void OnPurchaseDeferredHandler(DeferredOrder order)
@@ -155,8 +202,9 @@ namespace MobileCore.IAPModule
         {
             if (order is ConfirmedOrder confirmedOrder)
             {
-                var productInfo = confirmedOrder.CartOrdered?.Items()?.FirstOrDefault()?.Product?.definition;
-                IAPManager.Log($"[IAPManager]: Purchase confirmation is successful for {productInfo?.id}");
+                var items = confirmedOrder.CartOrdered?.Items();
+                string id = (items != null && items.Count > 0) ? items[0]?.Product?.definition?.id : null;
+                IAPManager.Log($"[IAPManager]: Purchase confirmation is successful for {id}");
             }
             else if (order is FailedOrder failedOrder)
             {
@@ -207,33 +255,85 @@ namespace MobileCore.IAPModule
 
         public Product GetProduct(string id)
         {
-            var products = UnityIAPServices.StoreController().GetProducts();
-            if (products != null)
+            try
             {
-                return products.FirstOrDefault(p => p.definition.id == id);
+                var storeController = UnityIAPServices.StoreController();
+                if (storeController == null) return null;
+
+                var products = storeController.GetProducts();
+                if (products != null)
+                {
+                    for (int i = 0; i < products.Count; i++)
+                    {
+                        if (products[i].definition.id == id)
+                        {
+                            return products[i];
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                IAPManager.LogWarning($"[IAPWrapper]: Failed to get product {id}: {e.Message}");
             }
             return null;
+        }
+
+        private bool CheckSubscriptionActive(Product product)
+        {
+            if (product == null) return false;
+            if (!product.hasReceipt || string.IsNullOrEmpty(product.receipt)) return false;
+
+            try
+            {
+                var subscriptionManager = new SubscriptionManager(product, null);
+                var info = subscriptionManager.getSubscriptionInfo();
+                return info.isSubscribed() == Result.True;
+            }
+            catch (System.Exception e)
+            {
+                IAPManager.LogWarning($"[IAPWrapper]: Subscription validation failed, fallback to hasReceipt. Error: {e.Message}");
+                return product.hasReceipt;
+            }
         }
 #endif
 
         public override void BuyProduct(ProductKeyType productKeyType)
         {
 #if MODULE_IAP
-            SystemManager.ChangeLoadingMessage("Payment in progress..");
+            try
+            {
+                SystemManager.ChangeLoadingMessage("Payment in progress..");
 
-            IAPItem item = IAPManager.GetIAPItem(productKeyType);
-            if (item != null)
-            {
-                UnityIAPServices.StoreController().PurchaseProduct(item.ID);
+                IAPItem item = IAPManager.GetIAPItem(productKeyType);
+                if (item != null)
+                {
+                    var storeController = UnityIAPServices.StoreController();
+                    if (storeController != null)
+                    {
+                        storeController.PurchaseProduct(item.ID);
+                    }
+                    else
+                    {
+                        SystemManager.ShowMessage("Store not available.");
+                        IAPManager.NotifyPurchaseFailed(productKeyType, PurchaseFailureReason.PurchasingUnavailable);
+                    }
+                }
+                else
+                {
+                    SystemManager.ShowMessage("Product not found.");
+                    IAPManager.NotifyPurchaseFailed(productKeyType, PurchaseFailureReason.ProductUnavailable);
+                }
             }
-            else
+            catch (System.Exception e)
             {
-                SystemManager.ShowMessage("Product not found.");
-                IAPManager.OnPurchaseFailed(productKeyType, (MobileCore.IAPModule.PurchaseFailureReason)7);
+                IAPManager.LogError($"[IAPWrapper]: Exception during purchase: {e.Message}");
+                SystemManager.ShowMessage("An error occurred. Please try again.");
+                IAPManager.NotifyPurchaseFailed(productKeyType, PurchaseFailureReason.Unknown);
             }
 #else
             SystemManager.ShowMessage("Network error.");
-            IAPManager.OnPurchaseFailed(productKeyType, (MobileCore.IAPModule.PurchaseFailureReason)7);
+            IAPManager.NotifyPurchaseFailed(productKeyType, PurchaseFailureReason.Unknown);
 #endif
         }
 
@@ -248,33 +348,60 @@ namespace MobileCore.IAPModule
 
             SystemManager.ShowMessage("Restoring purchased products..");
 
-            UnityIAPServices.StoreController().RestoreTransactions((result, error) =>
+            try
             {
-                if (result)
+                var storeController = UnityIAPServices.StoreController();
+                if (storeController != null)
                 {
-                    SystemManager.ShowMessage("Restoration completed!");
+                    storeController.RestoreTransactions((result, error) =>
+                    {
+                        if (result)
+                        {
+                            SystemManager.ShowMessage("Restoration completed!");
+                        }
+                        else
+                        {
+                            SystemManager.ShowMessage("Restoration failed: " + error);
+                        }
+                    });
                 }
                 else
                 {
-                    SystemManager.ShowMessage("Restoration failed: " + error);
+                    SystemManager.ShowMessage("Store not available.");
                 }
-            });
+            }
+            catch (System.Exception e)
+            {
+                IAPManager.LogError($"[IAPWrapper]: Exception during restore: {e.Message}");
+                SystemManager.ShowMessage("Restoration error occurred.");
+            }
 #endif
         }
-
 
         public override ProductData GetProductData(ProductKeyType productKeyType)
         {
 #if MODULE_IAP
-            IAPItem item = IAPManager.GetIAPItem(productKeyType);
-            if (item != null)
+            try
             {
-                Product product = GetProduct(item.ID);
-                if (product != null)
+                IAPItem item = IAPManager.GetIAPItem(productKeyType);
+                if (item != null)
                 {
-                    bool isPurchased = purchasedProductIds.Contains(item.ID);
-                    return new ProductData(product, item.ProductType, isPurchased);
+                    Product product = GetProduct(item.ID);
+                    if (product != null)
+                    {
+                        bool isPurchased = product.hasReceipt || purchasedProductIds.Contains(item.ID);
+                        bool isSubscribed = false;
+                        if (item.ProductType == ProductType.Subscription)
+                        {
+                            isSubscribed = CheckSubscriptionActive(product);
+                        }
+                        return new ProductData(product, item.ProductType, isPurchased, isSubscribed);
+                    }
                 }
+            }
+            catch (System.Exception e)
+            {
+                IAPManager.LogWarning($"[IAPWrapper]: GetProductData failed for {productKeyType}: {e.Message}");
             }
 #endif
             return null;
@@ -283,12 +410,25 @@ namespace MobileCore.IAPModule
         public override bool IsSubscribed(ProductKeyType productKeyType)
         {
 #if MODULE_IAP
-            IAPItem item = IAPManager.GetIAPItem(productKeyType);
-            if (item != null)
+            try
             {
-                // Check if in our local purchased set
-                if (purchasedProductIds.Contains(item.ID)) return true;
-                return false;
+                IAPItem item = IAPManager.GetIAPItem(productKeyType);
+                if (item != null)
+                {
+                    Product product = GetProduct(item.ID);
+                    if (product != null)
+                    {
+                        if (item.ProductType == ProductType.Subscription)
+                        {
+                            return CheckSubscriptionActive(product);
+                        }
+                        return product.hasReceipt || purchasedProductIds.Contains(item.ID);
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                IAPManager.LogWarning($"[IAPWrapper]: IsSubscribed failed for {productKeyType}: {e.Message}");
             }
 #endif
             return false;

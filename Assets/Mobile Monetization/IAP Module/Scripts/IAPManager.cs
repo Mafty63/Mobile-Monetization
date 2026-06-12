@@ -24,7 +24,9 @@ namespace MobileCore.IAPModule
 
         public static event PrimitiveCallback OnPurchaseModuleInitted;
         public static event ProductCallback OnPurchaseComplete;
+        [System.Obsolete("Use OnPurchaseFailed instead.")]
         public static event ProductFailCallback OnPurchaseFailded;
+        public static event ProductFailCallback OnPurchaseFailed;
 
         #region Centralized Logging
         public static void Log(string message)
@@ -55,6 +57,9 @@ namespace MobileCore.IAPModule
             }
 
             Settings = iapSettings;
+
+            productsTypeToProductLink.Clear();
+            productsKeyToProductLink.Clear();
 
             IAPItem[] items = iapSettings.StoreItems;
             for (int i = 0; i < items.Length; i++)
@@ -150,7 +155,7 @@ namespace MobileCore.IAPModule
             if (product == null)
                 return string.Empty;
 
-            return string.Format("{0} {1}", product.ISOCurrencyCode, product.Price);
+            return product.GetLocalPrice();
         }
 
         public static void OnModuleInitialized()
@@ -162,16 +167,23 @@ namespace MobileCore.IAPModule
             Log("[IAPManager]: Module is initialized!");
         }
 
-        public static void OnPurchaseCompled(ProductKeyType productKey)
+        public static void NotifyPurchaseComplete(ProductKeyType productKey)
         {
             IsPurchasing = false;
             OnPurchaseComplete?.Invoke(productKey);
         }
 
-        public static void OnPurchaseFailed(ProductKeyType productKey, PurchaseFailureReason failureReason)
+        public static void NotifyPurchaseFailed(ProductKeyType productKey, PurchaseFailureReason failureReason)
         {
             IsPurchasing = false;
             OnPurchaseFailded?.Invoke(productKey, failureReason);
+            OnPurchaseFailed?.Invoke(productKey, failureReason);
+        }
+
+        [System.Obsolete("Use NotifyPurchaseComplete instead.")]
+        public static void OnPurchaseCompled(ProductKeyType productKey)
+        {
+            NotifyPurchaseComplete(productKey);
         }
 
         public delegate void ProductCallback(ProductKeyType productKeyType);

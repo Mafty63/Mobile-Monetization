@@ -40,19 +40,30 @@ namespace MobileCore.IAPModule
             IsSubscribed = false;
         }
 
+        public ProductData(ProductType productType, bool isPurchased, bool isSubscribed, decimal price = 0.00m, string isoCurrencyCode = "USD")
+        {
+            ProductType = productType;
+            Price = price;
+            ISOCurrencyCode = isoCurrencyCode;
+            IsPurchased = isPurchased;
+            IsSubscribed = isSubscribed;
+        }
+
         public string GetLocalPrice()
         {
             return string.Format("{0} {1}", ISOCurrencyCode, Price);
         }
 
 #if MODULE_IAP
-        public ProductData(Product product, ProductType originalType, bool isPurchased)
+        public ProductData(Product product, ProductType originalType, bool isPurchased, bool isSubscribed)
         {
             Product = product;
 
             ProductType = originalType;
 
             IsPurchased = isPurchased;
+
+            IsSubscribed = isSubscribed;
 
             Price = product.metadata.localizedPrice;
             ISOCurrencyCode = product.metadata.isoCurrencyCode;
