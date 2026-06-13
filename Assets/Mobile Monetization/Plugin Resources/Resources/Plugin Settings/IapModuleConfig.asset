@@ -27,4 +27,24 @@ MonoBehaviour:
   m_Name: IAPSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.IAPModule.IAPSettings
   systemLogs: 1
-  storeItems: []
+  storeItems:
+  - androidID: com.company.product.new1
+    iOSID: com.company.product.new1
+    productKeyType: 0
+    productType: 0
+  - androidID: com.company.product.new2
+    iOSID: com.company.product.new2
+    productKeyType: 1
+    productType: 0
+  - androidID: com.company.product.new3
+    iOSID: com.company.product.new3
+    productKeyType: 2
+    productType: 0
+  - androidID: com.company.product.new4
+    iOSID: com.company.product.new4
+    productKeyType: 3
+    productType: 0
+  - androidID: com.company.product.new5
+    iOSID: com.company.product.new5
+    productKeyType: 4
+    productType: 0

@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6727cf4101edd8241bcf58b8d06eaded, type: 3}
   m_Name: SystemSettings
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.SystemModule.SystemSettings
-  systemCanvas: {fileID: 0}
+  systemCanvas: {fileID: 6951761026347705287, guid: 15892f63869a33e41aa27c6098e3caf3, type: 3}
   screenSettings:
     setFrameRateAutomatically: 0
     defaultFrameRate: 60
