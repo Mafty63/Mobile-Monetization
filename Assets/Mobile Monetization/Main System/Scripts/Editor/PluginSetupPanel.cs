@@ -202,7 +202,20 @@ namespace MobileCore.MainModule.Editor
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-            EditorStyleTemplate.DrawStatusLabel(enabled ? "ON" : "OFF", enabled, new GUILayoutOption[] { GUILayout.Width(34f), GUILayout.Height(18f) });
+            bool isCore = module is SystemModuleConfig;
+
+            if (isCore)
+            {
+                EditorStyleTemplate.DrawStatusLabel(enabled ? "ON" : "OFF", enabled, new GUILayoutOption[] { GUILayout.Width(34f), GUILayout.Height(18f) });
+            }
+            else
+            {
+                if (EditorStyleTemplate.DrawStatusButton(enabled ? "ON" : "OFF", enabled, new GUILayoutOption[] { GUILayout.Width(34f), GUILayout.Height(18f) }))
+                {
+                    ToggleModuleEnabled(module);
+                }
+            }
+
             GUILayout.Space(4f);
             EditorGUILayout.LabelField(name, EditorStyleTemplate.GrayTextStyle, GUILayout.ExpandWidth(true));
 
@@ -217,6 +230,21 @@ namespace MobileCore.MainModule.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void ToggleModuleEnabled(MobileModule module)
+        {
+            if (module == null) return;
+
+            SerializedObject so = new SerializedObject(module);
+            SerializedProperty prop = so.FindProperty("moduleEnabled");
+            if (prop != null)
+            {
+                prop.boolValue = !prop.boolValue;
+                so.ApplyModifiedProperties();
+                EditorUtility.SetDirty(module);
+                AssetDatabase.SaveAssets();
+            }
         }
 
         // ── Section: Example Scenes ────────────────────────────────────────────────

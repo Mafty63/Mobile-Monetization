@@ -491,6 +491,26 @@ namespace MobileCore.MainModule.Editor
             GUILayout.Label(label, labelStyle, options ?? new GUILayoutOption[0]);
             GUI.backgroundColor = prev;
         }
+
+        /// <summary>
+        /// Gambar button box status (misal: ON/OFF) menggunakan GUI.backgroundColor yang bisa diklik.
+        /// </summary>
+        public static bool DrawStatusButton(string label, bool enabled, GUILayoutOption[] options = null)
+        {
+            Color prev = GUI.backgroundColor;
+            GUI.backgroundColor = enabled ? new Color(0.20f, 0.55f, 0.28f) : new Color(0.45f, 0.45f, 0.45f);
+            
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.box)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontStyle = FontStyle.Bold
+            };
+            buttonStyle.normal.textColor = Color.white;
+            
+            bool clicked = GUILayout.Button(label, buttonStyle, options ?? new GUILayoutOption[0]);
+            GUI.backgroundColor = prev;
+            return clicked;
+        }
     }
 }
 #endif
