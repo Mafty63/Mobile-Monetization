@@ -45,7 +45,7 @@ namespace MobileCore.MainModule.Editor
             serializedObject.Update();
             RefreshModuleCache();
 
-            DrawHeader();
+            DrawConfigHeader();
             EditorGUILayout.Space(4);
             DrawModulesSection();
 
@@ -56,7 +56,7 @@ namespace MobileCore.MainModule.Editor
         }
 
         // ─────────────────────────────────────────────────────────────────────────────
-        private void DrawHeader()
+        private void DrawConfigHeader()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("MOBILE CORE CONFIG", EditorStyleTemplate.GrayBoldLabelStyle);
@@ -209,7 +209,7 @@ namespace MobileCore.MainModule.Editor
                     string niceName = ObjectNames.NicifyVariableName(iterator.name);
                     EditorGUILayout.LabelField(new GUIContent(niceName, iterator.tooltip),
                         EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(140f));
-                    EditorGUILayout.PropertyField(iterator, GUIContent.none, true);
+                    EditorStyleTemplate.DrawStyledPropertyField(iterator, GUIContent.none, true);
                     EditorGUILayout.EndHorizontal();
                 }
             }

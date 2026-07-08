@@ -16,14 +16,14 @@ MonoBehaviour:
   interstitialType: 0
   rewardedVideoType: 0
   adMobContainer:
-    androidAppID: ca-app-pub-3940256099942544~3347511713
-    iOSAppID: ca-app-pub-3940256099942544~1458002511
-    androidBannerID: ca-app-pub-3940256099942544/6300978111
-    iOSBannerID: ca-app-pub-3940256099942544/2934735716
-    androidInterstitialID: ca-app-pub-3940256099942544/1033173712
-    iOSInterstitialID: ca-app-pub-3940256099942544/4411468910
-    androidRewardedVideoID: ca-app-pub-3940256099942544/5224354917
-    iOSRewardedVideoID: ca-app-pub-3940256099942544/1712485313
+    androidAppID: 
+    iOSAppID: 
+    androidBannerID: 
+    iOSBannerID: 
+    androidInterstitialID: aaa
+    iOSInterstitialID: 
+    androidRewardedVideoID: 
+    iOSRewardedVideoID: 
     bannerPosition: 0
     bannerType: 0
     testDevicesIDs: []
@@ -74,6 +74,80 @@ MonoBehaviour:
   isIDFAEnabled: 0
   privacyLink: https://mywebsite.com/privacy
   termsOfUseLink: https://mywebsite.com/terms
+--- !u!114 &-5901782207109726835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15ddb41bf72d53a48a6bdc593d706f94, type: 3}
+  m_Name: AdsSettings
+  m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsSettings
+  bannerType: 2
+  interstitialType: 2
+  rewardedVideoType: 2
+  adMobContainer:
+    androidAppID: ca-app-pub-3940256099942544~3347511713
+    iOSAppID: ca-app-pub-3940256099942544~1458002511
+    androidBannerID: ca-app-pub-3940256099942544/6300978111
+    iOSBannerID: ca-app-pub-3940256099942544/2934735716
+    androidInterstitialID: ca-app-pub-3940256099942544/1033173712
+    iOSInterstitialID: ca-app-pub-3940256099942544/4411468910
+    androidRewardedVideoID: ca-app-pub-3940256099942544/5224354917
+    iOSRewardedVideoID: ca-app-pub-3940256099942544/1712485313
+    bannerPosition: 0
+    bannerType: 0
+    testDevicesIDs: []
+  unityAdsContainer:
+    androidAppID: 1234567
+    iOSAppID: 1234567
+    androidBannerID: banner
+    iOSBannerID: banner
+    androidInterstitialID: video
+    iOSInterstitialID: video
+    androidRewardedVideoID: rewardedVideo
+    iOSRewardedVideoID: rewardedVideo
+    testMode: 0
+    bannerPosition: 4
+  levelPlayContainer:
+    androidAppKey: 85460dcd
+    iOSAppKey: 8545d445
+    androidBannerID: thnfvcsog13bhn08
+    iOSBannerID: iep3rxsyp9na3rw8
+    androidInterstitialID: aeyqi3vqlv6o8sh9
+    iOSInterstitialID: wmgt0712uuux8ju4
+    androidRewardedVideoID: 76yy3nay3ceui2a3
+    iOSRewardedVideoID: qwouvdrkuwivay5q
+    testMode: 0
+    bannerPosition: 0
+    bannerType: 0
+  appLovinContainer:
+    androidSdkKey: YOUR_ANDROID_SDK_KEY
+    iOSSdkKey: YOUR_IOS_SDK_KEY
+    androidBannerID: c192d3f0d6c8bf71
+    iOSBannerID: c192d3f0d6c8bf71
+    androidInterstitialID: 4b6b2fef8bd6a3cd
+    iOSInterstitialID: 4b6b2fef8bd6a3cd
+    androidRewardedVideoID: d64b5b9c5a1a7e36
+    iOSRewardedVideoID: d64b5b9c5a1a7e36
+    bannerPosition: 0
+    bannerType: 0
+    enableVerboseLogging: 0
+  systemLogs: 0
+  interstitialFirstStartDelay: 40
+  interstitialStartDelay: 40
+  interstitialShowingDelay: 30
+  adOnStart: 0
+  grantRewardIfNoAds: 0
+  autoShowInterstitial: 0
+  isGDPREnabled: 0
+  gdprPrefab: {fileID: 2665059414450368139, guid: 25b05165b3e164d41a5e0f7d29a77b0a, type: 3}
+  isIDFAEnabled: 0
+  privacyLink: https://mywebsite.com/privacy
+  termsOfUseLink: https://mywebsite.com/terms
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,4 +161,4 @@ MonoBehaviour:
   m_Name: AdsModuleConfig
   m_EditorClassIdentifier: Assembly-CSharp::MobileCore.Advertisements.AdsModuleConfig
   moduleEnabled: 1
-  settings: {fileID: -7875529506414061821}
+  settings: {fileID: -5901782207109726835}

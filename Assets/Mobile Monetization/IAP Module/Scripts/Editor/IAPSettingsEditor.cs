@@ -326,7 +326,7 @@ namespace MobileCore.IAPModule.Editor
             // Android ID
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(new GUIContent(androidIDProperty.displayName, androidIDProperty.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
-            androidIDProperty.stringValue = EditorGUILayout.TextField(androidIDProperty.stringValue, textFieldStyle);
+            EditorStyleTemplate.DrawStyledPropertyField(androidIDProperty, GUIContent.none);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(2);
@@ -334,7 +334,7 @@ namespace MobileCore.IAPModule.Editor
             // iOS ID
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(new GUIContent(iOSIDProperty.displayName, iOSIDProperty.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
-            iOSIDProperty.stringValue = EditorGUILayout.TextField(iOSIDProperty.stringValue, textFieldStyle);
+            EditorStyleTemplate.DrawStyledPropertyField(iOSIDProperty, GUIContent.none);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();

@@ -208,45 +208,25 @@ namespace MobileCore.Advertisements.Editor
             buttonStyle.fontSize = 9;
             buttonStyle.padding = new RectOffset(4, 4, 2, 2);
 
-            float availableWidth = Mathf.Max(200f, EditorGUIUtility.currentViewWidth - 40f);
             int buttonsPerRow = 3;
-            float buttonWidth = (availableWidth - 20f) / buttonsPerRow;
-            float buttonHeight = 22f;
 
-            // Draw provider buttons automatically
-            for (int i = 0; i < providerInfos.Count; i += buttonsPerRow)
+            string[] providerNames = new string[providerInfos.Count];
+            for (int k = 0; k < providerInfos.Count; k++)
             {
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-
-                for (int j = 0; j < buttonsPerRow; j++)
-                {
-                    int index = i + j;
-                    if (index < providerInfos.Count)
-                    {
-                        var providerInfo = providerInfos[index];
-                        if (GUILayout.Toggle(selectedTab == index, providerInfo.DisplayName,
-                            buttonStyle, GUILayout.Width(buttonWidth), GUILayout.Height(buttonHeight)))
-                        {
-                            selectedTab = index;
-                        }
-                        if (j < buttonsPerRow - 1 && index < providerInfos.Count - 1)
-                        {
-                            GUILayout.Space(10f);
-                        }
-                    }
-                }
-
-                GUILayout.FlexibleSpace();
-                EditorGUILayout.EndHorizontal();
-
-                if (i + buttonsPerRow < providerInfos.Count)
-                {
-                    EditorGUILayout.Space(5f);
-                }
+                providerNames[k] = providerInfos[k].DisplayName;
             }
 
-            EditorPrefs.SetInt(EditorPrefKey, selectedTab);
+            EditorGUI.BeginChangeCheck();
+            int newSelected = GUILayout.SelectionGrid(selectedTab, providerNames, buttonsPerRow, buttonStyle);
+            if (EditorGUI.EndChangeCheck())
+            {
+                selectedTab = newSelected;
+                EditorPrefs.SetInt(EditorPrefKey, selectedTab);
+                
+                // Hapus focus kursor saat berpindah tab
+                GUIUtility.keyboardControl = 0;
+            }
+
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.Space();
@@ -407,16 +387,12 @@ namespace MobileCore.Advertisements.Editor
                     switch (iterator.propertyType)
                     {
                         case SerializedPropertyType.String:
-                            iterator.stringValue = EditorGUILayout.TextField(iterator.stringValue, textFieldStyle);
-                            break;
                         case SerializedPropertyType.Integer:
-                            iterator.intValue = EditorGUILayout.IntField(iterator.intValue, textFieldStyle);
-                            break;
                         case SerializedPropertyType.Float:
-                            iterator.floatValue = EditorGUILayout.FloatField(iterator.floatValue, textFieldStyle);
+                            EditorStyleTemplate.DrawStyledPropertyField(iterator, GUIContent.none);
                             break;
                         case SerializedPropertyType.Boolean:
-                            iterator.boolValue = EditorGUILayout.Toggle(iterator.boolValue, toggleStyle);
+                            iterator.boolValue = EditorStyleTemplate.DrawStyledToggle(iterator.boolValue);
                             break;
                         case SerializedPropertyType.Enum:
                             DrawStyledPopup(iterator, GUILayout.ExpandWidth(true));
@@ -450,14 +426,14 @@ namespace MobileCore.Advertisements.Editor
                 // System Logs
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(p_systemLogs.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
-                p_systemLogs.boolValue = EditorGUILayout.Toggle(p_systemLogs.boolValue, toggleStyle);
+                p_systemLogs.boolValue = EditorStyleTemplate.DrawStyledToggle(p_systemLogs.boolValue);
                 EditorGUILayout.LabelField(new GUIContent("", p_systemLogs.tooltip), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
 
                 // Ads On Start
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(p_adOnStart.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
-                p_adOnStart.boolValue = EditorGUILayout.Toggle(p_adOnStart.boolValue, toggleStyle);
+                p_adOnStart.boolValue = EditorStyleTemplate.DrawStyledToggle(p_adOnStart.boolValue);
                 EditorGUILayout.LabelField(new GUIContent("", p_adOnStart.tooltip), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
 
@@ -466,7 +442,7 @@ namespace MobileCore.Advertisements.Editor
                 EditorGUILayout.LabelField(new GUIContent(p_grantRewardIfNoAds.displayName, p_grantRewardIfNoAds.tooltip), EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 20));
                 if (p_grantRewardIfNoAds != null)
                 {
-                    p_grantRewardIfNoAds.boolValue = EditorGUILayout.Toggle(p_grantRewardIfNoAds.boolValue, toggleStyle);
+                    p_grantRewardIfNoAds.boolValue = EditorStyleTemplate.DrawStyledToggle(p_grantRewardIfNoAds.boolValue);
                 }
                 EditorGUILayout.LabelField(new GUIContent("", p_grantRewardIfNoAds.tooltip), EditorStyles.miniLabel, GUILayout.Width(20));
                 EditorGUILayout.EndHorizontal();
@@ -496,14 +472,14 @@ namespace MobileCore.Advertisements.Editor
                 EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(p_isGDPREnabled.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 10));
-                p_isGDPREnabled.boolValue = EditorGUILayout.Toggle(p_isGDPREnabled.boolValue, toggleStyle);
+                p_isGDPREnabled.boolValue = EditorStyleTemplate.DrawStyledToggle(p_isGDPREnabled.boolValue);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true));
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(p_isIDFAEnabled.displayName, EditorStyles.label, GUILayout.Width(EditorGUIUtility.labelWidth - 10));
-                p_isIDFAEnabled.boolValue = EditorGUILayout.Toggle(p_isIDFAEnabled.boolValue, toggleStyle);
+                p_isIDFAEnabled.boolValue = EditorStyleTemplate.DrawStyledToggle(p_isIDFAEnabled.boolValue);
                 EditorGUILayout.EndHorizontal();
                 EditorGUILayout.EndVertical();
 
@@ -525,14 +501,14 @@ namespace MobileCore.Advertisements.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(new GUIContent(p_privacyLink.displayName, p_privacyLink.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
-                p_privacyLink.stringValue = EditorGUILayout.TextField(p_privacyLink.stringValue, textFieldStyle);
+                EditorStyleTemplate.DrawStyledPropertyField(p_privacyLink, GUIContent.none);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space(2);
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(new GUIContent(p_termsOfUseLink.displayName, p_termsOfUseLink.tooltip), EditorStyles.miniLabel, GUILayout.Width(80));
-                p_termsOfUseLink.stringValue = EditorGUILayout.TextField(p_termsOfUseLink.stringValue, textFieldStyle);
+                EditorStyleTemplate.DrawStyledPropertyField(p_termsOfUseLink, GUIContent.none);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.EndVertical();
@@ -567,7 +543,7 @@ namespace MobileCore.Advertisements.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(new GUIContent(p_autoShowInterstitial.displayName, p_autoShowInterstitial.tooltip), EditorStyles.label, GUILayout.Width(150));
-                p_autoShowInterstitial.boolValue = EditorGUILayout.Toggle(p_autoShowInterstitial.boolValue, toggleStyle);
+                p_autoShowInterstitial.boolValue = EditorStyleTemplate.DrawStyledToggle(p_autoShowInterstitial.boolValue);
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.Space();
@@ -578,21 +554,21 @@ namespace MobileCore.Advertisements.Editor
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField(new GUIContent(p_interstitialFirstStartDelay.displayName, p_interstitialFirstStartDelay.tooltip), EditorStyles.miniLabel, GUILayout.Width(120));
-                    p_interstitialFirstStartDelay.floatValue = EditorGUILayout.FloatField(p_interstitialFirstStartDelay.floatValue, textFieldStyle);
+                    EditorStyleTemplate.DrawStyledPropertyField(p_interstitialFirstStartDelay, GUIContent.none);
                     EditorGUILayout.EndHorizontal();
 
                     EditorGUILayout.Space(2);
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField(new GUIContent(p_interstitialStartDelay.displayName, p_interstitialStartDelay.tooltip), EditorStyles.miniLabel, GUILayout.Width(120));
-                    p_interstitialStartDelay.floatValue = EditorGUILayout.FloatField(p_interstitialStartDelay.floatValue, textFieldStyle);
+                    EditorStyleTemplate.DrawStyledPropertyField(p_interstitialStartDelay, GUIContent.none);
                     EditorGUILayout.EndHorizontal();
 
                     EditorGUILayout.Space(2);
 
                     EditorGUILayout.BeginHorizontal();
                     EditorGUILayout.LabelField(new GUIContent(p_interstitialShowingDelay.displayName, p_interstitialShowingDelay.tooltip), EditorStyles.miniLabel, GUILayout.Width(120));
-                    p_interstitialShowingDelay.floatValue = EditorGUILayout.FloatField(p_interstitialShowingDelay.floatValue, textFieldStyle);
+                    EditorStyleTemplate.DrawStyledPropertyField(p_interstitialShowingDelay, GUIContent.none);
                     EditorGUILayout.EndHorizontal();
 
                     EditorGUILayout.EndVertical();

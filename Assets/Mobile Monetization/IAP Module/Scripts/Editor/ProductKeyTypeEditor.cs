@@ -168,8 +168,8 @@ namespace MobileCore.IAPModule.Editor
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Name:", EditorStyleTemplate.GrayMiniLabelStyle, GUILayout.Width(40));
-            var textFieldStyle = EditorStyleTemplate.GrayTextFieldBackgroundStyle;
-            newName = EditorGUILayout.TextField(newName, textFieldStyle);
+            Rect rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
+            newName = EditorStyleTemplate.DrawColoredTextField(rect, newName);
             EditorGUILayout.EndHorizontal();
 
             // Validasi Add Value
@@ -250,12 +250,14 @@ namespace MobileCore.IAPModule.Editor
                     if (enumValue.name == "NoAds")
                     {
                         EditorGUI.BeginDisabledGroup(true);
-                        EditorGUILayout.TextField(enumValue.name, textFieldStyle);
+                        Rect r = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
+                        EditorStyleTemplate.DrawColoredTextField(r, enumValue.name);
                         EditorGUI.EndDisabledGroup();
                     }
                     else
                     {
-                        string newNameValue = EditorGUILayout.TextField(enumValue.name, textFieldStyle);
+                        Rect r = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
+                        string newNameValue = EditorStyleTemplate.DrawColoredTextField(r, enumValue.name);
                         if (newNameValue != enumValue.name)
                         {
                             enumValue.name = newNameValue;
