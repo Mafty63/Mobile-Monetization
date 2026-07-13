@@ -92,6 +92,7 @@ namespace MobileCore.MainModule.Editor
                 _bareTextFieldStyle.border              = new RectOffset(0, 0, 0, 0);
                 _bareTextFieldStyle.padding             = new RectOffset(5, 5, 2, 2);
                 _bareTextFieldStyle.alignment           = TextAnchor.MiddleLeft;
+                _bareTextFieldStyle.clipping            = TextClipping.Clip;
 
                 // ── Other controls ────────────────────────────────────────────────────
 

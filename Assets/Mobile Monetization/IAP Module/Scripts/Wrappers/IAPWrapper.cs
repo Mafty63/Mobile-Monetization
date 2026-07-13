@@ -282,19 +282,8 @@ namespace MobileCore.IAPModule
         private bool CheckSubscriptionActive(Product product)
         {
             if (product == null) return false;
-            if (!product.hasReceipt || string.IsNullOrEmpty(product.receipt)) return false;
 
-            try
-            {
-                var subscriptionManager = new SubscriptionManager(product, null);
-                var info = subscriptionManager.getSubscriptionInfo();
-                return info.isSubscribed() == Result.True;
-            }
-            catch (System.Exception e)
-            {
-                IAPManager.LogWarning($"[IAPWrapper]: Subscription validation failed, fallback to hasReceipt. Error: {e.Message}");
-                return product.hasReceipt;
-            }
+            return purchasedProductIds.Contains(product.definition.id);
         }
 #endif
 
@@ -389,7 +378,7 @@ namespace MobileCore.IAPModule
                     Product product = GetProduct(item.ID);
                     if (product != null)
                     {
-                        bool isPurchased = product.hasReceipt || purchasedProductIds.Contains(item.ID);
+                        bool isPurchased = purchasedProductIds.Contains(item.ID);
                         bool isSubscribed = false;
                         if (item.ProductType == ProductType.Subscription)
                         {
@@ -422,7 +411,7 @@ namespace MobileCore.IAPModule
                         {
                             return CheckSubscriptionActive(product);
                         }
-                        return product.hasReceipt || purchasedProductIds.Contains(item.ID);
+                        return purchasedProductIds.Contains(item.ID);
                     }
                 }
             }
